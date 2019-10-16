@@ -1,0 +1,12 @@
+include LICENSE.txt
+include Makefile
+include README.md
+include requirements/base.in
+include requirements/base.txt
+include requirements/test.in
+include requirements/test.txt
+include test.sh
+include test_file.ogg
+include test_tooltool.py
+include tooltool.py
+include version.txt

@@ -1,0 +1,8 @@
+-r base.in
+
+coverage
+coveralls
+mock
+nose
+pep8
+pyflakes

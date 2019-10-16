@@ -1,0 +1,39 @@
+version: '3'
+services:
+  api:
+    build: api
+    ports:
+      - "8002:8002"
+    volumes:
+      # This doesn't quite work because the app has to be installed
+      # Maybe we should drop the volume mount and rely on rebuilding?
+      - ./api:/app
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8002
+      - APP_URL=https://localhost:8002
+      - APP_SETTINGS=/app/settings.py
+      - APP_CHANNEL=development
+      - DATABASE_URL=postgres://tooltooluser:tooltoolpassword@db/tooltooldb
+      - TASKCLUSTER_SECRET=$TASKCLUSTER_SECRET
+      - TASKCLUSTER_CLIENT_ID=$TASKCLUSTER_CLIENT_ID
+      - TASKCLUSTER_ACCESS_TOKEN=$TASKCLUSTER_ACCESS_TOKEN
+    depends_on:
+      - db
+
+  db:
+    image: postgres:11
+    volumes:
+      - dbstore:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=tooltooluser
+      - POSTGRES_PASSWORD=tooltoolpassword
+      - POSTGRES_DB=tooltooldb
+    healthcheck:
+      test: ["CMD-SHELL", "-c", "pg_isready -U tooltooluser -d tooltooldb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  dbstore:

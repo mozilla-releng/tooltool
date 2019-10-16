@@ -1,0 +1,184 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+version: 1
+policy:
+  pullRequests: public
+tasks:
+  $let:
+    # -------------------------------------------------------------------------
+    # -- This is where you add new projects -----------------------------------
+    # -------------------------------------------------------------------------
+    PROJECTS:
+      $let:
+        client_setup_2: 'apt-get update && apt-get install -y zip xz-utils build-essential libssl-dev libffi-dev python-dev &&'
+        client_setup_3: 'apt-get update && apt-get install -y zip xz-utils build-essential libssl-dev libffi-dev python3-dev &&'
+      in:
+        # [ <PROJECT NAME>, <PYTHON VERSION>, <SETUP COMMAND>,     <DOCKERHUB REPO>]
+        - ['client',        '27',             '${client_setup_2}', '']
+        - ['client',        '37',             '${client_setup_3}', '']
+        - ['api',           '37',             '',                  'mozilla/releng-tooltool']
+    # -------------------------------------------------------------------------
+
+    HEAD_REV:
+      $if: 'tasks_for == "github-pull-request"'
+      then: '${event.pull_request.head.sha}'
+      else:
+        $if: 'tasks_for == "github-push"'
+        then: '${event.after}'
+        else: '${event.release.tag_name}'
+
+    REPO_URL:
+      $if: 'tasks_for == "github-pull-request"'
+      then: '${event.pull_request.head.repo.html_url}'
+      else: '${event.repository.html_url}'
+
+    OWNER: '${event.sender.login}@users.noreply.github.com'
+
+    BRANCH_NAME:
+      $if: 'tasks_for == "github-pull-request"'
+      then: 'pull-request'
+      else:
+        $if: 'tasks_for == "github-push" && event.ref[0:11] == "refs/heads/"'
+        then: '${event.ref[11:]}'
+        else: 'unknown'
+  in:
+    $flatten:
+      $map: { "$eval": "PROJECTS" }
+      each(x,i):
+        $let:
+          project_name: { "$eval": "x[0]" }
+          python_version: { "$eval": "x[1]" }
+          setup_command: { "$eval": "x[2]" }
+          dockerhub_repo: { "$eval": "x[3]" }
+          run_tests:
+            $if: 'tasks_for == "github-pull-request"'
+            then: '1'
+            else:
+              $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/master","refs/heads/dev","refs/heads/staging","refs/heads/production","refs/heads/dev-" + x[0],"refs/heads/staging-" + x[0],"refs/heads/production-" + x[0]]'
+              then: '1'
+              else: '0'
+          push_docker_image:
+            $if: 'tasks_for == "github-pull-request"'
+            then: '0'
+            else:
+              $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/dev","refs/heads/staging","refs/heads/production","refs/heads/dev-" + x[0],"refs/heads/staging-" + x[0],"refs/heads/production-" + x[0]]'
+              then: '1'
+              else: '0'
+          number_prefix: ''
+          #  $if: 'i + 1 < 10'
+          #  then: '0'
+          #  else: ''
+          docker_tag:
+            $if: 'tasks_for == "github-pull-request"'
+            then: 'pull-request'
+            else:
+              $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/dev-" + x[0],"refs/heads/staging-" + x[0],"refs/heads/production-" + x[0]]'
+              then: '${event.ref[11:-(len(x[0]) + 1)]}'
+              else:
+                $if: 'tasks_for == "github-push" && event.ref[0:11] == "refs/heads/"'
+                then: '${event.ref[11:]}'
+                else: 'unknown'
+        in:
+          $match:
+            # Run code linting and unit tests for each project 
+            'run_tests == "1"':
+              taskId: '${as_slugid(project_name + python_version)}'
+              provisionerId: 'aws-provisioner-v1'
+              workerType: 'github-worker'
+              created: { $fromNow: '' }
+              deadline: { $fromNow: '4 hours' }
+              payload:
+                maxRunTime: 3600
+                image: 'python:${python_version[0]}.${python_version[1]}'
+                command:
+                  - sh
+                  - -lxce
+                  - >-
+                    groupadd --gid 10001 app &&
+                    useradd -g app --uid 10001 --shell /bin/bash --create-home --home-dir /src app && ${setup_command}
+                    su - app -c "
+                      cd /tmp &&
+                      wget ${REPO_URL}/archive/${HEAD_REV}.tar.gz &&
+                      tar zxf ${HEAD_REV}.tar.gz &&
+                      mv tooltool-${HEAD_REV}/* /src/ &&
+                      cd /src &&
+                      pip install --user tox &&
+                      /src/.local/bin/tox -e ${project_name}-py${python_version}
+                      "
+              metadata:
+                name:
+                  $let:
+                    test_task_number:
+                      $if: 'dockerhub_repo != ""'
+                      then: '${i+1}.1'
+                      else: '${i+1}'
+                  in:
+                    '${number_prefix}${test_task_number}. ${project_name}-py${python_version}: Run tox [on ${BRANCH_NAME}]'
+                description: 'Code linting and unit tests for ${project_name} on python ${python_version[0]}.${python_version[1]}'
+                owner: '${OWNER}'
+                source: '${REPO_URL}/raw/${HEAD_REV}/.taskcluster.yml'
+            # Build docker image and (optionally) push to docker hub
+            'run_tests == "1" && dockerhub_repo != ""':
+              taskId: '${as_slugid(project_name + "docker_build_and_push")}'
+              dependencies:
+                - '${as_slugid(project_name + python_version)}'
+              provisionerId: 'aws-provisioner-v1'
+              workerType: 'github-worker'
+              created: { $fromNow: '' }
+              deadline: { $fromNow: '24 hours' }
+              payload:
+                features:
+                  dind: true
+                  taskclusterProxy: true
+                maxRunTime: 3600
+                # we need to run really old docker version because taskcluster is using
+                # really old version in their setup
+                # image: docker:stable
+                image: 'docker:1.6.2'
+                env:
+
+                  DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
+                  DOCKERHUB_USER: 'mozillarelengservices'
+                  DOCKER_REPO: '${dockerhub_repo}'
+                  DOCKER_TAG: '${docker_tag}'
+                  GIT_HEAD_REV: '${HEAD_REV}'
+                  PROJECT_NAME: '${project_name}'
+                  PUSH_DOCKER_IMAGE: '${push_docker_image}'
+                  REPO_URL: '${REPO_URL}'
+                  SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/tooltool/deploy'
+                command:
+                  - sh
+                  - -lxce
+                  - >-
+                    cd /tmp &&
+                    wget ${REPO_URL}/archive/${HEAD_REV}.tar.gz &&
+                    tar zxf ${HEAD_REV}.tar.gz &&
+                    mv tooltool-${HEAD_REV} /src &&
+                    cd /src/${project_name} &&
+                    ./docker.d/generate_version_json.sh &&
+                    ./docker.d/build_image.sh /tmp/image.tar &&
+                    if [ "$PUSH_DOCKER_IMAGE" == "1" ]; then
+                      ./docker.d/push_image.sh
+                    fi
+                artifacts:
+                  public/image.tar:
+                    expires: {$fromNow: '8 weeks'}
+                    path: '/tmp/image.tar'
+                    type: 'file'
+              scopes:
+                $if: 'push_docker_image == "0"'
+                then: []
+                else:
+                  - 'secrets:get:project/releng/tooltool/deploy'
+              metadata:
+                $let:
+                  description:
+                    $if: 'push_docker_image == "0"'
+                    then: '${project_name}-py${python_version}: Build docker image [on ${BRANCH_NAME}]'
+                    else: '${project_name}-py${python_version}: Build and push docker image [on ${BRANCH_NAME}]'
+                in:
+                  name: '${number_prefix}${i+1}.2. ${description}'
+                  description: '${description}'
+                  owner: '${OWNER}'
+                  source: '${REPO_URL}/raw/${HEAD_REV}/.taskcluster.yml'
