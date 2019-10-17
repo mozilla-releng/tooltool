@@ -63,5 +63,4 @@ if 'DATABASE_URL' not in os.environ:
     raise RuntimeError(f'DATABASE_URL has to be set as an environment variable, when '
                        f'APP_CHANNEL is set to {secrets["APP_CHANNEL"]}')
 else:
-    print(80 * "=")
     SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
