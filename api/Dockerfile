@@ -6,7 +6,10 @@ RUN groupadd --gid 10001 app && \
 RUN apt-get update \
  && ln -s /app/docker.d/healthcheck /bin/healthcheck
 
+ENV PATH="/appenv/bin:${PATH}"
+
 COPY . /app
+
 RUN mkdir /appenv \
  && chown -R app:app /app /appenv
 

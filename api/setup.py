@@ -16,7 +16,7 @@ with open(os.path.join(ROOT_DIR, "requirements/base.in")) as f:
 with open(os.path.join(ROOT_DIR, "requirements/test.in")) as f:
     tests_require = [i.strip() for i in f.readlines() if i and not i.startswith('-r')]
 
-with open('VERSION') as f:
+with open('version.txt') as f:
     VERSION = f.read().strip()
 
 
