@@ -60,7 +60,5 @@ We have a number of deployed ToolTool environments.
 - Production
 
    :URL: https://tooltool.mozilla-releng.net/
-   :Taskcluster Secret: project/releng/tooltool/config:dev
-   :Taskcluster Client ID: project/releng/tooltool/dev
-
-When pushing to a branch with
+   :Taskcluster Secret: project/releng/tooltool/config:production
+   :Taskcluster Client ID: project/releng/tooltool/production
