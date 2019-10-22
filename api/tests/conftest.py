@@ -4,14 +4,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import base64
-import collections
 import datetime
-import hashlib
 import json
 import os
-import random
 import re
-import time
 
 import flask
 import flask_login
@@ -89,26 +85,6 @@ def get_app_config(extra_config):
 
 
 requests_mock = responses.RequestsMock(assert_all_requests_are_fired=False)
-
-
-def build_header(client_id, ext_data=None):
-    '''Build a fake Hawk header to share client id & scopes.
-    '''
-
-    out = collections.OrderedDict({
-        'id': client_id,
-        'ts': int(time.time()),
-        'nonce': random.randint(0, 100000),
-    })
-    if ext_data is not None:
-        json_data = json.dumps(ext_data, sort_keys=True).encode('utf-8')
-        out['ext'] = base64.b64encode(json_data).decode('utf-8')
-
-    mac_contents = '\n'.join(map(str, out.values()))
-    out['mac'] = hashlib.sha1(mac_contents.encode('utf-8')).hexdigest()
-
-    parts = map(lambda x: '{}="{}"'.format(*x), out.items())
-    return 'Hawk {}'.format(', '.join(parts))
 
 
 def parse_header(header):

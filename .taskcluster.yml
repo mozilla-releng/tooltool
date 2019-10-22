@@ -13,7 +13,7 @@ tasks:
       $let:
         client_setup_2: 'apt-get update && apt-get install -y zip xz-utils build-essential libssl-dev libffi-dev python-dev &&'
         client_setup_3: 'apt-get update && apt-get install -y zip xz-utils build-essential libssl-dev libffi-dev python3-dev &&'
-        api_setup: 'apt-get update && apt-get install -y postgres'
+        api_setup: 'apt-get update && apt-get install -y postgresql'
       in:
         # [ <PROJECT NAME>, <PYTHON VERSION>, <SETUP COMMAND>,     <DOCKERHUB REPO>]
         - ['client',        '27',             '${client_setup_2}', '']

@@ -3,9 +3,34 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import base64
+import collections
+import hashlib
 import json
+import random
+import time
 
 import pytest
+
+
+def build_header(client_id, ext_data=None):
+    '''Build a fake Hawk header to share client id & scopes.
+    '''
+
+    out = collections.OrderedDict({
+        'id': client_id,
+        'ts': int(time.time()),
+        'nonce': random.randint(0, 100000),
+    })
+    if ext_data is not None:
+        json_data = json.dumps(ext_data, sort_keys=True).encode('utf-8')
+        out['ext'] = base64.b64encode(json_data).decode('utf-8')
+
+    mac_contents = '\n'.join(map(str, out.values()))
+    out['mac'] = hashlib.sha1(mac_contents.encode('utf-8')).hexdigest()
+
+    parts = map(lambda x: '{}="{}"'.format(*x), out.items())
+    return 'Hawk {}'.format(', '.join(parts))
 
 
 def test_anonymous():
@@ -56,8 +81,6 @@ def test_auth(client):
     Test the Taskcluster authentication
     '''
 
-    import backend_common.testing
-
     # Test non authenticated endpoint
     resp = client.get('/')
     assert resp.status_code in (200, 302)
@@ -71,7 +94,7 @@ def test_auth(client):
         'scopes': ['project/test/*', ],
     }
     client_id = 'test/user@mozilla.com'
-    header = backend_common.testing.build_header(client_id, ext_data)
+    header = build_header(client_id, ext_data)
     resp = client.get('/test-auth-login', headers=[('Authorization', header)])
     assert resp.status_code == 200
     data = json.loads(resp.data.decode('utf-8'))
@@ -85,15 +108,13 @@ def test_scopes_invalid(client):
     Test the Taskcluster required scopes
     '''
 
-    import backend_common.testing
-
     client_id = 'test/user@mozilla.com'
 
     # Missing a scope to validate test
     ext_data = {
         'scopes': ['project/test/A', 'project/test/C', ],
     }
-    header = backend_common.testing.build_header(client_id, ext_data)
+    header = build_header(client_id, ext_data)
     resp = client.get('/test-auth-scopes', headers=[('Authorization', header)])
     assert resp.status_code == 401
 
@@ -103,14 +124,12 @@ def test_scopes_user(client):
     Test the Taskcluster required scopes
     '''
 
-    import backend_common.testing
-
     client_id = 'test/user@mozilla.com'
     # Validate with user scopes
     ext_data = {
         'scopes': ['project/test/A', 'project/test/B', ],
     }
-    header = backend_common.testing.build_header(client_id, ext_data)
+    header = build_header(client_id, ext_data)
     resp = client.get('/test-auth-scopes',
                       headers=[('Authorization', header)])
     assert resp.status_code == 200
@@ -122,15 +141,13 @@ def test_scopes_admin(client):
     Test the Taskcluster required scopes
     '''
 
-    import backend_common.testing
-
     client_id = 'test/user@mozilla.com'
 
     # Validate with admin scopes
     ext_data = {
         'scopes': ['project/another/*', 'project/test-admin/*']
     }
-    header = backend_common.testing.build_header(client_id, ext_data)
+    header = build_header(client_id, ext_data)
     resp = client.get('/test-auth-scopes', headers=[('Authorization', header)])
     assert resp.status_code == 200
     assert resp.data == b'Your scopes are ok.'

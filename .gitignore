@@ -39,6 +39,7 @@ htmlcov/
 .coverage
 .coverage.*
 /client/.coverage
+/client/.coverage-html/
 /client/.coverage.*
 .cache
 nosetests.xml
