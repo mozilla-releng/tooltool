@@ -13,11 +13,12 @@ tasks:
       $let:
         client_setup_2: 'apt-get update && apt-get install -y zip xz-utils build-essential libssl-dev libffi-dev python-dev &&'
         client_setup_3: 'apt-get update && apt-get install -y zip xz-utils build-essential libssl-dev libffi-dev python3-dev &&'
+        api_setup: 'apt-get update && apt-get install -y postgres'
       in:
         # [ <PROJECT NAME>, <PYTHON VERSION>, <SETUP COMMAND>,     <DOCKERHUB REPO>]
         - ['client',        '27',             '${client_setup_2}', '']
         - ['client',        '37',             '${client_setup_3}', '']
-        - ['api',           '37',             '',                  'mozilla/releng-tooltool']
+        - ['api',           '37',             '${api_setup}',      'mozilla/releng-tooltool']
     # -------------------------------------------------------------------------
 
     HEAD_REV:

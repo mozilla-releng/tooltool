@@ -5,15 +5,15 @@
 
 import glob
 import os.path
-import setuptools
 
+import setuptools
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(ROOT_DIR, "requirements/base.in")) as f:
+with open(os.path.join(ROOT_DIR, 'requirements/base.in')) as f:
     install_requires = f.readlines()
 
-with open(os.path.join(ROOT_DIR, "requirements/test.in")) as f:
+with open(os.path.join(ROOT_DIR, 'requirements/test.in')) as f:
     tests_require = [i.strip() for i in f.readlines() if i and not i.startswith('-r')]
 
 with open('version.txt') as f:
@@ -30,10 +30,10 @@ setuptools.setup(
     tests_require=tests_require,
     install_requires=install_requires,
     packages=setuptools.find_packages('src'),
-    package_dir={"": "src"},
+    package_dir={'': 'src'},
     py_modules=[
         os.path.splitext(os.path.basename(path))[0]
-        for path in glob.glob("src/*.py")],
+        for path in glob.glob('src/*.py')],
     include_package_data=True,
     zip_safe=False,
     license='MPL2',

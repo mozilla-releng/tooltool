@@ -10,11 +10,11 @@ import flask_talisman.talisman
 
 # TODO: we need to remove unsafe-inline
 DEFAULT_CSP_POLICY = {
-    'default-src': '\'none\'',
-    'script-src': '\'self\' \'unsafe-inline\'',
-    'style-src': '\'self\' \'unsafe-inline\'',
-    'img-src': '\'self\'',
-    'connect-src': '\'self\'',
+    'default-src': "'none'",
+    'script-src': "'self' 'unsafe-inline'",
+    'style-src': "'self' 'unsafe-inline'",
+    'img-src': "'self'",
+    'connect-src': "'self'",
 }
 
 
