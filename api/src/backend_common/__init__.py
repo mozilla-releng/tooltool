@@ -43,11 +43,11 @@ def create_app(
     app.__extensions = extensions
 
     if not app.config.get('TESTING') and os.environ.get('APP_SETTINGS'):
-        logger.info("Loading custom configuration from APP_SETTINGS", APP_SETTINGS=os.environ.get('APP_SETTINGS'))
+        logger.info('Loading custom configuration from APP_SETTINGS', APP_SETTINGS=os.environ.get('APP_SETTINGS'))
         app.config.from_envvar('APP_SETTINGS')
 
     if config:
-        logger.info("Loading custom configuration")
+        logger.info('Loading custom configuration')
         app.config.update(**config)
 
     for extension_name in EXTENSIONS:
