@@ -90,17 +90,7 @@ tasks:
                 maxRunTime: 3600
                 image: 'python:${python_version[0]}.${python_version[1]}'
                 env:
-                  $if: 'tasks_for == "github-push"'
-                  then:
-                    VCS_COMMIT_ID: '${HEAD_REV}'
-                    VCS_BRANCH_NAME: '${BRANCH_NAME}'
-                  else:
-                    $if: 'tasks_for == "github-pull-request"'
-                    then:
-                      VCS_COMMIT_ID: '${HEAD_REV}'
-                      VCS_PULL_REQUEST: '${event.pull_request.number}'
-                    else:
-                      VCS_COMMIT_ID:
+                  GIT_HEAD_REV: '${HEAD_REV}'
                 command:
                   - sh
                   - -lxce
