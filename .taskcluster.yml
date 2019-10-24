@@ -92,7 +92,7 @@ tasks:
                 env:
                   CI_HEAD_REV: '${HEAD_REV}'
                   CI_BRANCH_NAME:
-                    $if: 'tasks_for == "github-push" && event.ref[0:11] == "refs/heads/"'
+                    $if: 'tasks_for == "github-push"'
                     then: '${event.ref[11:]}'
                     else: ''
                   CI_PR_NUMBER:
