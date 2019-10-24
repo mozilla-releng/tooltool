@@ -99,6 +99,7 @@ tasks:
                     $if: 'tasks_for == "github-pull-request"'
                     then: '${event.pull_request.number}'
                     else: ''
+                  SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/tooltool/deploy'
                 command:
                   - sh
                   - -lxce
@@ -112,8 +113,12 @@ tasks:
                       mv tooltool-${HEAD_REV}/* /src/ &&
                       cd /src &&
                       pip install --user tox &&
+                      apt-get update && apt-get install -y jq &&
+                      export CODECOV_TOKEN=$(wget -qO- $SECRET_URL | jq '.["secret"]["codecov"]["token"]') &&
                       /src/.local/bin/tox -e ${project_name}-py${python_version}
                       "
+              scopes:
+                - 'secrets:get:project/releng/tooltool/deploy'
               metadata:
                 name:
                   $let:
