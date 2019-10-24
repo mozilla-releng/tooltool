@@ -67,9 +67,6 @@ tasks:
               then: '1'
               else: '0'
           number_prefix: ''
-          #  $if: 'i + 1 < 10'
-          #  then: '0'
-          #  else: ''
           docker_tag:
             $if: 'tasks_for == "github-pull-request"'
             then: 'pull-request'
@@ -92,6 +89,18 @@ tasks:
               payload:
                 maxRunTime: 3600
                 image: 'python:${python_version[0]}.${python_version[1]}'
+                env:
+                  $if: 'tasks_for == "github-push"'
+                  then:
+                    VCS_COMMIT_ID: '${HEAD_REV}'
+                    VCS_BRANCH_NAME: '${BRANCH_NAME}'
+                  else:
+                    $if: 'tasks_for == "github-pull-request"'
+                    then:
+                      VCS_COMMIT_ID: '${HEAD_REV}'
+                      VCS_PULL_REQUEST: '${event.pull_request.number}'
+                    else:
+                      VCS_COMMIT_ID:
                 command:
                   - sh
                   - -lxce
@@ -138,7 +147,6 @@ tasks:
                 # image: docker:stable
                 image: 'docker:1.6.2'
                 env:
-
                   DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
                   DOCKERHUB_USER: 'mozillarelengservices'
                   DOCKER_REPO: '${dockerhub_repo}'
