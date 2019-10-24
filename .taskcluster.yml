@@ -99,7 +99,7 @@ tasks:
                     $if: 'tasks_for == "github-pull-request"'
                     then: '${event.pull_request.number}'
                     else: ''
-                  SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/tooltool/deploy'
+                  SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/tooltool/ci'
                 command:
                   - sh
                   - -lxce
@@ -118,7 +118,7 @@ tasks:
                       /src/.local/bin/tox -e ${project_name}-py${python_version}
                       "
               scopes:
-                - 'secrets:get:project/releng/tooltool/deploy'
+                - 'secrets:get:project/releng/tooltool/ci'
               metadata:
                 name:
                   $let:
