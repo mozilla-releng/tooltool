@@ -106,6 +106,8 @@ tasks:
                   - >-
                     groupadd --gid 10001 app &&
                     useradd -g app --uid 10001 --shell /bin/bash --create-home --home-dir /src app && ${setup_command}
+                    apt-get update && apt-get install -y jq &&
+                    export CODECOV_TOKEN=$(wget -qO- $SECRET_URL | jq '.["secret"]["codecov"]["token"]') &&
                     su - app -c "
                       cd /tmp &&
                       wget ${REPO_URL}/archive/${HEAD_REV}.tar.gz &&
@@ -113,8 +115,6 @@ tasks:
                       mv tooltool-${HEAD_REV}/* /src/ &&
                       cd /src &&
                       pip install --user tox &&
-                      apt-get update && apt-get install -y jq &&
-                      export CODECOV_TOKEN=$(wget -qO- $SECRET_URL | jq '.["secret"]["codecov"]["token"]') &&
                       /src/.local/bin/tox -e ${project_name}-py${python_version}
                       "
               scopes:
