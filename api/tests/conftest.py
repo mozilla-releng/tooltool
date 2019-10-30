@@ -170,7 +170,7 @@ def client(app):
             if hasattr(app, 'auth'):
                 requests_mock.add_callback(
                     responses.POST,
-                    'https://auth.taskcluster.net/v1/authenticate-hawk',
+                    'http://zzz/api/auth/v1/authenticate-hawk',
                     callback=mock_auth_taskcluster,
                     content_type='application/json',
                 )

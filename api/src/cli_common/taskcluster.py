@@ -44,7 +44,10 @@ def read_hosts():
     return out
 
 
-def get_options(client_id=None, access_token=None):
+def get_options(client_id=None,
+                access_token=None,
+                root_url='https://taskcluster.net',
+                ):
     '''
     Build Taskcluster credentials options
     '''
@@ -56,7 +59,7 @@ def get_options(client_id=None, access_token=None):
                 'clientId': client_id,
                 'accessToken': access_token,
             },
-            'rootUrl': 'https://taskcluster.net',
+            'rootUrl': root_url,
         }
 
     else:
@@ -80,7 +83,11 @@ def get_options(client_id=None, access_token=None):
     return tc_options
 
 
-def get_service(service_name, client_id=None, access_token=None):
+def get_service(service_name,
+                client_id=None,
+                access_token=None,
+                root_url='https://taskcluster.net',
+                ):
     '''
     Build a Taskcluster service instance from the environment
     Supports:
@@ -107,7 +114,7 @@ def get_service(service_name, client_id=None, access_token=None):
         access_token = os.environ.get('TASKCLUSTER_ACCESS_TOKEN')
 
     # Instanciate service
-    options = get_options(client_id, access_token)
+    options = get_options(client_id, access_token, root_url)
     return getattr(taskcluster, service_name.capitalize())(options)
 
 
@@ -117,6 +124,7 @@ def get_secrets(name,
                 existing=dict(),
                 taskcluster_client_id=None,
                 taskcluster_access_token=None,
+                root_url='https://taskcluster.net',
                 ):
     '''
     Fetch a specific set of secrets by name and verify that the required
@@ -139,6 +147,7 @@ def get_secrets(name,
         secrets_service = get_service('secrets',
                                       taskcluster_client_id,
                                       taskcluster_access_token,
+                                      root_url,
                                       )
         all_secrets = secrets_service.get(name).get('secret', dict())
 
@@ -153,34 +162,3 @@ def get_secrets(name,
             raise Exception(f'Missing value {required_secret} in secrets.')
 
     return secrets
-
-
-def get_hook_artifact(hook_group_id, hook_id, artifact_name, client_id=None,
-                      access_token=None):
-    '''
-    Load an artifact from the last execution of an hook
-    '''
-
-    # Get last run from hook
-    hooks = get_service('hooks', client_id, access_token)
-    hook_status = hooks.getHookStatus(hook_group_id, hook_id)
-    last_fire = hook_status.get('lastFire')
-    if last_fire is None:
-        raise Exception('Hook did not fire')
-    task_id = last_fire['taskId']
-
-    # Get successful run for this task
-    queue = get_service('queue', client_id, access_token)
-    task_status = queue.status(task_id)
-    if task_status['status']['state'] != 'completed':
-        raise Exception(f'Task {task_id} is not completed')
-    run_id = None
-    for run in task_status['status']['runs']:
-        if run['state'] == 'completed':
-            run_id = run['runId']
-            break
-    if run_id is None:
-        raise Exception('No completed run found')
-
-    # Load artifact from task run
-    return queue.getArtifact(task_id, run_id, artifact_name)

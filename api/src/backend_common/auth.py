@@ -569,12 +569,15 @@ def get_taskcluster_credentials():
         return dict(
             client_id='XXX',
             access_token='YYY',
+            root_url='http://ZZZ'
         )
     return dict(
         client_id=os.environ.get('TASKCLUSTER_CLIENT_ID',
                                  flask.current_app.config.get('TASKCLUSTER_CLIENT_ID')),
         access_token=os.environ.get('TASKCLUSTER_ACCESS_TOKEN',
                                     flask.current_app.config.get('TASKCLUSTER_ACCESS_TOKEN')),
+        root_url=os.environ.get('TASKCLUSTER_ROOT_URL',
+                                flask.current_app.config.get('TASKCLUSTER_ROOT_URL')),
     )
 
 
