@@ -67,9 +67,6 @@ tasks:
               then: '1'
               else: '0'
           number_prefix: ''
-          #  $if: 'i + 1 < 10'
-          #  then: '0'
-          #  else: ''
           docker_tag:
             $if: 'tasks_for == "github-pull-request"'
             then: 'pull-request'
@@ -90,15 +87,32 @@ tasks:
               created: { $fromNow: '' }
               deadline: { $fromNow: '4 hours' }
               payload:
+                features:
+                  taskclusterProxy: true
                 maxRunTime: 3600
                 image: 'python:${python_version[0]}.${python_version[1]}'
+                env:
+                  CI_HEAD_REV: '${HEAD_REV}'
+                  CI_BRANCH_NAME:
+                    $if: 'tasks_for == "github-push"'
+                    then: '${event.ref[11:]}'
+                    else: ''
+                  CI_PR_NUMBER:
+                    $if: 'tasks_for == "github-pull-request"'
+                    then: '${event.pull_request.number}'
+                    else: ''
+                  SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/tooltool/ci'
                 command:
                   - sh
                   - -lxce
                   - >-
                     groupadd --gid 10001 app &&
                     useradd -g app --uid 10001 --shell /bin/bash --create-home --home-dir /src app && ${setup_command}
-                    su - app -c "
+                    apt-get update && apt-get install -y jq &&
+                    set +o xtrace &&
+                    export CODECOV_TOKEN=$(wget -qO- $SECRET_URL | jq -r '.["secret"]["codecov"]["token"]') &&
+                    set -o xtrace &&
+                    su app -c "
                       cd /tmp &&
                       wget ${REPO_URL}/archive/${HEAD_REV}.tar.gz &&
                       tar zxf ${HEAD_REV}.tar.gz &&
@@ -107,6 +121,8 @@ tasks:
                       pip install --user tox &&
                       /src/.local/bin/tox -e ${project_name}-py${python_version}
                       "
+              scopes:
+                - 'secrets:get:project/releng/tooltool/ci'
               metadata:
                 name:
                   $let:
@@ -138,7 +154,6 @@ tasks:
                 # image: docker:stable
                 image: 'docker:1.6.2'
                 env:
-
                   DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
                   DOCKERHUB_USER: 'mozillarelengservices'
                   DOCKER_REPO: '${dockerhub_repo}'
