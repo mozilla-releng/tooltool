@@ -84,6 +84,7 @@ coverage run --rcfile=coveragerc --source=tooltool `which nosetests` test_toolto
 
 status "checking coverage"
 coverage report --rcfile=coveragerc >${tmpbase}/covreport
+coverage xml --rcfile=coveragerc
 coverage html --rcfile=coveragerc -d .coverage-html
 head -n2 ${tmpbase}/covreport
 tail -n1 ${tmpbase}/covreport
