@@ -87,6 +87,8 @@ tasks:
               created: { $fromNow: '' }
               deadline: { $fromNow: '4 hours' }
               payload:
+                features:
+                  taskclusterProxy: true
                 maxRunTime: 3600
                 image: 'python:${python_version[0]}.${python_version[1]}'
                 env:
@@ -107,7 +109,9 @@ tasks:
                     groupadd --gid 10001 app &&
                     useradd -g app --uid 10001 --shell /bin/bash --create-home --home-dir /src app && ${setup_command}
                     apt-get update && apt-get install -y jq &&
+                    set +o xtrace
                     export CODECOV_TOKEN=$(wget -qO- $SECRET_URL | jq '.["secret"]["codecov"]["token"]') &&
+                    set -o xtrace
                     su - app -c "
                       cd /tmp &&
                       wget ${REPO_URL}/archive/${HEAD_REV}.tar.gz &&
