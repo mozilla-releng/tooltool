@@ -25,6 +25,7 @@ required = [
     'S3_REGIONS_SECRET_ACCESS_KEY',
     'PULSE_USER',
     'PULSE_PASSWORD',
+    'TASKCLUSTER_ROOT_URL',
 ]
 
 existing = {x: os.environ.get(x) for x in required if x in os.environ}
@@ -49,16 +50,6 @@ locals().update(secrets)
 
 RELENGAPI_AUTH = True
 SECRET_KEY = base64.b64decode(secrets['SECRET_KEY_BASE64'])
-
-# -- TASKCLUSTER --------------------------------------------------------------
-# it is important to be aware that even if we point to different taskcluster
-# instance, secrets which are loaded few lines above are still fetched from
-# production instance of taskcluster
-
-if APP_CHANNEL in ['staging']:
-    TASKCLUSTER_ROOT_URL = 'https://stage.taskcluster.nonprod.cloudops.mozgcp.net'
-else:
-    TASKCLUSTER_ROOT_URL = 'https://taskcluster.net'
 
 # -- DATABASE -----------------------------------------------------------------
 

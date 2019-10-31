@@ -6,7 +6,6 @@
 import datetime
 import functools
 import json
-import os
 import time
 
 import flask
@@ -572,12 +571,9 @@ def get_taskcluster_credentials():
             root_url='http://ZZZ'
         )
     return dict(
-        client_id=os.environ.get('TASKCLUSTER_CLIENT_ID',
-                                 flask.current_app.config.get('TASKCLUSTER_CLIENT_ID')),
-        access_token=os.environ.get('TASKCLUSTER_ACCESS_TOKEN',
-                                    flask.current_app.config.get('TASKCLUSTER_ACCESS_TOKEN')),
-        root_url=os.environ.get('TASKCLUSTER_ROOT_URL',
-                                flask.current_app.config.get('TASKCLUSTER_ROOT_URL')),
+        client_id=flask.current_app.config.get('TASKCLUSTER_CLIENT_ID'),
+        access_token=flask.current_app.config.get('TASKCLUSTER_ACCESS_TOKEN'),
+        root_url=flask.current_app.config.get('TASKCLUSTER_ROOT_URL'),
     )
 
 
