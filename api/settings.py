@@ -6,7 +6,7 @@
 import base64
 import os
 
-import cli_common.taskcluster
+import tooltool_api.lib.taskcluster
 import tooltool_api.config
 
 DEBUG = bool(os.environ.get('DEBUG', False))
