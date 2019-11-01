@@ -37,7 +37,7 @@ existing['ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD'] = False
 existing['UPLOAD_EXPIRES_IN'] = 60
 existing['DOWLOAD_EXPIRES_IN'] = 60
 
-secrets = cli_common.taskcluster.get_secrets(
+secrets = tooltool_api.lib.taskcluster.get_secrets(
     os.environ.get('TASKCLUSTER_SECRET'),
     tooltool_api.config.PROJECT_NAME,
     required=required,
