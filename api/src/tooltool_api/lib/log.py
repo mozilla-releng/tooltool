@@ -38,51 +38,6 @@ class UnstructuredRenderer(structlog.processors.KeyValueRenderer):
             return event
 
 
-def setup_mozdef(project_name, channel, MOZDEF):
-    '''
-    Setup mozdef using taskcluster secrets
-    '''
-
-    import mozdef_client
-
-    sevirity_map = {
-        'critical': mozdef_client.MozDefEvent.SEVERITY_CRITICAL,
-        'error': mozdef_client.MozDefEvent.SEVERITY_ERROR,
-        'warning': mozdef_client.MozDefEvent.SEVERITY_WARNING,
-        'info': mozdef_client.MozDefEvent.SEVERITY_INFO,
-        'debug': mozdef_client.MozDefEvent.SEVERITY_DEBUG,
-    }
-
-    def send(logger, method_name, event_dict):
-
-        # only send to mozdef if `mozdef` is set
-        if event_dict.pop('mozdef', False):
-            msg = mozdef_client.MozDefEvent(MOZDEF)
-
-            msg.summary = event_dict.get('event', '')
-            msg.tags = [
-                'mozilla/release-services/' + channel,
-                project_name,
-            ]
-
-            if set(event_dict) - {'event'}:
-                msg.details = event_dict.copy()
-                msg.details.pop('event', None)
-
-            msg.source = logger.name
-            msg.set_severity(
-                sevirity_map.get(
-                    method_name,
-                    mozdef_client.MozDefEvent.SEVERITY_INFO,
-                ),
-            )
-            msg.send()
-
-        return event_dict
-
-    return send
-
-
 def setup_papertrail(project_name, channel, PAPERTRAIL_HOST, PAPERTRAIL_PORT):
     '''
     Setup papertrail account using taskcluster secrets
@@ -176,10 +131,6 @@ def init_logger(project_name,
     ]
     if timestamp is True:
         processors.append(structlog.processors.TimeStamper(fmt='%Y-%m-%d %H:%M:%S'))
-
-    # send to mozdef before formatting into a string
-    if channel and MOZDEF:
-        processors.append(setup_mozdef(project_name, channel, MOZDEF))
 
     processors.append(UnstructuredRenderer())
 
