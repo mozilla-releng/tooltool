@@ -13,11 +13,11 @@ import json
 
 import flask
 
-import backend_common
-import backend_common.dockerflow
-import cli_common.log
+import tooltool_api.lib.flask
+import tooltool_api.lib.dockerflow
+import tooltool_api.lib.log
 
-logger = cli_common.log.get_logger(__name__)
+logger = tooltool_api.lib.log.get_logger(__name__)
 
 
 class HeartbeatException(Exception):
@@ -62,12 +62,12 @@ def heartbeat_response():
     extensions = flask.current_app.__extensions
 
     for extension_name in extensions:
-        if extension_name not in backend_common.EXTENSIONS:
+        if extension_name not in tooltool_api.lib.flask.EXTENSIONS:
             continue
 
         extension_heartbeat = None
         try:
-            app_heartbeat = getattr(importlib.import_module('backend_common.' + extension_name), 'app_heartbeat')
+            app_heartbeat = getattr(importlib.import_module('tooltool_api.lib.flask.' + extension_name), 'app_heartbeat')
             logger.info(f'Testing heartbeat of {extension_name} extension')
             app_heartbeat()
         except HeartbeatException as e:

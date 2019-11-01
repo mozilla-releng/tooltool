@@ -9,9 +9,9 @@ import connexion
 import flask
 import werkzeug
 
-import cli_common.log
+import tooltool_api.lib.log
 
-logger = cli_common.log.get_logger(__name__)
+logger = tooltool_api.lib.log.get_logger(__name__)
 
 
 def common_error_handler(exception):

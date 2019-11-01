@@ -17,12 +17,12 @@ import requests
 import sqlalchemy as sa
 import taskcluster.utils
 
-import backend_common.db
-import backend_common.dockerflow
-import cli_common.log
-import cli_common.taskcluster
+import tooltool_api.lib.db
+import tooltool_api.lib.dockerflow
+import tooltool_api.lib.log
+import tooltool_api.lib.taskcluster
 
-logger = cli_common.log.get_logger(__name__)
+logger = tooltool_api.lib.log.get_logger(__name__)
 
 UNAUTHORIZED_JSON = {
     'status': 401,
@@ -340,7 +340,7 @@ def from_relengapi_permission(_permission):
     return _permission
 
 
-class RelengapiToken(backend_common.db.db.Model):
+class RelengapiToken(tooltool_api.lib.db.db.Model):
     __tablename__ = 'relengapi_auth_tokens'
 
     def __init__(self, permissions=None, **kwargs):
@@ -405,7 +405,7 @@ def parse_header_taskcluster(request):
     }
 
     # Auth with taskcluster
-    auth = cli_common.taskcluster.get_service('auth', **get_taskcluster_credentials())
+    auth = tooltool_api.lib.taskcluster.get_service('auth', **get_taskcluster_credentials())
     try:
         resp = auth.authenticateHawk(payload)
         if not resp.get('status') == 'auth-success':
@@ -646,13 +646,13 @@ def app_heartbeat():
             assert 'clock' in r.json()
         except Exception as e:
             logger.exception(e)
-            raise backend_common.dockerflow.HeartbeatException('Cannot connect to the mozilla auth0 service.')
+            raise tooltool_api.lib.dockerflow.HeartbeatException('Cannot connect to the mozilla auth0 service.')
 
     if config.get('TASKCLUSTER_AUTH') is True:
-        auth = cli_common.taskcluster.get_service('auth', **get_taskcluster_credentials())
+        auth = tooltool_api.lib.taskcluster.get_service('auth', **get_taskcluster_credentials())
         try:
             ping = auth.ping()
             assert ping['alive'] is True
         except Exception as e:
             logger.exception(e)
-            raise backend_common.dockerflow.HeartbeatException('Cannot connect to the taskcluster auth service.')
+            raise tooltool_api.lib.dockerflow.HeartbeatException('Cannot connect to the taskcluster auth service.')

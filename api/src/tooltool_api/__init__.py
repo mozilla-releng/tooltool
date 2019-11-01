@@ -9,8 +9,8 @@ import typing
 import flask
 import werkzeug.exceptions
 
-import backend_common
-import backend_common.api
+import tooltool_api.lib
+import tooltool_api.lib.api
 import tooltool_api.aws
 import tooltool_api.cli
 import tooltool_api.config
@@ -20,7 +20,7 @@ import tooltool_api.models  # noqa
 def custom_handle_default_exceptions(e: Exception) -> typing.Tuple[int, str]:
     '''Conform structure of errors as before, to make it work with client (tooltool.py).
     '''
-    error = backend_common.api.handle_default_exceptions_raw(e)
+    error = tooltool_api.lib.api.handle_default_exceptions_raw(e)
     error['name'] = error['title']
     error['description'] = error['detail']
     import flask  # for some reason flask needs to be imported here
@@ -28,7 +28,7 @@ def custom_handle_default_exceptions(e: Exception) -> typing.Tuple[int, str]:
 
 
 def create_app(config: dict = None) -> flask.Flask:
-    app = backend_common.create_app(
+    app = tooltool_api.lib.create_app(
         project_name=tooltool_api.config.PROJECT_NAME,
         app_name=tooltool_api.config.APP_NAME,
         config=config,

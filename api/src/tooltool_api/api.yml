@@ -13,7 +13,7 @@ paths:
   /init:
 
     get:
-      operationId: "backend_common.auth.initial_data"
+      operationId: "tooltool_api.lib.auth.initial_data"
       description: Initial data for frontend
       responses:
         200:

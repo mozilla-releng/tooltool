@@ -9,10 +9,10 @@ import flask
 import flask_migrate
 import flask_sqlalchemy
 
-import backend_common.dockerflow
-import cli_common.log
+import tooltool_api.lib.dockerflow
+import tooltool_api.lib.log
 
-logger = cli_common.log.get_logger(__name__)
+logger = tooltool_api.lib.log.get_logger(__name__)
 db = flask_sqlalchemy.SQLAlchemy()
 migrate = flask_migrate.Migrate(db=db)
 
@@ -126,4 +126,4 @@ def app_heartbeat():
         db.session.execute('SELECT 1').fetchall()
     except Exception as e:
         logger.exception(e)
-        raise backend_common.dockerflow.HeartbeatException('Cannot connect to the database.')
+        raise tooltool_api.lib.dockerflow.HeartbeatException('Cannot connect to the database.')

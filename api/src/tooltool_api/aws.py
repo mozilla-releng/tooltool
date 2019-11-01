@@ -12,9 +12,9 @@ import boto
 import boto.s3
 import boto.sqs
 
-from cli_common import log
+import tooltool_api.lib.log
 
-logger = log.get_logger(__name__)
+logger = tooltool_api.lib.log.get_logger(__name__)
 
 
 class StopListening(Exception):

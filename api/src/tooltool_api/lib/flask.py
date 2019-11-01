@@ -8,8 +8,8 @@ import os
 
 import flask
 
-import backend_common.dockerflow
-import cli_common.log
+import tooltool_api.lib.dockerflow
+import tooltool_api.lib.log
 
 EXTENSIONS = [
     'log',
@@ -21,7 +21,7 @@ EXTENSIONS = [
     'db',
 ]
 
-logger = cli_common.log.get_logger(__name__)
+logger = tooltool_api.lib.log.get_logger(__name__)
 
 
 def create_app(
@@ -61,13 +61,13 @@ def create_app(
 
         extension_init_app = None
         try:
-            extension_init_app = getattr(importlib.import_module('backend_common.' + extension_name), 'init_app')
+            extension_init_app = getattr(importlib.import_module('tooltool_api.lib.flask.' + extension_name), 'init_app')
         except Exception as e:
             logger.exception(e)
             pass
 
         if extension_init_app is None:
-            raise Exception(f'Could not import backend_common extension: {extension_name}')
+            raise Exception(f'Could not import tooltool_api.lib.flask extension: {extension_name}')
 
         extension = extension_init_app(app)
         if extension and extension_name is not None:
@@ -79,11 +79,11 @@ def create_app(
 
     if enable_dockerflow:
         app.add_url_rule('/__heartbeat__',
-                         view_func=backend_common.dockerflow.heartbeat_response)
+                         view_func=tooltool_api.lib.dockerflow.heartbeat_response)
         app.add_url_rule('/__lbheartbeat__',
-                         view_func=backend_common.dockerflow.lbheartbeat_response)
+                         view_func=tooltool_api.lib.dockerflow.lbheartbeat_response)
         app.add_url_rule('/__version__',
-                         view_func=backend_common.dockerflow.get_version)
+                         view_func=tooltool_api.lib.dockerflow.get_version)
 
     logger.debug('Initialized', app=app.name)
     return app

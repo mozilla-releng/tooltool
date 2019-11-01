@@ -10,9 +10,9 @@ import re
 import click
 import taskcluster
 
-from cli_common.log import get_logger
+import tooltool_api.lib.log
 
-logger = get_logger(__name__)
+logger = tooltool_api.lib.log.get_logger(__name__)
 
 TASKCLUSTER_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
