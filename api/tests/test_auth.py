@@ -37,9 +37,9 @@ def test_anonymous():
     '''
     Test AnonymousUser instances
     '''
-    import backend_common.auth
+    import tooltool_api.lib.auth
 
-    user = backend_common.auth.AnonymousUser()
+    user = tooltool_api.lib.auth.AnonymousUser()
 
     # Test base
     assert user.get_id() == 'anonymous:'
@@ -54,13 +54,13 @@ def test_taskcluster_user():
     Test TasklusterUser instances
     '''
 
-    import backend_common.auth
+    import tooltool_api.lib.auth
 
     credentials = {
         'clientId': 'test/user@mozilla.com',
         'scopes': ['project:test:*', ]
     }
-    user = backend_common.auth.TaskclusterUser(credentials)
+    user = tooltool_api.lib.auth.TaskclusterUser(credentials)
 
     # Test base
     assert user.get_id() == credentials['clientId']
@@ -71,9 +71,9 @@ def test_taskcluster_user():
 
     # Test invalid input
     with pytest.raises(Exception):
-        user = backend_common.auth.TaskclusterUser({})
+        user = tooltool_api.lib.auth.TaskclusterUser({})
     with pytest.raises(Exception):
-        user = backend_common.auth.TaskclusterUser({'clientId': '', 'scopes': None})
+        user = tooltool_api.lib.auth.TaskclusterUser({'clientId': '', 'scopes': None})
 
 
 def test_auth(client):

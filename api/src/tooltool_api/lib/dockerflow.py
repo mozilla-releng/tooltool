@@ -13,8 +13,8 @@ import json
 
 import flask
 
-import tooltool_api.lib.flask
 import tooltool_api.lib.dockerflow
+import tooltool_api.lib.flask
 import tooltool_api.lib.log
 
 logger = tooltool_api.lib.log.get_logger(__name__)

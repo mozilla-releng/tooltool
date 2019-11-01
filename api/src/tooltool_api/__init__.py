@@ -9,11 +9,11 @@ import typing
 import flask
 import werkzeug.exceptions
 
-import tooltool_api.lib
-import tooltool_api.lib.api
 import tooltool_api.aws
 import tooltool_api.cli
 import tooltool_api.config
+import tooltool_api.lib
+import tooltool_api.lib.api
 import tooltool_api.models  # noqa
 
 

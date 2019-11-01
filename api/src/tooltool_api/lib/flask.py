@@ -61,13 +61,13 @@ def create_app(
 
         extension_init_app = None
         try:
-            extension_init_app = getattr(importlib.import_module('tooltool_api.lib.flask.' + extension_name), 'init_app')
+            extension_init_app = getattr(importlib.import_module('tooltool_api.lib.' + extension_name), 'init_app')
         except Exception as e:
             logger.exception(e)
             pass
 
         if extension_init_app is None:
-            raise Exception(f'Could not import tooltool_api.lib.flask extension: {extension_name}')
+            raise Exception(f'Could not import tooltool_api.lib extension: {extension_name}')
 
         extension = extension_init_app(app)
         if extension and extension_name is not None:

@@ -98,7 +98,7 @@ def upload_batch(body: dict, region: typing.Optional[str] = None) -> dict:
         logger2 = logger.bind(tooltool_sha512=info['digest'],
                               tooltool_operation='upload',
                               tooltool_batch_id=batch.id,
-                              mozdef=True)
+                              )
 
         if info['algorithm'] != 'sha512':
             raise werkzeug.exceptions.BadRequest('`sha512` is the only allowed digest algorithm')

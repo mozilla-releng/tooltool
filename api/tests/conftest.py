@@ -22,7 +22,7 @@ def app():
 
     Build an app with an authenticated dummy api
     '''
-    import backend_common
+    import tooltool_api.lib
 
     # Use unique auth instance
     config = get_app_config({
@@ -37,10 +37,10 @@ def app():
         'AUTH_REDIRECT_URI': 'http://localhost/login',
     })
 
-    app = backend_common.create_app(
+    app = tooltool_api.lib.flask.create_app(
         app_name='test',
         project_name='Test',
-        extensions=backend_common.EXTENSIONS,
+        extensions=tooltool_api.lib.flask.EXTENSIONS,
         config=config,
     )
 
@@ -49,7 +49,7 @@ def app():
         return app.response_class('OK')
 
     @app.route('/test-auth-login')
-    @backend_common.auth.auth.require_login
+    @tooltool_api.lib.auth.auth.require_login
     def logged_in():
         data = {
             'auth': True,
@@ -60,7 +60,7 @@ def app():
         return flask.jsonify(data)
 
     @app.route('/test-auth-scopes')
-    @backend_common.auth.auth.require_permissions([
+    @tooltool_api.lib.auth.auth.require_permissions([
         ['project/test/A', 'project/test/B'],
         ['project/test-admin/*'],
     ])
@@ -184,7 +184,7 @@ def logger():
     Build a logger
     '''
 
-    import cli_common.log
+    import tooltool_api.lib.log
 
-    cli_common.log.init_logger('cli_common', level=logbook.DEBUG)
-    return cli_common.log.get_logger(__name__)
+    tooltool_api.lib.log.init_logger('tooltool_api.lib', level=logbook.DEBUG)
+    return tooltool_api.lib.log.get_logger(__name__)
