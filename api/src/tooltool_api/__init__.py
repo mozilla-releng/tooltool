@@ -28,7 +28,7 @@ def custom_handle_default_exceptions(e: Exception) -> typing.Tuple[int, str]:
 
 
 def create_app(config: dict = None) -> flask.Flask:
-    app = tooltool_api.lib.create_app(
+    app = tooltool_api.lib.flask.create_app(
         project_name=tooltool_api.config.PROJECT_NAME,
         app_name=tooltool_api.config.APP_NAME,
         config=config,
