@@ -38,22 +38,6 @@ class UnstructuredRenderer(structlog.processors.KeyValueRenderer):
             return event
 
 
-def setup_papertrail(project_name, env, PAPERTRAIL_HOST, PAPERTRAIL_PORT):
-    '''
-    Setup papertrail account using taskcluster secrets
-    '''
-
-    # Setup papertrail
-    papertrail = logbook.SyslogHandler(
-        application_name=f'mozilla/release-services/{env}/{project_name}',
-        address=(PAPERTRAIL_HOST, int(PAPERTRAIL_PORT)),
-        level=logbook.INFO,
-        format_string='{record.time} {record.channel}: {record.message}',
-        bubble=True,
-    )
-    papertrail.push_application()
-
-
 def setup_sentry(project_name, env, SENTRY_DSN, flask_app=None):
     '''
     Setup sentry account using taskcluster secrets
@@ -89,8 +73,6 @@ def init_logger(project_name,
                 env,
                 level=logbook.INFO,
                 handler=None,
-                PAPERTRAIL_HOST=None,
-                PAPERTRAIL_PORT=None,
                 SENTRY_DSN=None,
                 flask_app=None,
                 timestamp=False,
@@ -105,10 +87,6 @@ def init_logger(project_name,
         handler = logbook.StderrHandler(level=level, format_string=fmt)
 
     handler.push_application()
-
-    # Log to papertrail
-    if env and PAPERTRAIL_HOST and PAPERTRAIL_PORT:
-        setup_papertrail(project_name, env, PAPERTRAIL_HOST, PAPERTRAIL_PORT)
 
     # Log to sentry
     if env and SENTRY_DSN:
@@ -155,8 +133,6 @@ def init_app(app):
         app.name,
         env=app.config['ENV'],
         level=level,
-        PAPERTRAIL_HOST=app.config.get('PAPERTRAIL_HOST'),
-        PAPERTRAIL_PORT=app.config.get('PAPERTRAIL_PORT'),
         SENTRY_DSN=app.config.get('SENTRY_DSN'),
         flask_app=app,
     )
