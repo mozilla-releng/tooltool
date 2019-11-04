@@ -13,7 +13,7 @@ services:
       - PORT=8002
       - APP_URL=https://localhost:8002
       - APP_SETTINGS=/app/settings.py
-      - APP_CHANNEL=development
+      - APP_CHANNEL=localdev
       - DATABASE_URL=postgres://tooltooluser:tooltoolpassword@db/tooltooldb
       - TASKCLUSTER_SECRET=$TASKCLUSTER_SECRET
       - TASKCLUSTER_CLIENT_ID=$TASKCLUSTER_CLIENT_ID

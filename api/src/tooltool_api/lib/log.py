@@ -14,9 +14,9 @@ import logbook
 import structlog
 import structlog.exceptions
 
-CHANNELS = [
-    'master',
-    'testing',
+ENVS = [
+    'localdev',
+    'dev',
     'staging',
     'production',
 ]
@@ -38,14 +38,14 @@ class UnstructuredRenderer(structlog.processors.KeyValueRenderer):
             return event
 
 
-def setup_papertrail(project_name, channel, PAPERTRAIL_HOST, PAPERTRAIL_PORT):
+def setup_papertrail(project_name, env, PAPERTRAIL_HOST, PAPERTRAIL_PORT):
     '''
     Setup papertrail account using taskcluster secrets
     '''
 
     # Setup papertrail
     papertrail = logbook.SyslogHandler(
-        application_name=f'mozilla/release-services/{channel}/{project_name}',
+        application_name=f'mozilla/release-services/{env}/{project_name}',
         address=(PAPERTRAIL_HOST, int(PAPERTRAIL_PORT)),
         level=logbook.INFO,
         format_string='{record.time} {record.channel}: {record.message}',
@@ -54,7 +54,7 @@ def setup_papertrail(project_name, channel, PAPERTRAIL_HOST, PAPERTRAIL_PORT):
     papertrail.push_application()
 
 
-def setup_sentry(project_name, channel, SENTRY_DSN, flask_app=None):
+def setup_sentry(project_name, env, SENTRY_DSN, flask_app=None):
     '''
     Setup sentry account using taskcluster secrets
     '''
@@ -66,7 +66,7 @@ def setup_sentry(project_name, channel, SENTRY_DSN, flask_app=None):
         dsn=SENTRY_DSN,
         site=project_name,
         name='mozilla/release-services',
-        environment=channel,
+        environment=env,
         # TODO:
         # release=read(VERSION) we need to promote that as well via secrets
         # tags=...
@@ -86,22 +86,18 @@ def setup_sentry(project_name, channel, SENTRY_DSN, flask_app=None):
 
 
 def init_logger(project_name,
-                channel=None,
+                env,
                 level=logbook.INFO,
                 handler=None,
                 PAPERTRAIL_HOST=None,
                 PAPERTRAIL_PORT=None,
                 SENTRY_DSN=None,
-                MOZDEF=None,
                 flask_app=None,
                 timestamp=False,
                 ):
 
-    if not channel:
-        channel = os.environ.get('APP_CHANNEL')
-
-    if channel and channel not in CHANNELS:
-        raise Exception('Initializing logging with channel `{}`. It should be one of: {}'.format(channel, ', '.join(CHANNELS)))
+    if env and env not in ENVS:
+        raise Exception('Initializing logging with env `{}`. It should be one of: {}'.format(env, ', '.join(ENVS)))
 
     # By default output logs on stderr
     if handler is None:
@@ -111,12 +107,12 @@ def init_logger(project_name,
     handler.push_application()
 
     # Log to papertrail
-    if channel and PAPERTRAIL_HOST and PAPERTRAIL_PORT:
-        setup_papertrail(project_name, channel, PAPERTRAIL_HOST, PAPERTRAIL_PORT)
+    if env and PAPERTRAIL_HOST and PAPERTRAIL_PORT:
+        setup_papertrail(project_name, env, PAPERTRAIL_HOST, PAPERTRAIL_PORT)
 
     # Log to sentry
-    if channel and SENTRY_DSN:
-        setup_sentry(project_name, channel, SENTRY_DSN, flask_app)
+    if env and SENTRY_DSN:
+        setup_sentry(project_name, env, SENTRY_DSN, flask_app)
 
     def logbook_factory(*args, **kwargs):
         # Logger given to structlog
@@ -157,12 +153,11 @@ def init_app(app):
 
     init_logger(
         app.name,
+        env=app.config['ENV'],
         level=level,
-        channel=app.config.get('APP_CHANNEL'),
         PAPERTRAIL_HOST=app.config.get('PAPERTRAIL_HOST'),
         PAPERTRAIL_PORT=app.config.get('PAPERTRAIL_PORT'),
         SENTRY_DSN=app.config.get('SENTRY_DSN'),
-        MOZDEF=app.config.get('MOZDEF'),
         flask_app=app,
     )
 

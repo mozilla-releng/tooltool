@@ -9,10 +9,9 @@ import os
 import tooltool_api.lib.taskcluster
 import tooltool_api.config
 
-DEBUG = bool(os.environ.get('DEBUG', False))
-
-
 # -- LOAD SECRETS -------------------------------------------------------------
+
+DEBUG = bool(os.environ.get('DEBUG', False))
 
 required = [
     'APP_CHANNEL',
@@ -48,6 +47,7 @@ secrets = tooltool_api.lib.taskcluster.get_secrets(
 
 locals().update(secrets)
 
+ENV = secrets['APP_CHANNEL']
 RELENGAPI_AUTH = True
 SECRET_KEY = base64.b64decode(secrets['SECRET_KEY_BASE64'])
 
