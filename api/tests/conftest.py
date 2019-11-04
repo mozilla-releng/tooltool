@@ -77,7 +77,7 @@ def app():
 
 def get_app_config(extra_config):
     config = {
-        'TESTING': True,
+        'APP_TESTING': True,
         'SECRET_KEY': os.urandom(24)
     }
     config.update(extra_config)
@@ -186,5 +186,5 @@ def logger():
 
     import tooltool_api.lib.log
 
-    tooltool_api.lib.log.init_logger('tooltool_api.lib', level=logbook.DEBUG)
+    tooltool_api.lib.log.init_logger('tooltool_api.lib', env='test', level=logbook.DEBUG)
     return tooltool_api.lib.log.get_logger(__name__)

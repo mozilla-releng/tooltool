@@ -16,6 +16,14 @@ import tooltool_api.lib.log
 
 logger = tooltool_api.lib.log.get_logger(__name__)
 
+DEFAULT_CONFIG = dict(
+    PULSE_HOST='pulse.mozilla.org',
+    PULSE_PORT=5671,
+    PULSE_VIRTUAL_HOST='/',
+    PULSE_USE_SSL=True,
+    PULSE_CONNECTION_TIMEOUT=5,
+)
+
 
 async def _create_consumer(user, password, exchange, topic, callback):
     '''
@@ -170,13 +178,13 @@ class Pulse(object):
 
 def init_app(app):
     return Pulse(
-        app.config.get('PULSE_HOST'),
-        app.config.get('PULSE_PORT'),
+        app.config.get('PULSE_HOST', DEFAULT_CONFIG['PULSE_HOST']),
+        app.config.get('PULSE_PORT', DEFAULT_CONFIG['PULSE_PORT']),
         app.config.get('PULSE_USER'),
         app.config.get('PULSE_PASSWORD'),
-        app.config.get('PULSE_VIRTUAL_HOST'),
-        app.config.get('PULSE_USE_SSL'),
-        app.config.get('PULSE_CONNECTION_TIMEOUT'),
+        app.config.get('PULSE_VIRTUAL_HOST', DEFAULT_CONFIG['PULSE_VIRTUAL_HOST']),
+        app.config.get('PULSE_USE_SSL', DEFAULT_CONFIG['PULSE_USE_SSL']),
+        app.config.get('PULSE_CONNECTION_TIMEOUT', DEFAULT_CONFIG['PULSE_CONNECTION_TIMEOUT']),
     )
 
 

@@ -65,6 +65,10 @@ def upload_batch(body: dict, region: typing.Optional[str] = None) -> dict:
     if 'author' in body:
         raise werkzeug.exceptions.BadRequest('Author must NOT be specified for upload.')
 
+    # This value should be fairly short (and its value is included in the
+    # `upload_batch` docstring).  Uploads cannot be validated until this
+    # time has elapsed, otherwise a malicious uploader could alter a file
+    # after it had been verified.
     UPLOAD_EXPIRES_IN = flask.current_app.config['UPLOAD_EXPIRES_IN']
     if type(UPLOAD_EXPIRES_IN) is not int:
         raise werkzeug.exceptions.InternalServerError('UPLOAD_EXPIRES_IN should be of type int.')
