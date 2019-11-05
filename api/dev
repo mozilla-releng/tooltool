@@ -20,7 +20,6 @@ export APP_SETTINGS=`realpath ./settings.py`
 export HOST="127.0.0.1"
 export PORT="8002"
 export DATABASE_URL="postgres://tooltooluser:tooltoolpassword@localhost:54320/tooltooldb"
-export SECRET_KEY="gDs52OnoHp6YPR7KTQCCC7jGK7PfS0Yn"
 export TASKCLUSTER_ROOT_URL="https://stage.taskcluster.nonprod.cloudops.mozgcp.net"
 
 # find the following secrets from private repo at passwords/tooltool-localdev
