@@ -26,20 +26,15 @@ def app():
 
     # Use unique auth instance
     config = get_app_config({
-        'OIDC_CLIENT_SECRETS': os.path.join(os.path.dirname(__file__), 'client_secrets.json'),
-        'OIDC_RESOURCE_SERVER_ONLY': True,
         'APP_TEMPLATES_FOLDER': '',
         'SQLALCHEMY_DATABASE_URI': 'sqlite://',
         'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-        'AUTH_CLIENT_ID': 'dummy_id',
-        'AUTH_CLIENT_SECRET': 'dummy_secret',
-        'AUTH_DOMAIN': 'auth.localhost',
-        'AUTH_REDIRECT_URI': 'http://localhost/login',
+        'TASKCLUSTER_AUTH': True,
+        'TASKCLUSTER_ROOT_URL': 'http://taskcluster.mock',
     })
 
     app = tooltool_api.lib.flask.create_app(
-        app_name='test',
-        project_name='Test',
+        project_name='test',
         extensions=tooltool_api.lib.flask.EXTENSIONS,
         config=config,
     )
@@ -170,7 +165,7 @@ def client(app):
             if hasattr(app, 'auth'):
                 requests_mock.add_callback(
                     responses.POST,
-                    'http://zzz/api/auth/v1/authenticate-hawk',
+                    'http://taskcluster.mock/api/auth/v1/authenticate-hawk',
                     callback=mock_auth_taskcluster,
                     content_type='application/json',
                 )

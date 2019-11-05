@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i zsh -p python27Full python27Packages.virtualenv python37Packages.tox python37Packages.setuptools postgresql ag entr python37Packages.virtualenv zip pkgconfig libffi openssl xz gccStdenv entr ag
+#! nix-shell -i zsh -p python27Full python37Packages.setuptools python37Packages.virtualenv postgresql zip pkgconfig libffi openssl xz gccStdenv entr ag
 
 set -e
 
@@ -40,15 +40,30 @@ PYTHON_VERSION=3.7
 export SOURCE_DATE_EPOCH=315532800;
 
 setup_pyenv() {
-  # create virtualenv and install all needed packages
   if [ ! -d $PYENV_DIR ]; then
+    echo
+    echo "--------------------------------------------------------------------"
+    echo " 1. Create python virtualenv environment for python${PYTHON_VERSION}"
+    echo "--------------------------------------------------------------------"
+    echo
     virtualenv env -p python${PYTHON_VERSION};
 
-    # make sure we always use latest
+    echo
+    echo "--------------------------------------------------------------------"
+    echo " 2. Make sure we always use latest version of pip"
+    echo "--------------------------------------------------------------------"
+    echo
     $PYENV_DIR/bin/pip install --upgrade pip;
 
-    # also install tox as the runner for testing
+    echo
+    echo "--------------------------------------------------------------------"
+    echo " 3. Install tox as a test runner"
+    echo "--------------------------------------------------------------------"
+    echo
     $PYENV_DIR/bin/pip install tox;
+
+    export PATH=$PYENV_DIR/bin:$PATH
+    export VIRTUAL_ENV=`realpath $PYENV_DIR`
   fi
 }
 
@@ -69,14 +84,12 @@ case "$1" in;
       # install project itself
       $PYENV_DIR/bin/pip install -e ./
     fi
-    export PATH=$PYENV_DIR/bin:$PATH
-    export VIRTUAL_ENV=`realpath $PYENV_DIR`
     exec ./docker.d/run.sh
     exit 0
     ;;
   "test")
     setup_pyenv
-    ag -l | entr -s "tox -e ${PROJECT_NAME}-py${PYTHON_VERSION}"
+    ag -l | entr -s "${PYENV_DIR}/bin/tox -e py${PYTHON_VERSION:0:1}${PYTHON_VERSION:2:3}"
     exit 0
     ;;
   *)

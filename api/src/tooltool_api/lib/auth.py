@@ -3,18 +3,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import datetime
 import functools
 import json
-import time
 
 import flask
 import flask_login
 import flask_oidc
-import itsdangerous
-import pytz
-import requests
-import sqlalchemy as sa
 import taskcluster
 import taskcluster.utils
 
@@ -270,8 +264,9 @@ def parse_header_taskcluster(request):
     }
 
     # Auth with taskcluster
+    auth = taskcluster.Auth(dict(rootUrl=flask.current_app.config['TASKCLUSTER_ROOT_URL']))
     try:
-        resp = taskcluster.Auth.authenticateHawk(payload)
+        resp = auth.authenticateHawk(payload)
         if not resp.get('status') == 'auth-success':
             raise Exception('Taskcluster rejected the authentication')
     except Exception as e:
@@ -328,8 +323,9 @@ def init_app(app):
 def app_heartbeat():
     config = flask.current_app.config
     if config.get('TASKCLUSTER_AUTH') is True:
+        auth = taskcluster.Auth(dict(rootUrl=flask.current_app.config['TASKCLUSTER_ROOT_URL']))
         try:
-            ping = taskcluster.Auth.ping()
+            ping = auth.ping()
             assert ping['alive'] is True
         except Exception as e:
             logger.exception(e)
