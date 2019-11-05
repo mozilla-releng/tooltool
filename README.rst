@@ -2,18 +2,17 @@ ToolTool API, Frontend and Client
 ---------------------------------
 
 
-See `client/` and `api/` READMEs fo more details on each.
-
-Frontend is included in `api/` and is located in
-`api/src/tooltool_api/static/ui/` folder.
-
-
 Local Development
 ^^^^^^^^^^^^^^^^^
 
-Use `docker-compose up` to run `api` (and postgresql database). The API will be
-available at https://localhost:8002/apidocs. When visiting
-https://localhost:8002 you will be redirected to the location of the frontend.
+Use `docker-compose up db` to run the database. To run `api` open a separate
+terminal window and run::
+
+    $ cd api/
+    $ export $(gpg --decrypt ./../path/to/private/passwords/tooltool-localdev.txt.gpg 2>/dev/null | xargs) && ./dev run
+
+That will load the secrets needed for local development and start `api` service
+in development mode.
 
 
 Deployment process

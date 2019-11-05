@@ -55,7 +55,7 @@ secrets = {
         # tooltool_api for more details look at src/tooltool_api/api.py
         ('UPLOAD_EXPIRES_IN', as_int(default(60))),
         ('DOWLOAD_EXPIRES_IN', as_int(default(60))),
-        ('ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD', as_bool(default(False))),
+        ('ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD', as_bool(default(True))),
 
         # taskcluster instance url
         ('TASKCLUSTER_ROOT_URL', default('https://taskcluster.net')),
