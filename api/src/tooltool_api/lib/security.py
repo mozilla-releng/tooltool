@@ -44,6 +44,9 @@ security = flask_talisman.Talisman()
 
 def init_app(app):
     config = app.config.get('SECURITY', DEFAULT_CONFIG)
+    csp_report_uri = app.config.get('SECURITY_CSP_REPORT_URI')
+    if csp_report_uri:
+        config['content_security_policy_report_uri'] = csp_report_uri
     security.init_app(app, **config)
     return security
 

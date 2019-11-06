@@ -82,6 +82,7 @@ secrets = {
 
         # Security, for more details look at src/tooltool_api/lib/security.py
         ('SECURITY', default(tooltool_api.lib.security.DEFAULT_CONFIG)),
+        ('SECURITY_CSP_REPORT_URI', default(None)),
 
         # Pulse, for more details look at src/tooltool_api/lib/pulse.py
         ('PULSE_USER', required),
