@@ -98,7 +98,7 @@ secrets = {
 locals().update(secrets)
 
 with open(os.path.join(os.path.dirname(__file__), 'version.txt')) as f:
-    VERSION = f.open().strip()
+    VERSION = f.read().strip()
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_DATABASE_URI = secrets['DATABASE_URL']
