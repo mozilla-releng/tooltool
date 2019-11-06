@@ -52,22 +52,19 @@ secrets = {
         # environment in which we should run this application
         ('ENV', required),
 
-        # tooltool_api for more details look at src/tooltool_api/api.py
+        # tooltool_api specific secrets, for more details look at src/tooltool_api/api.py
         ('UPLOAD_EXPIRES_IN', as_int(default(60))),
         ('DOWLOAD_EXPIRES_IN', as_int(default(60))),
         ('ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD', as_bool(default(True))),
+        ('S3_REGIONS', as_dict(required)),
+        ('S3_REGIONS_ACCESS_KEY_ID', required),
+        ('S3_REGIONS_SECRET_ACCESS_KEY', required),
 
         # taskcluster instance url
         ('TASKCLUSTER_ROOT_URL', default('https://taskcluster.net')),
 
         # Database connection string, for more details look at src/tooltool_api/lib/db.py
         ('DATABASE_URL', required),
-
-        # S3 regions where to upload files to, for more details look at src/tooltool_api/api.py
-        ('S3_REGIONS', as_dict(required)),
-        ('S3_REGIONS_ACCESS_KEY_ID', required),
-        ('S3_REGIONS_SECRET_ACCESS_KEY', required),
-
 
         # Log errors to sentry, for more details look at src/tooltool_api/lib/log.py
         ('SENTRY_DNS', default(None)),
