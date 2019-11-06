@@ -50,9 +50,10 @@ def setup_sentry(project_name, env, SENTRY_DSN, flask_app=None):
         environment=env,
     )
 
-    version = app.config.get('VERSION')
-    if version:
-        config['release'] = version
+    if flask_app:
+        version = flask_app.config.get('VERSION')
+        if version:
+            config['release'] = version
 
     sentry_client = raven.Client(**config)
 
