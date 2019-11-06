@@ -45,16 +45,16 @@ def setup_sentry(project_name, env, SENTRY_DSN, flask_app=None):
     import raven
     import raven.handlers.logbook
 
-    sentry_client = raven.Client(
+    config = dict(
         dsn=SENTRY_DSN,
-        site=project_name,
-        name='mozilla/release-services',
         environment=env,
-        # TODO:
-        # release=read(VERSION) we need to promote that as well via secrets
-        # tags=...
-        # repos=...
     )
+
+    version = app.config.get('VERSION')
+    if version:
+        config['release'] = version
+
+    sentry_client = raven.Client(**config)
 
     if flask_app:
         import raven.contrib.flask
