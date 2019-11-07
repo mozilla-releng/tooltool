@@ -6,11 +6,13 @@ set -e
 # -- APPLICATION SETTINGS -----------------------------------------------------
 export ENV=${ENV:="localdev"}
 export PROJECT_NAME=${PROJECT_NAME:="tooltool_api"}
+export FLASK_APP=${FLASK_APP:="tooltool_api.flask:app"}
 export APP_SETTINGS=${APP_SETTINGS:=`realpath ./settings.py`}
 export HOST=${HOST:="127.0.0.1"}
 export PORT=${PORT:="8002"}
 export DATABASE_URL=${DATABASE_URL:="postgres://tooltooluser:tooltoolpassword@localhost:54320/tooltooldb"}
-export TASKCLUSTER_ROOT_URL=${TASKCLUSTER_ROOT_URL:="https://stage.taskcluster.nonprod.cloudops.mozgcp.net"}
+#export TASKCLUSTER_ROOT_URL=${TASKCLUSTER_ROOT_URL:="https://stage.taskcluster.nonprod.cloudops.mozgcp.net"}
+export TASKCLUSTER_ROOT_URL=${TASKCLUSTER_ROOT_URL:="https://firefox-ci-tc.services.mozilla.com"}
 
 # -- LOCAL SCRIPT SETTINGS ----------------------------------------------------
 PYENV_DIR=./env
@@ -68,7 +70,8 @@ case "$1" in
       # install project itself
       $PYENV_DIR/bin/pip install -e ./
     fi
-    exec ./docker.d/run.sh
+    #exec ./docker.d/run.sh
+    exec ${PYENV_DIR}/bin/flask run -h $HOST -p $PORT --cert docker.d/cert.pem --key docker.d/key.pem --reload
     exit 0
     ;;
   "test")

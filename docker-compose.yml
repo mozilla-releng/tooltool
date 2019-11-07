@@ -25,6 +25,7 @@ services:
     image: postgres:11
     volumes:
       - dbstore:/var/lib/postgresql/data
+      - ./:/app
     ports:
       - "54320:5432"
     environment:
