@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i zsh -p python27Full python37Packages.setuptools python37Packages.virtualenv postgresql zip pkgconfig libffi openssl xz gccStdenv entr ag
+#! nix-shell -i zsh -p python37Packages.setuptools python37Packages.virtualenv postgresql zip pkgconfig libffi openssl xz gccStdenv entr ag
 
 set -e
 
