@@ -40,8 +40,12 @@ def as_dict(default):
 def b64decode(default):
     return compose(base64.b64decode, default)
 
-def default(value):
-    return lambda _: value
+def default(default_value):
+    def _default(variable):
+        if variable in os.environ:
+            return os.environ[variable]
+        return default_value
+    return _default
 
 
 # -- LOAD SECRETS -------------------------------------------------------------
