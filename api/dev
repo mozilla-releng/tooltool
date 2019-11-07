@@ -3,31 +3,14 @@
 
 set -e
 
-test_var_set() {
-  local varname=$1
-
-  if [ -z ${varname} ]; then
-    echo "ERROR: ${varname} is not set."
-    echo "       Find the following secrets from private repo at passwords/tooltool-localdev."
-    exit 1
-  fi
-}
-
 # -- APPLICATION SETTINGS -----------------------------------------------------
-export ENV="localdev"
-export PROJECT_NAME="tooltool_api"
-export APP_SETTINGS=`realpath ./settings.py`
-export HOST="127.0.0.1"
-export PORT="8002"
-export DATABASE_URL="postgres://tooltooluser:tooltoolpassword@localhost:54320/tooltooldb"
-export TASKCLUSTER_ROOT_URL="https://stage.taskcluster.nonprod.cloudops.mozgcp.net"
-
-# find the following secrets from private repo at passwords/tooltool-localdev
-test_var_set "S3_REGIONS"
-test_var_set "S3_REGIONS_ACCESS_KEY_ID"
-test_var_set "S3_REGIONS_SECRET_ACCESS_KEY"
-test_var_set "PULSE_USER"
-test_var_set "PULSE_PASSWORD"
+export ENV=${ENV:="localdev"}
+export PROJECT_NAME=${PROJECT_NAME:="tooltool_api"}
+export APP_SETTINGS=${APP_SETTINGS:=`realpath ./settings.py`}
+export HOST=${HOST:="127.0.0.1"}
+export PORT=${PORT:="8002"}
+export DATABASE_URL=${DATABASE_URL:="postgres://tooltooluser:tooltoolpassword@localhost:54320/tooltooldb"}
+export TASKCLUSTER_ROOT_URL=${TASKCLUSTER_ROOT_URL:="https://stage.taskcluster.nonprod.cloudops.mozgcp.net"}
 
 # -- LOCAL SCRIPT SETTINGS ----------------------------------------------------
 PYENV_DIR=./env
@@ -38,6 +21,10 @@ PYTHON_VERSION=3.7
 
 # this makes wheels work with python that is installed via nix
 export SOURCE_DATE_EPOCH=315532800;
+
+# this makes python use virtualenv
+export PATH=$PYENV_DIR/bin:$PATH
+export VIRTUAL_ENV=`realpath $PYENV_DIR`
 
 setup_pyenv() {
   if [ ! -d $PYENV_DIR ]; then
@@ -61,9 +48,6 @@ setup_pyenv() {
     echo "--------------------------------------------------------------------"
     echo
     $PYENV_DIR/bin/pip install tox;
-
-    export PATH=$PYENV_DIR/bin:$PATH
-    export VIRTUAL_ENV=`realpath $PYENV_DIR`
   fi
 }
 
@@ -75,7 +59,7 @@ display_help() {
     echo
 }
 
-case "$1" in;
+case "$1" in
   "run")
     setup_pyenv
     if [ ! -e $PYENV_DIR/bin/gunicorn ]; then
