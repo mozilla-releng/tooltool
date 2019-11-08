@@ -14,7 +14,7 @@ services:
       - APP_URL=https://localhost:8002
       - APP_SETTINGS=/app/settings.py
       - ENV=localdev
-      - DATABASE_URL=postgres://tooltooluser:tooltoolpassword@db/tooltooldb
+      - DATABASE_URL=postgres://tooltooluser:tooltoolpassword@db:80020/tooltooldb
       - TASKCLUSTER_SECRET=$TASKCLUSTER_SECRET
       - TASKCLUSTER_CLIENT_ID=$TASKCLUSTER_CLIENT_ID
       - TASKCLUSTER_ACCESS_TOKEN=$TASKCLUSTER_ACCESS_TOKEN
@@ -27,7 +27,7 @@ services:
       - dbstore:/var/lib/postgresql/data
       - ./:/app
     ports:
-      - "54320:5432"
+      - "8102:5432"
     environment:
       - POSTGRES_USER=tooltooluser
       - POSTGRES_PASSWORD=tooltoolpassword
