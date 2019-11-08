@@ -10,8 +10,8 @@ import flask_talisman.talisman
 
 # TODO: we need to remove unsafe-inline
 DEFAULT_CSP_POLICY = {
-    'default-src': "'none'",
-    'script-src': "'self' 'unsafe-inline'",
+    'default-src': "'self'",
+    'script-src': "'self' 'unsafe-inline' 'unsafe-eval'",
     'style-src': "'self' 'unsafe-inline'",
     'img-src': "'self'",
     'connect-src': "'self'",
@@ -44,6 +44,19 @@ security = flask_talisman.Talisman()
 
 def init_app(app):
     config = app.config.get('SECURITY', DEFAULT_CONFIG)
+
+    csp_report_uri = app.config.get('SECURITY_CSP_REPORT_URI')
+    if csp_report_uri:
+        config['content_security_policy_report_uri'] = csp_report_uri
+
+        env = app.config.get('ENV')
+        if env:
+            config['content_security_policy_report_uri'] += f'&sentry_environment={env}'
+
+        version = app.config.get('VERSION')
+        if version:
+            config['content_security_policy_report_uri'] += f'&sentry_release={version}'
+
     security.init_app(app, **config)
     return security
 

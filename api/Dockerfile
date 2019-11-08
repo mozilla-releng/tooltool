@@ -6,7 +6,6 @@ RUN groupadd --gid 10001 app && \
 RUN apt-get update \
  && ln -s /app/docker.d/healthcheck /bin/healthcheck
 
-ENV APP_NAME tooltool_api
 ENV APP_SETTINGS /app/settings.py
 ENV FLASK_APP tooltool_api.flask:app
 ENV WEB_CONCURRENCY=3

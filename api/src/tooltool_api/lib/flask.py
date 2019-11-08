@@ -8,8 +8,8 @@ import os
 
 import flask
 
-import backend_common.dockerflow
-import cli_common.log
+import tooltool_api.lib.dockerflow
+import tooltool_api.lib.log
 
 EXTENSIONS = [
     'log',
@@ -21,28 +21,27 @@ EXTENSIONS = [
     'db',
 ]
 
-logger = cli_common.log.get_logger(__name__)
+logger = tooltool_api.lib.log.get_logger(__name__)
 
 
 def create_app(
         project_name,
-        app_name,
         extensions=[],
         config=None,
         enable_dockerflow=True,
         **kw):
     '''
     Create a new Flask backend application
-    app_name is the Python application name, used as Flask import_name
+    project_name is the Python application name, used as Flask import_name
     project_name is a "nice" name, used to identify the application
     '''
-    logger.debug('Initializing', app=app_name)
+    logger.debug('Initializing', app=project_name)
 
-    app = flask.Flask(import_name=app_name, **kw)
+    app = flask.Flask(import_name=project_name, **kw)
     app.name = project_name
     app.__extensions = extensions
 
-    if not app.config.get('TESTING') and os.environ.get('APP_SETTINGS'):
+    if not app.config.get('APP_TESTING') and os.environ.get('APP_SETTINGS'):
         logger.info('Loading custom configuration from APP_SETTINGS', APP_SETTINGS=os.environ.get('APP_SETTINGS'))
         app.config.from_envvar('APP_SETTINGS')
 
@@ -51,7 +50,7 @@ def create_app(
         app.config.update(**config)
 
     for extension_name in EXTENSIONS:
-        if app.config.get('TESTING') and extension_name in ['security', 'cors']:
+        if app.config.get('APP_TESTING') and extension_name in ['security', 'cors']:
             continue
 
         if extension_name not in extensions:
@@ -61,13 +60,13 @@ def create_app(
 
         extension_init_app = None
         try:
-            extension_init_app = getattr(importlib.import_module('backend_common.' + extension_name), 'init_app')
+            extension_init_app = getattr(importlib.import_module('tooltool_api.lib.' + extension_name), 'init_app')
         except Exception as e:
             logger.exception(e)
             pass
 
         if extension_init_app is None:
-            raise Exception(f'Could not import backend_common extension: {extension_name}')
+            raise Exception(f'Could not import tooltool_api.lib extension: {extension_name}')
 
         extension = extension_init_app(app)
         if extension and extension_name is not None:
@@ -79,11 +78,11 @@ def create_app(
 
     if enable_dockerflow:
         app.add_url_rule('/__heartbeat__',
-                         view_func=backend_common.dockerflow.heartbeat_response)
+                         view_func=tooltool_api.lib.dockerflow.heartbeat_response)
         app.add_url_rule('/__lbheartbeat__',
-                         view_func=backend_common.dockerflow.lbheartbeat_response)
+                         view_func=tooltool_api.lib.dockerflow.lbheartbeat_response)
         app.add_url_rule('/__version__',
-                         view_func=backend_common.dockerflow.get_version)
+                         view_func=tooltool_api.lib.dockerflow.get_version)
 
     logger.debug('Initialized', app=app.name)
     return app

@@ -4,63 +4,105 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import base64
+import functools
 import os
 
-import cli_common.taskcluster
-import tooltool_api.config
+import tooltool_api.lib.pulse
+import tooltool_api.lib.security
 
-DEBUG = bool(os.environ.get('DEBUG', False))
+
+def compose(*functions):
+    return functools.reduce(lambda f, g: lambda x: f(g(x)), functions, lambda x: x)
+
+def required(variable):
+    if variable in os.environ:
+        return os.environ[variable]
+    raise RuntimeError(f'{variable} environment variable is required')
+
+def as_int(default):
+    return compose(int, default)
+
+def as_bool(default):
+    return compose(
+        lambda x: str(x).lower() in ['1', 'true'],
+        default,
+    )
+
+def as_dict(default):
+    return compose(
+        lambda x: {
+            i.split(':')[0].strip(): i.split(':')[1].strip()
+            for i in x.split(';')
+        },
+        default,
+    )
+
+def b64decode(default):
+    return compose(base64.b64decode, default)
+
+def default(default_value):
+    def _default(variable):
+        if variable in os.environ:
+            return os.environ[variable]
+        return default_value
+    return _default
 
 
 # -- LOAD SECRETS -------------------------------------------------------------
 
-required = [
-    'APP_CHANNEL',
-    'SECRET_KEY_BASE64',
-    'DATABASE_URL',
-    # https://github.com/mozilla/build-cloud-tools/blob/master/configs/cloudformation/tooltool.py
-    'S3_REGIONS',
-    # https://github.com/mozilla/build-cloud-tools/blob/master/configs/cloudformation/iam_relengapi.py
-    'S3_REGIONS_ACCESS_KEY_ID',
-    'S3_REGIONS_SECRET_ACCESS_KEY',
-    'PULSE_USER',
-    'PULSE_PASSWORD',
-]
+secrets = {
+    item: default(item)
+    for (item, default) in [
+        # environment in which we should run this application
+        ('ENV', required),
 
-existing = {x: os.environ.get(x) for x in required if x in os.environ}
-existing['ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD'] = False
-# This value should be fairly short (and its value is included in the
-# `upload_batch` docstring).  Uploads cannot be validated until this
-# time has elapsed, otherwise a malicious uploader could alter a file
-# after it had been verified.
-existing['UPLOAD_EXPIRES_IN'] = 60
-existing['DOWLOAD_EXPIRES_IN'] = 60
+        # tooltool_api specific secrets, for more details look at src/tooltool_api/api.py
+        ('UPLOAD_EXPIRES_IN', as_int(default(60))),
+        ('DOWLOAD_EXPIRES_IN', as_int(default(60))),
+        ('ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD', as_bool(default(True))),
+        ('S3_REGIONS', as_dict(required)),
+        ('S3_REGIONS_ACCESS_KEY_ID', required),
+        ('S3_REGIONS_SECRET_ACCESS_KEY', required),
 
-secrets = cli_common.taskcluster.get_secrets(
-    os.environ.get('TASKCLUSTER_SECRET'),
-    tooltool_api.config.PROJECT_NAME,
-    required=required,
-    existing=existing,
-    taskcluster_client_id=os.environ.get('TASKCLUSTER_CLIENT_ID'),
-    taskcluster_access_token=os.environ.get('TASKCLUSTER_ACCESS_TOKEN'),
-)
+        # taskcluster instance url
+        ('TASKCLUSTER_ROOT_URL', default('https://taskcluster.net')),
+
+        # Database connection string, for more details look at src/tooltool_api/lib/db.py
+        ('DATABASE_URL', required),
+
+        # Log errors to sentry, for more details look at src/tooltool_api/lib/log.py
+        ('SENTRY_DNS', default(None)),
+
+        # Authentication, for more details look at src/tooltool_api/lib/auth.py
+        ('TASKCLUSTER_AUTH', as_bool(default(True))),
+        ('SECRET_KEY', b64decode(required)),
+
+        # Cors, for more details look at src/tooltool_api/lib/cors.py
+        ('CORS_ORIGINS', default('*')),
+        ('CORS_RESOURCES', default('*')),
+
+        # Security, for more details look at src/tooltool_api/lib/security.py
+        ('SECURITY', default(tooltool_api.lib.security.DEFAULT_CONFIG)),
+        ('SECURITY_CSP_REPORT_URI', default(None)),
+
+        # Pulse, for more details look at src/tooltool_api/lib/pulse.py
+        ('PULSE_USER', required),
+        ('PULSE_PASSWORD', required),
+        ('PULSE_HOST', default(tooltool_api.lib.pulse.DEFAULT_CONFIG['PULSE_HOST'])),
+        ('PULSE_PORT', as_int(default(tooltool_api.lib.pulse.DEFAULT_CONFIG['PULSE_PORT']))),
+        ('PULSE_VIRTUAL_HOST', default(tooltool_api.lib.pulse.DEFAULT_CONFIG['PULSE_VIRTUAL_HOST'])),
+        ('PULSE_USE_SSL', as_bool(default(tooltool_api.lib.pulse.DEFAULT_CONFIG['PULSE_USE_SSL']))),
+        ('PULSE_CONNECTION_TIMEOUT', as_int(default(tooltool_api.lib.pulse.DEFAULT_CONFIG['PULSE_CONNECTION_TIMEOUT']))),
+    ]
+}
 
 locals().update(secrets)
 
-RELENGAPI_AUTH = True
-SECRET_KEY = base64.b64decode(secrets['SECRET_KEY_BASE64'])
-
-
-# -- DATABASE -----------------------------------------------------------------
+with open(os.path.join(os.path.dirname(__file__), 'version.txt')) as f:
+    VERSION = f.read().strip()
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+SQLALCHEMY_DATABASE_URI = secrets['DATABASE_URL']
 
-if DEBUG:
+if ENV == 'localdev':
     SQLALCHEMY_ECHO = True
-
-# We require DATABASE_URL set by environment variables for branches deployed to Dockerflow.
-if 'DATABASE_URL' not in os.environ:
-    raise RuntimeError(f'DATABASE_URL has to be set as an environment variable, when '
-                       f'APP_CHANNEL is set to {secrets["APP_CHANNEL"]}')
-else:
-    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']

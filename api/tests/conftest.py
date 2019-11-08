@@ -22,25 +22,20 @@ def app():
 
     Build an app with an authenticated dummy api
     '''
-    import backend_common
+    import tooltool_api.lib
 
     # Use unique auth instance
     config = get_app_config({
-        'OIDC_CLIENT_SECRETS': os.path.join(os.path.dirname(__file__), 'client_secrets.json'),
-        'OIDC_RESOURCE_SERVER_ONLY': True,
         'APP_TEMPLATES_FOLDER': '',
         'SQLALCHEMY_DATABASE_URI': 'sqlite://',
         'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-        'AUTH_CLIENT_ID': 'dummy_id',
-        'AUTH_CLIENT_SECRET': 'dummy_secret',
-        'AUTH_DOMAIN': 'auth.localhost',
-        'AUTH_REDIRECT_URI': 'http://localhost/login',
+        'TASKCLUSTER_AUTH': True,
+        'TASKCLUSTER_ROOT_URL': 'http://taskcluster.mock',
     })
 
-    app = backend_common.create_app(
-        app_name='test',
-        project_name='Test',
-        extensions=backend_common.EXTENSIONS,
+    app = tooltool_api.lib.flask.create_app(
+        project_name='test',
+        extensions=tooltool_api.lib.flask.EXTENSIONS,
         config=config,
     )
 
@@ -49,7 +44,7 @@ def app():
         return app.response_class('OK')
 
     @app.route('/test-auth-login')
-    @backend_common.auth.auth.require_login
+    @tooltool_api.lib.auth.auth.require_login
     def logged_in():
         data = {
             'auth': True,
@@ -60,7 +55,7 @@ def app():
         return flask.jsonify(data)
 
     @app.route('/test-auth-scopes')
-    @backend_common.auth.auth.require_permissions([
+    @tooltool_api.lib.auth.auth.require_permissions([
         ['project/test/A', 'project/test/B'],
         ['project/test-admin/*'],
     ])
@@ -77,7 +72,7 @@ def app():
 
 def get_app_config(extra_config):
     config = {
-        'TESTING': True,
+        'APP_TESTING': True,
         'SECRET_KEY': os.urandom(24)
     }
     config.update(extra_config)
@@ -170,7 +165,7 @@ def client(app):
             if hasattr(app, 'auth'):
                 requests_mock.add_callback(
                     responses.POST,
-                    'https://auth.taskcluster.net/v1/authenticate-hawk',
+                    'http://taskcluster.mock/api/auth/v1/authenticate-hawk',
                     callback=mock_auth_taskcluster,
                     content_type='application/json',
                 )
@@ -184,7 +179,7 @@ def logger():
     Build a logger
     '''
 
-    import cli_common.log
+    import tooltool_api.lib.log
 
-    cli_common.log.init_logger('cli_common', level=logbook.DEBUG)
-    return cli_common.log.get_logger(__name__)
+    tooltool_api.lib.log.init_logger('tooltool_api.lib', env='test', level=logbook.DEBUG)
+    return tooltool_api.lib.log.get_logger(__name__)

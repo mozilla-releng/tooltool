@@ -5,9 +5,9 @@
 
 import flask_cors
 
-import cli_common.log
+import tooltool_api.lib.log
 
-logger = cli_common.log.get_logger(__name__)
+logger = tooltool_api.lib.log.get_logger(__name__)
 cors = flask_cors.CORS()
 
 

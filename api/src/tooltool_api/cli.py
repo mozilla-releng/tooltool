@@ -13,13 +13,13 @@ import flask
 import pytz
 import sqlalchemy as sa
 
-import cli_common.log
-import cli_common.pulse
 import tooltool_api.config
+import tooltool_api.lib.log
+import tooltool_api.lib.pulse
 import tooltool_api.models
 import tooltool_api.utils
 
-logger = cli_common.log.get_logger(__name__)
+logger = tooltool_api.lib.log.get_logger(__name__)
 
 
 def replicate_file(session, file, regions_config, aws):
@@ -227,7 +227,7 @@ def cmd_worker():
     pulse_user = flask.current_app.config['PULSE_USER']
     pulse_pass = flask.current_app.config['PULSE_PASSWORD']
     exchange = f'exchange/{pulse_user}/{tooltool_api.config.PROJECT_NAME}'
-    check_file_pending_uploads_consumer = cli_common.pulse.create_consumer(
+    check_file_pending_uploads_consumer = tooltool_api.lib.pulse.create_consumer(
         pulse_user,
         pulse_pass,
         exchange,
@@ -239,6 +239,6 @@ def cmd_worker():
         exchange=exchange,
         route=tooltool_api.config.PULSE_ROUTE_CHECK_FILE_PENDING_UPLOADS,
     )
-    cli_common.pulse.run_consumer(asyncio.gather(*[
+    tooltool_api.lib.pulse.run_consumer(asyncio.gather(*[
         check_file_pending_uploads_consumer,
     ]))

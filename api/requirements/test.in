@@ -29,7 +29,6 @@ inotify  # needed by gunicorn for faster/better reload
 itsdangerous==0.24
 kombu
 mohawk<0.4,>=0.3.4
-mozdef-client
 pdbpp
 pytest
 pytest-cov

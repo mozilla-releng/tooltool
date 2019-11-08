@@ -1,0 +1,86 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i zsh -p python37Packages.setuptools python37Packages.virtualenv postgresql zip pkgconfig libffi openssl xz gccStdenv entr ag
+
+set -e
+
+# -- APPLICATION SETTINGS -----------------------------------------------------
+export ENV=${ENV:="localdev"}
+export PROJECT_NAME=${PROJECT_NAME:="tooltool_api"}
+export FLASK_APP=${FLASK_APP:="tooltool_api.flask:app"}
+export APP_SETTINGS=${APP_SETTINGS:=`realpath ./settings.py`}
+export HOST=${HOST:="127.0.0.1"}
+export PORT=${PORT:="8002"}
+export DATABASE_URL=${DATABASE_URL:="postgres://tooltooluser:tooltoolpassword@localhost:54320/tooltooldb"}
+#export TASKCLUSTER_ROOT_URL=${TASKCLUSTER_ROOT_URL:="https://stage.taskcluster.nonprod.cloudops.mozgcp.net"}
+export TASKCLUSTER_ROOT_URL=${TASKCLUSTER_ROOT_URL:="https://firefox-ci-tc.services.mozilla.com"}
+
+# -- LOCAL SCRIPT SETTINGS ----------------------------------------------------
+PYENV_DIR=./env
+PYTHON_VERSION=3.7
+
+
+# -----------------------------------------------------------------------------
+
+# this makes wheels work with python that is installed via nix
+export SOURCE_DATE_EPOCH=315532800;
+
+# this makes python use virtualenv
+export PATH=$PYENV_DIR/bin:$PATH
+export VIRTUAL_ENV=`realpath $PYENV_DIR`
+
+setup_pyenv() {
+  if [ ! -d $PYENV_DIR ]; then
+    echo
+    echo "--------------------------------------------------------------------"
+    echo " 1. Create python virtualenv environment for python${PYTHON_VERSION}"
+    echo "--------------------------------------------------------------------"
+    echo
+    virtualenv env -p python${PYTHON_VERSION};
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo " 2. Make sure we always use latest version of pip"
+    echo "--------------------------------------------------------------------"
+    echo
+    $PYENV_DIR/bin/pip install --upgrade pip;
+
+    echo
+    echo "--------------------------------------------------------------------"
+    echo " 3. Install tox as a test runner"
+    echo "--------------------------------------------------------------------"
+    echo
+    $PYENV_DIR/bin/pip install tox;
+  fi
+}
+
+display_help() {
+    echo "USAGE: ./dev [option...] {run|test}"
+    echo
+    echo "   run    run $PROJECT_NAME in localdev mode"
+    echo "   test   run ${PROJECT_NAME}'s tests and linting"
+    echo
+}
+
+case "$1" in
+  "run")
+    setup_pyenv
+    if [ ! -e $PYENV_DIR/bin/gunicorn ]; then
+      # install runtime and dev(time) dependencies
+      $PYENV_DIR/bin/pip install -r ./requirements/base.txt
+      # install project itself
+      $PYENV_DIR/bin/pip install -e ./
+    fi
+    #exec ./docker.d/run.sh
+    exec ${PYENV_DIR}/bin/flask run -h $HOST -p $PORT --cert docker.d/cert.pem --key docker.d/key.pem --reload
+    exit 0
+    ;;
+  "test")
+    setup_pyenv
+    ag -l | entr -s "${PYENV_DIR}/bin/tox -e py${PYTHON_VERSION:0:1}${PYTHON_VERSION:2:3}"
+    exit 0
+    ;;
+  *)
+    display_help
+    exit 1
+    ;;
+esac
