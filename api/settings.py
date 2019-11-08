@@ -71,7 +71,7 @@ secrets = {
         ('DATABASE_URL', required),
 
         # Log errors to sentry, for more details look at src/tooltool_api/lib/log.py
-        ('SENTRY_DNS', default(None)),
+        ('SENTRY_DSN', default(None)),
 
         # Authentication, for more details look at src/tooltool_api/lib/auth.py
         ('TASKCLUSTER_AUTH', as_bool(default(True))),
