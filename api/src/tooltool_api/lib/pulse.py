@@ -38,7 +38,7 @@ async def _create_consumer(user, password, exchange, topic, callback):
     host = 'pulse.mozilla.org'
     port = 5671
 
-    _, protocol = await aioamqp.connect(
+    transport, protocol = await aioamqp.connect(
         host=host,
         login=user,
         password=password,
@@ -92,8 +92,13 @@ async def _create_consumer(user, password, exchange, topic, callback):
     logger.info('Starting loop to ensure connection is open')
     while True:
         await asyncio.sleep(10)
+        try:
+            await protocol.ensure_open()
         # raise AmqpClosedConnection in case the connection is closed.
-        await protocol.ensure_open()
+        except (aioamqp.AmqpClosedConnection, OSError):
+            await protocol.close()
+            transport.close()
+            raise
 
 
 async def create_consumer(user, password, exchange, topic, callback):
