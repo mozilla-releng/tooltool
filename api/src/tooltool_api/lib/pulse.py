@@ -95,7 +95,7 @@ async def _create_consumer(user, password, exchange, topic, callback):
         try:
             await protocol.ensure_open()
         # raise AmqpClosedConnection in case the connection is closed.
-        except (aioamqp.AmqpClosedConnection, OSError):
+        except:
             await protocol.close()
             transport.close()
             raise
