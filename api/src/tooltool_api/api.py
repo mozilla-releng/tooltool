@@ -4,7 +4,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import datetime
-import pathlib
 import random
 import typing
 
@@ -311,8 +310,3 @@ def download_file(digest: str, region: typing.Optional[str] = None) -> werkzeug.
     signed_url = s3.generate_url(method='GET', expires_in=DOWLOAD_EXPIRES_IN, bucket=bucket, key=key)
 
     return flask.redirect(signed_url)
-
-
-def download_client():
-    client = pathlib.Path(__file__).parent / 'tooltool.py.download'
-    return flask.send_file(str(client.absolute()), attachment_filename='tooltool.py')

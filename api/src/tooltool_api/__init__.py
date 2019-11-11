@@ -15,6 +15,7 @@ import tooltool_api.config
 import tooltool_api.lib
 import tooltool_api.lib.api
 import tooltool_api.models  # noqa
+import tooltool_api.view
 
 
 def custom_handle_default_exceptions(e: Exception) -> typing.Tuple[int, str]:
@@ -53,6 +54,6 @@ def create_app(config: dict = None) -> flask.Flask:
     app.cli.add_command(tooltool_api.cli.cmd_replicate, 'replicate')
     app.cli.add_command(tooltool_api.cli.cmd_check_pending_uploads, 'check-pending-uploads')
 
-    app.add_url_rule('/tooltool.py', view_func=tooltool_api.api.download_client)
+    app.add_url_rule('/tooltool.py', view_func=tooltool_api.view.download_client)
 
     return app
