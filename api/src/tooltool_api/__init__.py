@@ -15,6 +15,7 @@ import tooltool_api.config
 import tooltool_api.lib
 import tooltool_api.lib.api
 import tooltool_api.models  # noqa
+import tooltool_api.view
 
 
 def custom_handle_default_exceptions(e: Exception) -> typing.Tuple[int, str]:
