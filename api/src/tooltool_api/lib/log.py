@@ -13,77 +13,62 @@ import structlog
 import structlog.exceptions
 
 ENVS = [
-    'test',  # for running tests
-    'localdev',  # for local development
-    'dev',  # dev environment on GCP
-    'staging',  # staging environment on GCP
-    'production',  # production environment on GCP
+    "test",  # for running tests
+    "localdev",  # for local development
+    "dev",  # dev environment on GCP
+    "staging",  # staging environment on GCP
+    "production",  # production environment on GCP
 ]
 
 
 class UnstructuredRenderer(structlog.processors.KeyValueRenderer):
-
     def __call__(self, logger, method_name, event_dict):
         event = None
-        if 'event' in event_dict:
-            event = event_dict.pop('event')
+        if "event" in event_dict:
+            event = event_dict.pop("event")
         if event_dict or event is None:
             # if there are other keys, use the parent class to render them
             # and append to the event
-            rendered = super(UnstructuredRenderer, self).__call__(
-                logger, method_name, event_dict)
-            return '%s (%s)' % (event, rendered)
+            rendered = super(UnstructuredRenderer, self).__call__(logger, method_name, event_dict)
+            return "%s (%s)" % (event, rendered)
         else:
             return event
 
 
 def setup_sentry(project_name, env, SENTRY_DSN, flask_app=None):
-    '''
+    """
     Setup sentry account using taskcluster secrets
-    '''
+    """
 
     import raven
     import raven.handlers.logbook
 
-    config = dict(
-        dsn=SENTRY_DSN,
-        environment=env,
-    )
+    config = dict(dsn=SENTRY_DSN, environment=env)
 
     if flask_app:
-        version = flask_app.config.get('VERSION')
+        version = flask_app.config.get("VERSION")
         if version:
-            config['release'] = version
+            config["release"] = version
 
     sentry_client = raven.Client(**config)
 
     if flask_app:
         import raven.contrib.flask
+
         raven.contrib.flask.Sentry(flask_app, client=sentry_client)
 
-    sentry_handler = raven.handlers.logbook.SentryHandler(
-        sentry_client,
-        level=logbook.WARNING,
-        bubble=True,
-    )
+    sentry_handler = raven.handlers.logbook.SentryHandler(sentry_client, level=logbook.WARNING, bubble=True)
     sentry_handler.push_application()
 
 
-def init_logger(project_name,
-                env,
-                level=logbook.INFO,
-                handler=None,
-                SENTRY_DSN=None,
-                flask_app=None,
-                timestamp=False,
-                ):
+def init_logger(project_name, env, level=logbook.INFO, handler=None, SENTRY_DSN=None, flask_app=None, timestamp=False):
 
     if env and env not in ENVS:
-        raise Exception('Initializing logging with env `{}`. It should be one of: {}'.format(env, ', '.join(ENVS)))
+        raise Exception("Initializing logging with env `{}`. It should be one of: {}".format(env, ", ".join(ENVS)))
 
     # By default output logs on stderr
     if handler is None:
-        fmt = '{record.channel}: {record.message}'
+        fmt = "{record.channel}: {record.message}"
         handler = logbook.StderrHandler(level=level, format_string=fmt)
 
     handler.push_application()
@@ -98,13 +83,9 @@ def init_logger(project_name,
         return logbook.Logger(level=level, *args, **kwargs)
 
     # Setup structlog over logbook
-    processors = [
-        structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-    ]
+    processors = [structlog.stdlib.PositionalArgumentsFormatter(), structlog.processors.StackInfoRenderer(), structlog.processors.format_exc_info]
     if timestamp is True:
-        processors.append(structlog.processors.TimeStamper(fmt='%Y-%m-%d %H:%M:%S'))
+        processors.append(structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S"))
 
     processors.append(UnstructuredRenderer())
 
@@ -122,20 +103,14 @@ def get_logger(*args, **kwargs):
 
 
 def init_app(app):
-    '''
+    """
     Init logger from a Flask Application
-    '''
+    """
     level = logbook.INFO
     if app.debug:
         level = logbook.DEBUG
 
-    init_logger(
-        app.name,
-        env=app.config['ENV'],
-        level=level,
-        SENTRY_DSN=app.config.get('SENTRY_DSN'),
-        flask_app=app,
-    )
+    init_logger(app.name, env=app.config["ENV"], level=level, SENTRY_DSN=app.config.get("SENTRY_DSN"), flask_app=app)
 
 
 def app_heartbeat():

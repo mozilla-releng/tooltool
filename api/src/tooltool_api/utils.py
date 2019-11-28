@@ -15,8 +15,8 @@ def now() -> datetime.datetime:
 
 
 def keyname(digest: str) -> str:
-    return 'sha512/{}'.format(digest)
+    return "sha512/{}".format(digest)
 
 
 def is_valid_sha512(sha512: str) -> typing.Optional[typing.Match[str]]:
-    return re.compile(r'^[0-9a-f]{128}$').match(sha512)
+    return re.compile(r"^[0-9a-f]{128}$").match(sha512)
