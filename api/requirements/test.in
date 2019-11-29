@@ -12,7 +12,9 @@ Logbook
 SQLAlchemy
 Werkzeug
 aioamqp
+black
 boto
+check-manifest
 codecov
 connexion[swagger-ui]
 coveralls
@@ -26,10 +28,12 @@ flake8-quotes
 flask-oidc
 flask-talisman
 inotify  # needed by gunicorn for faster/better reload
+isort
 itsdangerous==0.24
 kombu
 mohawk<0.4,>=0.3.4
 pdbpp
+pip-compile-multi
 pytest
 pytest-cov
 python-dateutil<2.7.0,>=2.1

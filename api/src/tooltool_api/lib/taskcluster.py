@@ -14,26 +14,22 @@ import tooltool_api.lib.log
 
 logger = tooltool_api.lib.log.get_logger(__name__)
 
-TASKCLUSTER_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+TASKCLUSTER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 with open(taskcluster.generated._client_importer.__file__) as f:
-    TASKCLUSTER_SERVICES = [
-        line.split(' ')[1][1:]
-        for line in f.read().split('\n')
-        if line and not line.startswith('#')
-    ]
+    TASKCLUSTER_SERVICES = [line.split(" ")[1][1:] for line in f.read().split("\n") if line and not line.startswith("#")]
 
 
 def read_hosts():
-    '''
+    """
     Read /etc/hosts to get hostnames
     on a Nix env (used for taskclusterProxy)
     Only reads ipv4 entries to avoid duplicates
-    '''
+    """
     out = {}
-    regex = re.compile(r'([\w:\-\.]+)')
-    for line in open('/etc/hosts').readlines():
-        if ':' in line:  # only ipv4
+    regex = re.compile(r"([\w:\-\.]+)")
+    for line in open("/etc/hosts").readlines():
+        if ":" in line:  # only ipv4
             continue
         x = regex.findall(line)
         if not x:
@@ -44,89 +40,69 @@ def read_hosts():
     return out
 
 
-def get_options(client_id=None,
-                access_token=None,
-                root_url='https://taskcluster.net',
-                ):
-    '''
+def get_options(client_id=None, access_token=None, root_url="https://taskcluster.net"):
+    """
     Build Taskcluster credentials options
-    '''
+    """
 
     if client_id is not None and access_token is not None:
         # Use provided credentials
-        tc_options = {
-            'credentials': {
-                'clientId': client_id,
-                'accessToken': access_token,
-            },
-            'rootUrl': root_url,
-        }
+        tc_options = {"credentials": {"clientId": client_id, "accessToken": access_token}, "rootUrl": root_url}
 
     else:
         # Get taskcluster proxy host
         # as /etc/hosts is not used in the Nix image (?)
         hosts = read_hosts()
-        if 'taskcluster' not in hosts:
-            raise Exception('Missing taskcluster in /etc/hosts')
+        if "taskcluster" not in hosts:
+            raise Exception("Missing taskcluster in /etc/hosts")
 
         # Load secrets from TC task context
         # with taskclusterProxy
         root_url = f"http://{hosts['taskcluster']}"
 
-        logger.info('Taskcluster Proxy enabled', url=root_url)
-        tc_options = {
-            'rootUrl': root_url
-        }
+        logger.info("Taskcluster Proxy enabled", url=root_url)
+        tc_options = {"rootUrl": root_url}
 
-    tc_options['maxRetries'] = 12
+    tc_options["maxRetries"] = 12
 
     return tc_options
 
 
-def get_service(service_name,
-                client_id=None,
-                access_token=None,
-                root_url='https://taskcluster.net',
-                ):
-    '''
+def get_service(service_name, client_id=None, access_token=None, root_url="https://taskcluster.net"):
+    """
     Build a Taskcluster service instance from the environment
     Supports:
      * directly provided credentials
      * credentials from click
      * credentials from environment variables
      * taskclusterProxy
-    '''
+    """
     if service_name not in TASKCLUSTER_SERVICES:
-        raise Exception(f'Service `{service_name}` does not exists.')
+        raise Exception(f"Service `{service_name}` does not exists.")
 
     # Credentials preference: Use click variables
     if client_id is None and access_token is None:
         try:
             ctx = click.get_current_context()
-            client_id = ctx.params.get('taskcluster_client_id')
-            access_token = ctx.params.get('taskcluster_access_token')
+            client_id = ctx.params.get("taskcluster_client_id")
+            access_token = ctx.params.get("taskcluster_access_token")
         except RuntimeError:
             pass  # no active context
 
     # Credentials preference: Use env. variables
     if client_id is None and access_token is None:
-        client_id = os.environ.get('TASKCLUSTER_CLIENT_ID')
-        access_token = os.environ.get('TASKCLUSTER_ACCESS_TOKEN')
+        client_id = os.environ.get("TASKCLUSTER_CLIENT_ID")
+        access_token = os.environ.get("TASKCLUSTER_ACCESS_TOKEN")
 
     # Instanciate service
     options = get_options(client_id, access_token, root_url)
     return getattr(taskcluster, service_name.capitalize())(options)
 
 
-def get_secrets(name,
-                project_name,
-                required=[],
-                existing=dict(),
-                taskcluster_client_id=None,
-                taskcluster_access_token=None,
-                root_url='https://taskcluster.net',
-                ):
-    '''
+def get_secrets(
+    name, project_name, required=[], existing=dict(), taskcluster_client_id=None, taskcluster_access_token=None, root_url="https://taskcluster.net"
+):
+    """
     Fetch a specific set of secrets by name and verify that the required
     secrets exist.
 
@@ -136,7 +112,7 @@ def get_secrets(name,
           object
         - project specific secrets, specified under the `project_name` key in
           the secrets object
-    '''
+    """
 
     secrets = dict()
     if existing:
@@ -144,14 +120,10 @@ def get_secrets(name,
 
     all_secrets = dict()
     if name:
-        secrets_service = get_service('secrets',
-                                      taskcluster_client_id,
-                                      taskcluster_access_token,
-                                      root_url,
-                                      )
-        all_secrets = secrets_service.get(name).get('secret', dict())
+        secrets_service = get_service("secrets", taskcluster_client_id, taskcluster_access_token, root_url)
+        all_secrets = secrets_service.get(name).get("secret", dict())
 
-    secrets_common = all_secrets.get('common', dict())
+    secrets_common = all_secrets.get("common", dict())
     secrets.update(secrets_common)
 
     secrets_app = all_secrets.get(project_name, dict())
@@ -159,6 +131,6 @@ def get_secrets(name,
 
     for required_secret in required:
         if required_secret not in secrets:
-            raise Exception(f'Missing value {required_secret} in secrets.')
+            raise Exception(f"Missing value {required_secret} in secrets.")
 
     return secrets

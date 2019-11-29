@@ -5,7 +5,7 @@
 
 import flask
 
-TOOLTOOL_PY_URL = 'https://raw.githubusercontent.com/mozilla-releng/tooltool/master/client/tooltool.py'
+TOOLTOOL_PY_URL = "https://raw.githubusercontent.com/mozilla-releng/tooltool/master/client/tooltool.py"
 
 
 def download_client():
