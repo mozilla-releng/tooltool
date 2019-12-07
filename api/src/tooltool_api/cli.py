@@ -35,31 +35,24 @@ def replicate_file(session, file, regions_config, aws):
 
         # this should only happen when the only region containing a
         # file is removed from the configuration
-        logger2.warning('no source regions for {}'.format(file.sha512))
+        logger2.warning("no source regions for {}".format(file.sha512))
         return
 
     source_region = source_regions.pop()
     source_bucket = regions_config[source_region]
     target_regions = regions - file_regions
-    logger2.info('replicating {} from {} to {}'.format(
-        file.sha512, source_region, ', '.join(target_regions)))
+    logger2.info("replicating {} from {} to {}".format(file.sha512, source_region, ", ".join(target_regions)))
 
     key_name = tooltool_api.utils.keyname(file.sha512)
     for target_region in target_regions:
         target_bucket = regions_config[target_region]
-        conn = aws.connect_to('s3', target_region)
+        conn = aws.connect_to("s3", target_region)
         bucket = conn.get_bucket(target_bucket)
 
         # commit the session before replicating, since the DB connection may
         # otherwise go away while we're distracted.
         session.commit()
-        bucket.copy_key(
-            new_key_name=key_name,
-            src_key_name=key_name,
-            src_bucket_name=source_bucket,
-            storage_class='STANDARD',
-            preserve_acl=False,
-        )
+        bucket.copy_key(new_key_name=key_name, src_key_name=key_name, src_bucket_name=source_bucket, storage_class="STANDARD", preserve_acl=False)
         try:
             session.add(tooltool_api.models.FileInstance(file=file, region=target_region))
             session.commit()
@@ -68,12 +61,12 @@ def replicate_file(session, file, regions_config, aws):
 
 
 def verify_file_instance(sha512, size, key):
-    '''Verify that the given S3 Key matches the given size and digest.
-    '''
+    """Verify that the given S3 Key matches the given size and digest.
+    """
 
     logger2 = logger.bind(tooltool_sha512=sha512)
     if key.size != size:
-        logger2.warning('Uploaded file {} has unexpected size {}; expected {}'.format(sha512, key.size, size))
+        logger2.warning("Uploaded file {} has unexpected size {}; expected {}".format(sha512, key.size, size))
         return False
 
     m = hashlib.sha512()
@@ -81,22 +74,22 @@ def verify_file_instance(sha512, size, key):
         m.update(bytes)
 
     if m.hexdigest() != sha512:
-        logger2.warning('Digest of file {} does not match'.format(sha512))
+        logger2.warning("Digest of file {} does not match".format(sha512))
         return False
 
     # verify some settings on the key, in case the uploader configured
     # it differently
-    if key.storage_class != 'STANDARD':
-        logger2.warning('File {} was uploaded with incorrect storage class {}'.format(sha512, key.storage_class))
+    if key.storage_class != "STANDARD":
+        logger2.warning("File {} was uploaded with incorrect storage class {}".format(sha512, key.storage_class))
         return False
 
     if key.get_redirect():  # pragma: no cover
         # (not covered because moto doesn't support redirects)
-        logger2.warning('File {} was uploaded with a website redirect set'.format(sha512, key.storage_class))
+        logger2.warning("File {} was uploaded with a website redirect set".format(sha512, key.storage_class))
         return False
 
     # verifying the ACL is a bit tricky, so just set it correctly
-    key.set_acl('private')
+    key.set_acl("private")
 
     return True
 
@@ -116,15 +109,15 @@ def check_pending_upload(session, pending_upload):
         return
     elif tooltool_api.utils.now() > (pending_upload.expires + datetime.timedelta(days=1)).replace(tzinfo=pytz.UTC):
         # Upload will probably never complete
-        logger2.info('Deleting abandoned pending upload for {}'.format(sha512))
+        logger2.info("Deleting abandoned pending upload for {}".format(sha512))
         session.delete(pending_upload)
         return
 
     # connect and see if the file exists..
-    s3 = flask.current_app.aws.connect_to('s3', pending_upload.region)
-    s3_regions = flask.current_app.config.get('S3_REGIONS')
+    s3 = flask.current_app.aws.connect_to("s3", pending_upload.region)
+    s3_regions = flask.current_app.config.get("S3_REGIONS")
     if not s3_regions or pending_upload.region not in s3_regions:
-        logger2.warning('Pending upload for {} was to an un-configured region'.format(sha512))
+        logger2.warning("Pending upload for {} was to an un-configured region".format(sha512))
         session.delete(pending_upload)
         return
 
@@ -139,20 +132,17 @@ def check_pending_upload(session, pending_upload):
     session.commit()
 
     if not verify_file_instance(sha512, size, key):
-        logger2.warning('Upload of {} was invalid; deleting key'.format(sha512))
+        logger2.warning("Upload of {} was invalid; deleting key".format(sha512))
         key.delete()
         session.delete(pending_upload)
         session.commit()
         return
 
-    logger2.info('Upload of {} considered valid'.format(sha512))
+    logger2.info("Upload of {} considered valid".format(sha512))
 
     # add a file instance, but it's OK if it already exists
     try:
-        tooltool_api.models.FileInstance(
-            file=pending_upload.file,
-            region=pending_upload.region,
-        )
+        tooltool_api.models.FileInstance(file=pending_upload.file, region=pending_upload.region)
         session.commit()
     except sa.exc.IntegrityError:
         session.rollback()
@@ -167,13 +157,12 @@ def check_pending_upload(session, pending_upload):
 
 
 async def check_file_pending_uploads(channel, body, envelope, properties):
-    '''Check for pending uploads for a single file.
-    '''
-    body = json.loads(body.decode('utf-8'))
-    digest = body['payload']['digest']
+    """Check for pending uploads for a single file.
+    """
+    body = json.loads(body.decode("utf-8"))
+    digest = body["payload"]["digest"]
     session = flask.current_app.db.session
-    file = tooltool_api.models.File.query.filter(
-        tooltool_api.models.File.sha512 == digest).first()
+    file = tooltool_api.models.File.query.filter(tooltool_api.models.File.sha512 == digest).first()
     if file:
         for pending_upload in file.pending_uploads:
             check_pending_upload(session, pending_upload)
@@ -184,8 +173,8 @@ async def check_file_pending_uploads(channel, body, envelope, properties):
 @click.command()
 @flask.cli.with_appcontext
 def cmd_check_pending_uploads():
-    '''Check for any pending uploads and verify them if found.
-    '''
+    """Check for any pending uploads and verify them if found.
+    """
     session = flask.current_app.db.session
     pending_uploads = tooltool_api.models.PendingUpload.query.all()
     for pending_upload in pending_uploads:
@@ -196,16 +185,13 @@ def cmd_check_pending_uploads():
 @click.command()
 @flask.cli.with_appcontext
 def cmd_replicate():
-    '''Replicate objects between regions as necessary.
-    '''
+    """Replicate objects between regions as necessary.
+    """
     # fetch all files with at least one instance, but not a full complement
     # of instances
-    regions = flask.current_app.config['S3_REGIONS']
+    regions = flask.current_app.config["S3_REGIONS"]
     session = flask.current_app.db.session
-    subq = session.query(
-        tooltool_api.models.FileInstance.file_id,
-        sa.func.count('*').label('instance_count'),
-    )
+    subq = session.query(tooltool_api.models.FileInstance.file_id, sa.func.count("*").label("instance_count"))
     subq = subq.group_by(tooltool_api.models.FileInstance.file_id)
     subq = subq.subquery()
 
@@ -222,23 +208,13 @@ def cmd_replicate():
 @click.command()
 @flask.cli.with_appcontext
 def cmd_worker():
-    '''Check for pending uploads for a single file.
-    '''
-    pulse_user = flask.current_app.config['PULSE_USER']
-    pulse_pass = flask.current_app.config['PULSE_PASSWORD']
-    exchange = f'exchange/{pulse_user}/{tooltool_api.config.PROJECT_NAME}'
+    """Check for pending uploads for a single file.
+    """
+    pulse_user = flask.current_app.config["PULSE_USER"]
+    pulse_pass = flask.current_app.config["PULSE_PASSWORD"]
+    exchange = f"exchange/{pulse_user}/{tooltool_api.config.PROJECT_NAME}"
     check_file_pending_uploads_consumer = tooltool_api.lib.pulse.create_consumer(
-        pulse_user,
-        pulse_pass,
-        exchange,
-        tooltool_api.config.PULSE_ROUTE_CHECK_FILE_PENDING_UPLOADS,
-        check_file_pending_uploads,
+        pulse_user, pulse_pass, exchange, tooltool_api.config.PULSE_ROUTE_CHECK_FILE_PENDING_UPLOADS, check_file_pending_uploads
     )
-    logger.info(
-        'Listening for new messages on',
-        exchange=exchange,
-        route=tooltool_api.config.PULSE_ROUTE_CHECK_FILE_PENDING_UPLOADS,
-    )
-    tooltool_api.lib.pulse.run_consumer(asyncio.gather(*[
-        check_file_pending_uploads_consumer,
-    ]))
+    logger.info("Listening for new messages on", exchange=exchange, route=tooltool_api.config.PULSE_ROUTE_CHECK_FILE_PENDING_UPLOADS)
+    tooltool_api.lib.pulse.run_consumer(asyncio.gather(*[check_file_pending_uploads_consumer]))
