@@ -48,6 +48,8 @@ def default(default_value):
 
 # -- LOAD SECRETS -------------------------------------------------------------
 
+DISABLE_PULSE = as_bool(default(False))("DISABLE_PULSE")
+
 secrets = {
     item: default(item)
     for (item, default) in [
@@ -76,8 +78,8 @@ secrets = {
         ("SECURITY", default(tooltool_api.lib.security.DEFAULT_CONFIG)),
         ("SECURITY_CSP_REPORT_URI", default(None)),
         # Pulse, for more details look at src/tooltool_api/lib/pulse.py
-        ("PULSE_USER", required),
-        ("PULSE_PASSWORD", required),
+        ("PULSE_USER", required if not DISABLE_PULSE else default(None)),
+        ("PULSE_PASSOWRD", required if not DISABLE_PULSE else default(None)),
         ("PULSE_HOST", default(tooltool_api.lib.pulse.DEFAULT_CONFIG["PULSE_HOST"])),
         ("PULSE_PORT", as_int(default(tooltool_api.lib.pulse.DEFAULT_CONFIG["PULSE_PORT"]))),
         ("PULSE_VIRTUAL_HOST", default(tooltool_api.lib.pulse.DEFAULT_CONFIG["PULSE_VIRTUAL_HOST"])),

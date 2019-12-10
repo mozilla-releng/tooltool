@@ -156,16 +156,17 @@ def upload_complete(digest: str) -> typing.Union[werkzeug.Response, typing.Tuple
                 headers = {"X-Retry-After": str(1 + int(until.total_seconds()))}
                 return werkzeug.Response(status=409, headers=headers)
 
-    exchange = f'exchange/{flask.current_app.config["PULSE_USER"]}/{tooltool_api.config.PROJECT_NAME}'
-    logger.info(f"Sending digest `{digest}` to queue `{exchange}` for route `{tooltool_api.config.PULSE_ROUTE_CHECK_FILE_PENDING_UPLOADS}`.")
-    try:
-        flask.current_app.pulse.publish(exchange, tooltool_api.config.PULSE_ROUTE_CHECK_FILE_PENDING_UPLOADS, dict(digest=digest))
-    except Exception as e:
-        import traceback
+    if not flask.current_app.config.get("DISABLE_PULSE"):
+        exchange = f'exchange/{flask.current_app.config["PULSE_USER"]}/{tooltool_api.config.PROJECT_NAME}'
+        logger.info(f"Sending digest `{digest}` to queue `{exchange}` for route `{tooltool_api.config.PULSE_ROUTE_CHECK_FILE_PENDING_UPLOADS}`.")
+        try:
+            flask.current_app.pulse.publish(exchange, tooltool_api.config.PULSE_ROUTE_CHECK_FILE_PENDING_UPLOADS, dict(digest=digest))
+        except Exception as e:
+            import traceback
 
-        msg = "Can't send notification to pulse."
-        trace = traceback.format_exc()
-        logger.error(f"{msg}\nException:{e}\nTraceback: {trace}")
+            msg = "Can't send notification to pulse."
+            trace = traceback.format_exc()
+            logger.error(f"{msg}\nException:{e}\nTraceback: {trace}")
 
     return "{}", 202
 
