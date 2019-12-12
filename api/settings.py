@@ -62,6 +62,9 @@ secrets = {
         ("S3_REGIONS", as_dict(required)),
         ("S3_REGIONS_ACCESS_KEY_ID", required),
         ("S3_REGIONS_SECRET_ACCESS_KEY", required),
+        ("CLOUDFRONT_URL", required),
+        ("CLOUDFRONT_KEY_ID", required),
+        ("CLOUDFRONT_PRIVATE_KEY", required),
         # taskcluster instance url
         ("TASKCLUSTER_ROOT_URL", default("https://taskcluster.net")),
         # Database connection string, for more details look at src/tooltool_api/lib/db.py
@@ -92,6 +95,9 @@ locals().update(secrets)
 
 with open(os.path.join(os.path.dirname(__file__), "version.txt")) as f:
     VERSION = f.read().strip()
+
+with open(CLOUDFRONT_PRIVATE_KEY) as f:
+    CLOUDFRONT_PRIVATE_KEY = f.read().strip().encode("utf-8")
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_DATABASE_URI = secrets["DATABASE_URL"]

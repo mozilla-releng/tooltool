@@ -6,7 +6,6 @@
 import importlib
 
 import boto
-import boto.cloudfront.distribution
 import boto.s3
 import boto.sqs
 
@@ -54,8 +53,3 @@ class AWS(object):
         # special case for S3, which boto does differently than
         # the other services
         return boto.s3.connect_to_region(region_name=region_name, aws_access_key_id=self.access_key_id, aws_secret_access_key=self.secret_access_key)
-
-    def connect_to_cloudfront(self, service_name, region_name):
-        # special case for cloudfront, which boto does differently than
-        # the other services
-        return boto.cloudfront.Distribution(aws_access_key_id=self.access_key_id, aws_secret_access_key=self.secret_access_key,)
