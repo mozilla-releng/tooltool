@@ -79,7 +79,7 @@ secrets = {
         ("SECURITY_CSP_REPORT_URI", default(None)),
         # Pulse, for more details look at src/tooltool_api/lib/pulse.py
         ("PULSE_USER", required if not DISABLE_PULSE else default(None)),
-        ("PULSE_PASSOWRD", required if not DISABLE_PULSE else default(None)),
+        ("PULSE_PASSWORD", required if not DISABLE_PULSE else default(None)),
         ("PULSE_HOST", default(tooltool_api.lib.pulse.DEFAULT_CONFIG["PULSE_HOST"])),
         ("PULSE_PORT", as_int(default(tooltool_api.lib.pulse.DEFAULT_CONFIG["PULSE_PORT"]))),
         ("PULSE_VIRTUAL_HOST", default(tooltool_api.lib.pulse.DEFAULT_CONFIG["PULSE_VIRTUAL_HOST"])),
