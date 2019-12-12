@@ -3,21 +3,28 @@ services:
   api:
     build: api
     ports:
-      - "8002:8002"
+      - "8010:8010"
     volumes:
       # This doesn't quite work because the app has to be installed
       # Maybe we should drop the volume mount and rely on rebuilding?
       - ./api:/app
     environment:
       - HOST=0.0.0.0
-      - PORT=8002
-      - APP_URL=https://localhost:8002
+      - PORT=8010
+      - APP_URL=https://localhost:8010
       - APP_SETTINGS=/app/settings.py
       - ENV=localdev
-      - DATABASE_URL=postgres://tooltooluser:tooltoolpassword@db:80020/tooltooldb
+      - DATABASE_URL=postgres://tooltooluser:tooltoolpassword@db/tooltooldb
+      # "notasecret"
+      - SECRET_KEY=bm90YXNlY3JldA==
       - TASKCLUSTER_SECRET=$TASKCLUSTER_SECRET
       - TASKCLUSTER_CLIENT_ID=$TASKCLUSTER_CLIENT_ID
       - TASKCLUSTER_ACCESS_TOKEN=$TASKCLUSTER_ACCESS_TOKEN
+      # S3_REGIONS format is "foo:bar; blah:blah", which turns into a dict in the app
+      - S3_REGIONS=$S3_REGIONS
+      - S3_REGIONS_ACCESS_KEY_ID=$S3_REGIONS_ACCESS_KEY_ID
+      - S3_REGIONS_SECRET_ACCESS_KEY=$S3_REGIONS_SECRET_ACCESS_KEY
+      - DISABLE_PULSE=1
     depends_on:
       - db
 
@@ -25,9 +32,6 @@ services:
     image: postgres:11
     volumes:
       - dbstore:/var/lib/postgresql/data
-      - ./:/app
-    ports:
-      - "8102:5432"
     environment:
       - POSTGRES_USER=tooltooluser
       - POSTGRES_PASSWORD=tooltoolpassword
