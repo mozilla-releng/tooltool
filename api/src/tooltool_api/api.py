@@ -269,9 +269,7 @@ def download_file(digest: str) -> werkzeug.Response:
         keypair_id = flask.current_app.config["CLOUDFRONT_KEY_ID"]
         private_key_string = flask.current_app.config["CLOUDFRONT_PRIVATE_KEY"]
 
-        signed_url = flask.current_app.aws.generate_presigned_cloudfront_url(
-            url, expire_time, keypair_id, private_key_string
-        )
+        signed_url = flask.current_app.aws.generate_presigned_cloudfront_url(url, expire_time, keypair_id, private_key_string)
         return flask.redirect(signed_url)
     else:
         s3_regions = flask.current_app.config["S3_REGIONS"]  # type: typing.Dict[str, str]

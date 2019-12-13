@@ -49,6 +49,7 @@ def default(default_value):
 # -- LOAD SECRETS -------------------------------------------------------------
 
 DISABLE_PULSE = as_bool(default(False))("DISABLE_PULSE")
+CLOUDFRONT_PRIVATE_KEY = default(None)("CLOUDFRONT_PRIVATE_KEY")
 
 secrets = {
     item: default(item)
@@ -62,8 +63,6 @@ secrets = {
         ("S3_REGIONS", as_dict(required)),
         ("S3_REGIONS_ACCESS_KEY_ID", required),
         ("S3_REGIONS_SECRET_ACCESS_KEY", required),
-        ("CLOUDFRONT_URL", default(None)),
-        ("CLOUDFRONT_KEY_ID", default(None)),
         ("CLOUDFRONT_PRIVATE_KEY", default(None)),
         # taskcluster instance url
         ("TASKCLUSTER_ROOT_URL", default("https://taskcluster.net")),
