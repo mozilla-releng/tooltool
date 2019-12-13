@@ -264,37 +264,14 @@ def download_file(digest: str) -> werkzeug.Response:
     key = tooltool_api.utils.keyname(digest)
 
     if cloudfront_url:
-        expire_time = int(tooltool_api.utils.now().timestamp() + dowload_expires_in)
+        expire_time = tooltool_api.utils.now() + datetime.timedelta(seconds=dowload_expires_in)
         url = f"https://{cloudfront_url}/{key}"
         keypair_id = flask.current_app.config["CLOUDFRONT_KEY_ID"]
         private_key_string = flask.current_app.config["CLOUDFRONT_PRIVATE_KEY"]
 
-        # From https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudfront.html#generate-a-signed-url-for-amazon-cloudfront
-        import datetime
-
-        from cryptography.hazmat.backends import default_backend
-        from cryptography.hazmat.primitives import hashes
-        from cryptography.hazmat.primitives import serialization
-        from cryptography.hazmat.primitives.asymmetric import padding
-        from botocore.signers import CloudFrontSigner
-
-
-        def rsa_signer(message):
-            private_key = serialization.load_pem_private_key(
-                private_key_string,
-                password=None,
-                backend=default_backend()
-            )
-            return private_key.sign(message, padding.PKCS1v15(), hashes.SHA1())
-
-        expire_time = datetime.datetime(2020, 1, 1)
-
-        cloudfront_signer = CloudFrontSigner(keypair_id, rsa_signer)
-
-        # Create a signed url that will be valid until the specfic expiry date
-        # provided using a canned policy.
-        signed_url = cloudfront_signer.generate_presigned_url(
-            url, date_less_than=expire_time)
+        signed_url = flask.current_app.aws.generate_presigned_cloudfront_url(
+            url, expire_time, keypair_id, private_key_string
+        )
         return flask.redirect(signed_url)
     else:
         s3_regions = flask.current_app.config["S3_REGIONS"]  # type: typing.Dict[str, str]
