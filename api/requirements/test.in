@@ -17,6 +17,7 @@ boto
 check-manifest
 codecov
 connexion[swagger-ui]
+coverage==4.5.4
 coveralls
 flake8
 flake8-coding
