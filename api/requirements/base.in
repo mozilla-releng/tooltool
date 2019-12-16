@@ -9,8 +9,10 @@ Werkzeug
 aioamqp
 blinker
 boto
+botocore
 click
 connexion[swagger-ui]
+cryptography
 flask-oidc
 flask-talisman
 gunicorn

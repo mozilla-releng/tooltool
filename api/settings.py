@@ -49,6 +49,16 @@ def default(default_value):
 # -- LOAD SECRETS -------------------------------------------------------------
 
 DISABLE_PULSE = as_bool(default(False))("DISABLE_PULSE")
+CLOUDFRONT_URL = default(None)("CLOUDFRONT_URL")
+if CLOUDFRONT_URL:
+    CLOUDFRONT_PRIVATE_KEY = required("CLOUDFRONT_PRIVATE_KEY")
+else:
+    CLOUDFRONT_PRIVATE_KEY = None
+
+if "S3_REGIONS" in os.environ:
+    S3_REGIONS = as_dict(default({}))("S3_REGIONS")
+else:
+    S3_REGIONS = {}
 
 secrets = {
     item: default(item)
@@ -59,9 +69,9 @@ secrets = {
         ("UPLOAD_EXPIRES_IN", as_int(default(60))),
         ("DOWLOAD_EXPIRES_IN", as_int(default(60))),
         ("ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD", as_bool(default(True))),
-        ("S3_REGIONS", as_dict(required)),
-        ("S3_REGIONS_ACCESS_KEY_ID", required),
-        ("S3_REGIONS_SECRET_ACCESS_KEY", required),
+        ("S3_REGIONS_ACCESS_KEY_ID", required if S3_REGIONS else default(None)),
+        ("S3_REGIONS_SECRET_ACCESS_KEY", required if S3_REGIONS else default(None)),
+        ("CLOUDFRONT_KEY_ID", required if CLOUDFRONT_URL else default(None)),
         # taskcluster instance url
         ("TASKCLUSTER_ROOT_URL", default("https://taskcluster.net")),
         # Database connection string, for more details look at src/tooltool_api/lib/db.py
@@ -92,6 +102,10 @@ locals().update(secrets)
 
 with open(os.path.join(os.path.dirname(__file__), "version.txt")) as f:
     VERSION = f.read().strip()
+
+if CLOUDFRONT_PRIVATE_KEY:
+    with open(CLOUDFRONT_PRIVATE_KEY, "rb") as f:
+        CLOUDFRONT_PRIVATE_KEY = f.read().strip()
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_DATABASE_URI = secrets["DATABASE_URL"]

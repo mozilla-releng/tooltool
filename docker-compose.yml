@@ -17,13 +17,18 @@ services:
       - DATABASE_URL=postgres://tooltooluser:tooltoolpassword@db/tooltooldb
       # "notasecret"
       - SECRET_KEY=bm90YXNlY3JldA==
-      - TASKCLUSTER_SECRET=$TASKCLUSTER_SECRET
-      - TASKCLUSTER_CLIENT_ID=$TASKCLUSTER_CLIENT_ID
-      - TASKCLUSTER_ACCESS_TOKEN=$TASKCLUSTER_ACCESS_TOKEN
+      # Used by the taskcluster library, not by us directly
+      - TASKCLUSTER_ROOT_URL
+      - TASKCLUSTER_CLIENT_ID
+      - TASKCLUSTER_ACCESS_TOKEN
       # S3_REGIONS format is "foo:bar; blah:blah", which turns into a dict in the app
-      - S3_REGIONS=$S3_REGIONS
-      - S3_REGIONS_ACCESS_KEY_ID=$S3_REGIONS_ACCESS_KEY_ID
-      - S3_REGIONS_SECRET_ACCESS_KEY=$S3_REGIONS_SECRET_ACCESS_KEY
+      - S3_REGIONS
+      - S3_REGIONS_ACCESS_KEY_ID
+      - S3_REGIONS_SECRET_ACCESS_KEY
+      - CLOUDFRONT_URL
+      - CLOUDFRONT_KEY_ID
+      # Path to a file
+      - CLOUDFRONT_PRIVATE_KEY
       - DISABLE_PULSE=1
     depends_on:
       - db

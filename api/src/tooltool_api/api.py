@@ -235,26 +235,16 @@ def patch_file(digest: str, body: dict) -> dict:
     return file.to_dict(include_instances=True)
 
 
-def download_file(digest: str, region: typing.Optional[str] = None) -> werkzeug.Response:
+def download_file(digest: str) -> werkzeug.Response:
     logger2 = logger.bind(tooltool_sha512=digest, tooltool_operation="download_file")
 
-    S3_REGIONS = flask.current_app.config["S3_REGIONS"]  # type: typing.Dict[str, str]
-    if type(S3_REGIONS) is not dict:
-        raise werkzeug.exceptions.InternalServerError("S3_REGIONS should be of type dict.")
-
-    DOWLOAD_EXPIRES_IN = flask.current_app.config["DOWLOAD_EXPIRES_IN"]
-    if type(DOWLOAD_EXPIRES_IN) is not int:
+    dowload_expires_in = flask.current_app.config["DOWLOAD_EXPIRES_IN"]
+    if type(dowload_expires_in) is not int:
         raise werkzeug.exceptions.InternalServerError("DOWLOAD_EXPIRES_IN should be of type int.")
 
-    ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD = flask.current_app.config["ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD"]
-    if type(ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD) is not bool:
+    allow_anonymous_public_download = flask.current_app.config["ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD"]
+    if type(allow_anonymous_public_download) is not bool:
         raise werkzeug.exceptions.InternalServerError("ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD should be of type bool.")
-
-    regions = ", ".join(S3_REGIONS.keys())
-    logger2.debug(f"Looking for file in following regions: {regions}")
-
-    if not tooltool_api.utils.is_valid_sha512(digest):
-        raise werkzeug.exceptions.BadRequest("Invalid sha512 digest")
 
     # see where the file is.
     file_row = tooltool_api.models.File.query.filter(tooltool_api.models.File.sha512 == digest).first()
@@ -262,29 +252,42 @@ def download_file(digest: str, region: typing.Optional[str] = None) -> werkzeug.
         raise werkzeug.exceptions.NotFound
 
     # check visibility
-    if file_row.visibility != "public" or not ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD:
+    if file_row.visibility != "public" or not allow_anonymous_public_download:
         permission = f"{tooltool_api.config.SCOPE_PREFIX}/download/{file_row.visibility}"
         if not flask_login.current_user.has_permissions(permission):
             raise werkzeug.exceptions.Forbidden
 
-    # figure out which region to use, and from there which bucket
-    selected_region = None
-    for file_instance in file_row.instances:
-        if file_instance.region == region:
-            selected_region = file_instance.region
-            break
+    if not tooltool_api.utils.is_valid_sha512(digest):
+        raise werkzeug.exceptions.BadRequest("Invalid sha512 digest")
+
+    cloudfront_url = flask.current_app.config.get("CLOUDFRONT_URL")
+    key = tooltool_api.utils.keyname(digest)
+
+    if cloudfront_url:
+        expire_time = tooltool_api.utils.now() + datetime.timedelta(seconds=dowload_expires_in)
+        url = f"https://{cloudfront_url}/{key}"
+        keypair_id = flask.current_app.config["CLOUDFRONT_KEY_ID"]
+        private_key_string = flask.current_app.config["CLOUDFRONT_PRIVATE_KEY"]
+
+        signed_url = flask.current_app.aws.generate_presigned_cloudfront_url(url, expire_time, keypair_id, private_key_string)
+        return flask.redirect(signed_url)
     else:
+        s3_regions = flask.current_app.config["S3_REGIONS"]  # type: typing.Dict[str, str]
+        if type(s3_regions) is not dict:
+            raise werkzeug.exceptions.InternalServerError("S3_REGIONS should be of type dict.")
+
+        regions = ", ".join(s3_regions.keys())
+        logger2.debug(f"Looking for file in following regions: {regions}")
+
         # preferred region not found, so pick one from the available set
         selected_region = random.choice([inst.region for inst in file_row.instances])
 
-    bucket = S3_REGIONS.get(selected_region)
-    if bucket is None:
-        raise werkzeug.exceptions.InternalServerError(f"Region `{selected_region}` can not be found in S3_REGIONS.")
+        bucket = s3_regions.get(selected_region)
+        if bucket is None:
+            raise werkzeug.exceptions.InternalServerError(f"Region `{selected_region}` can not be found in S3_REGIONS.")
 
-    key = tooltool_api.utils.keyname(digest)
+        s3 = flask.current_app.aws.connect_to("s3", selected_region)
+        logger2.info(f"Generating signed S3 GET URL for {digest[:10]}, expiring in {dowload_expires_in}s")
+        signed_url = s3.generate_url(method="GET", expires_in=dowload_expires_in, bucket=bucket, key=key)
 
-    s3 = flask.current_app.aws.connect_to("s3", selected_region)
-    logger2.info(f"Generating signed S3 GET URL for {digest[:10]}, expiring in {DOWLOAD_EXPIRES_IN}s")
-    signed_url = s3.generate_url(method="GET", expires_in=DOWLOAD_EXPIRES_IN, bucket=bucket, key=key)
-
-    return flask.redirect(signed_url)
+        return flask.redirect(signed_url)

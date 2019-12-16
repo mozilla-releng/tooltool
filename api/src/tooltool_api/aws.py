@@ -4,21 +4,19 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import importlib
-import json
-import threading
-import time
 
 import boto
 import boto.s3
 import boto.sqs
+from botocore.signers import CloudFrontSigner
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import padding
 
 import tooltool_api.lib.log
 
 logger = tooltool_api.lib.log.get_logger(__name__)
-
-
-class StopListening(Exception):
-    pass
 
 
 class AWS(object):
@@ -61,69 +59,14 @@ class AWS(object):
         # the other services
         return boto.s3.connect_to_region(region_name=region_name, aws_access_key_id=self.access_key_id, aws_secret_access_key=self.secret_access_key)
 
-    def get_sqs_queue(self, region_name, queue_name):
-        key = (region_name, queue_name)
-        if key in self._queues:
-            return self._queues[key]
+    def generate_presigned_cloudfront_url(self, url, expire_time, keypair_id, private_key_string):
+        # From https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudfront.html#generate-a-signed-url-for-amazon-cloudfront
+        def rsa_signer(message):
+            private_key = serialization.load_pem_private_key(private_key_string, password=None, backend=default_backend())
+            return private_key.sign(message, padding.PKCS1v15(), hashes.SHA1())
 
-        sqs = self.connect_to("sqs", region_name)
-        queue = sqs.get_queue(queue_name)
-        if not queue:
-            raise RuntimeError("no such queue %r in %s" % (queue_name, region_name))
-        self._queues[key] = queue
-        return queue
+        cloudfront_signer = CloudFrontSigner(keypair_id, rsa_signer)
 
-    def sqs_write(self, region_name, queue_name, body):
-        queue = self.get_sqs_queue(region_name, queue_name)
-        m = boto.sqs.message.Message(body=json.dumps(body))
-        queue.write(m)
-
-    def sqs_listen(self, region_name, queue_name, read_args=None):
-        def decorate(func):
-            self._listeners.append((region_name, queue_name, read_args or {}, func))
-            return func
-
-        return decorate
-
-    def _listen_thd(self, region_name, queue_name, read_args, listener):
-        logger.info("Listening to SQS queue %r in region %s", queue_name, region_name)
-        try:
-            queue = self.get_sqs_queue(region_name, queue_name)
-        except Exception:
-            logger.exception("While getting queue %r in region %s; listening cancelled", queue_name, region_name)
-            return
-
-        while True:
-            msg = queue.read(wait_time_seconds=20, **read_args)
-            if msg:
-                try:
-                    listener(msg)
-                except StopListening:  # for tests
-                    break
-                except Exception:
-                    logger.exception("while invoking %r", listener)
-                    # note that we do nothing with the message; it will
-                    # remain invisible for a while, then reappear and maybe
-                    # cause another exception
-                    continue
-                msg.delete()
-
-    def _spawn_sqs_listeners(self, _testing=False):
-        # launch a listening thread for each SQS queue
-        threads = []
-        for region_name, queue_name, read_args, listener in self._listeners:
-            thd = threading.Thread(
-                name="%s/%r -> %r" % (region_name, queue_name, listener), target=self._listen_thd, args=(region_name, queue_name, read_args, listener)
-            )
-            # set the thread to daemon so that SIGINT will kill the process
-            thd.daemon = True
-            thd.start()
-            threads.append(thd)
-
-        # sleep forever, or until we get a SIGINT, at which point the remaining
-        # threads will be killed during process shutdown
-        if not _testing:  # pragma: no cover
-            while True:
-                time.sleep(2 ** 31)
-
-        return threads
+        # Create a signed url that will be valid until the specfic expiry date
+        # provided using a canned policy.
+        return cloudfront_signer.generate_presigned_url(url, date_less_than=expire_time)

@@ -322,14 +322,6 @@ paths:
           in: path
           required: true
           type: string
-        - name: region
-          in: query
-          required: false
-          description: |
-            The query argument ``region=us-west-1`` indicates a preference for
-            a URL in that region, although if the file is not available in tht
-            region then a URL from another region may be returned.
-          type: string
       responses:
         302:
           description: Redirect to a signed download URL.
