@@ -13,7 +13,6 @@ import tooltool_api.aws
 import tooltool_api.cli
 import tooltool_api.config
 import tooltool_api.lib
-import tooltool_api.lib.api
 import tooltool_api.models  # noqa
 import tooltool_api.view
 
@@ -21,9 +20,17 @@ import tooltool_api.view
 def custom_handle_default_exceptions(e: Exception) -> typing.Tuple[int, str]:
     """Conform structure of errors as before, to make it work with client (tooltool.py).
     """
-    error = tooltool_api.lib.api.handle_default_exceptions_raw(e)
-    error["name"] = error["title"]
-    error["description"] = error["detail"]
+    code = getattr(e, "code", 500)
+    description = getattr(e, "description", str(e))
+    error = {
+        "type": "about:blank",
+        "title": str(e),
+        "name": str(e),
+        "status": code,
+        "detail": description,
+        "description": description,
+        "instance": "about:blank",
+    }
     import flask  # for some reason flask needs to be imported here
 
     return flask.jsonify(dict(error=error)), error["status"]
