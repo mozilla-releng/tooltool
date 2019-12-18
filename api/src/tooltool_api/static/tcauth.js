@@ -57,12 +57,14 @@ window.tcauth.setup = function(service, default_service_url) {
     } catch(err) {
         auth = null;
     }
+    console.log(auth);
     if (auth != null && auth.access_token) {
         $.ajax({
-            url: 'https://login.taskcluster.net/v1/oidc-credentials/mozilla-auth0',
+            url: 'https://firefox-ci-tc.services.mozilla.com/login/oauth/credentials',
             async: false,
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", "Bearer " + auth.access_token);
+            headers: {
+                Authorization: 'Bearer ' + auth.access_token,
+                'Content-Type': 'application/json',
             },
             error: function(xhr, status, error) {
             },

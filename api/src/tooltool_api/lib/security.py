@@ -14,7 +14,7 @@ DEFAULT_CSP_POLICY = {
     "script-src": "'self' 'unsafe-inline' 'unsafe-eval'",
     "style-src": "'self' 'unsafe-inline'",
     "img-src": "'self'",
-    "connect-src": "'self'",
+    "connect-src": "'self' https://firefox-ci-tc.services.mozilla.com",
 }
 
 
