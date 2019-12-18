@@ -90,16 +90,8 @@ window.tcauth.setup = function(service, default_service_url) {
     $login.on('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        var url = $('body').attr('data-treestatus-api-url') || 'https://localhost:8000';
-        $.ajax({
-            url: url + '/auth0/login',
-            error: function(xhr, status, error) {
-            },
-            success: function(redirect_url, status, xhr) {
-                window.location = redirect_url;
-            }
-
-        });
+        var url = 'https://firefox-ci-tc.services.mozilla.com/login/oauth/authorize?client_id=releng-tooltool-localdev&redirect_uri=https%3A%2F%2Flocalhost%3A8010%2Fstatic%2Flogin.html&response_type=code&scope=project%3Areleng%3Aservices%2Ftooltool%2F*&state=5&expires=5%20minutes';
+        window.location = url;
     });
 
     $logout.on('click', function(e) {
