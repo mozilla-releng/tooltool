@@ -40,21 +40,7 @@ window.login.handle = function() {
           console.log("login succeeded");
           window.localStorage.setItem('auth', JSON.stringify(data))
           window.location = window.location.origin;
-          /*$.ajax({
-            url: 'https://firefox-ci-tc.services.mozilla.com/login/oauth/credentials',
-            headers: {
-              Authorization: 'Bearer ' + data.access_token,
-              'Content-Type': 'application/json',
-            },
-            error: function(xhr, status, error) {
-              console.log("login failed");
-              console.log(error);
-            },
-            success: function(data) {
-              window.localStorage.setItem('tc_auth', JSON.stringify(data))
-            }
-          });*/
-        },
+        }
       });
     }
   }
