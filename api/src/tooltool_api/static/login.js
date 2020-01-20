@@ -18,7 +18,8 @@ window.login.handle = function() {
     const qs = parseQuery(window.location.search);
 
     if (qs.error) {
-      console.log("fail!");
+      alert("Failed to parse query string: " + qs.error);
+      console.log("Failed to parse query string: " + qs.error);
     }
     else if (qs.state === '5') {
       $.ajax({
@@ -27,14 +28,13 @@ window.login.handle = function() {
         method: 'POST',
         data: {
           grant_type: 'authorization_code',
-          grant_type: 'authorization_code',
           code: qs.code,
           redirect_uri: 'https://localhost:8010/static/login.html',
           client_id: 'releng-tooltool-localdev',
         },
         error: function(xhr, status, error) {
-          console.log("login failed");
-          console.log(error);
+          alert("Login failed: " + error);
+          console.log("Login failed: " + error);
         },
         success: function(data) {
           console.log("login succeeded");

@@ -67,6 +67,8 @@ window.tcauth.setup = function(service, default_service_url) {
                 'Content-Type': 'application/json',
             },
             error: function(xhr, status, error) {
+                alert("Failed to get credentials: " + error);
+                console.log("Failed to get credentials: " + error);
             },
             success: function(data, status, xhr) {
                 $email.html('<span>' + data.credentials.clientId + '</span>' + '<span class="caret"></span/>');
