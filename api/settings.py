@@ -73,7 +73,7 @@ secrets = {
         ("S3_REGIONS_SECRET_ACCESS_KEY", required if S3_REGIONS else default(None)),
         ("CLOUDFRONT_KEY_ID", required if CLOUDFRONT_URL else default(None)),
         # taskcluster instance url
-        ("TASKCLUSTER_ROOT_URL", default("https://taskcluster.net")),
+        ("TASKCLUSTER_ROOT_URL", default("https://firefox-ci-tc.services.mozilla.com")),
         # Database connection string, for more details look at src/tooltool_api/lib/db.py
         ("DATABASE_URL", required),
         # Log errors to sentry, for more details look at src/tooltool_api/lib/log.py

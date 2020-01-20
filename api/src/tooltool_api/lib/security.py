@@ -14,9 +14,8 @@ DEFAULT_CSP_POLICY = {
     "script-src": "'self' 'unsafe-inline' 'unsafe-eval'",
     "style-src": "'self' 'unsafe-inline'",
     "img-src": "'self'",
-    "connect-src": "'self' https://firefox-ci-tc.services.mozilla.com",
+    "connect-src": "'self'",
 }
-
 
 DEFAULT_CONFIG = dict(
     force_https=False,
@@ -44,6 +43,8 @@ security = flask_talisman.Talisman()
 
 def init_app(app):
     config = app.config.get("SECURITY", DEFAULT_CONFIG)
+
+    config["content_security_policy"]["connect-src"] += f" {app.config['TASKCLUSTER_ROOT_URL']}"
 
     csp_report_uri = app.config.get("SECURITY_CSP_REPORT_URI")
     if csp_report_uri:
