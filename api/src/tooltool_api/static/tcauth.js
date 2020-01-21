@@ -1,3 +1,5 @@
+import config from './config.mjs';
+
 (function() {
 
 window.tcauth = {};
@@ -57,10 +59,9 @@ window.tcauth.setup = function(service, default_service_url) {
     } catch(err) {
         auth = null;
     }
-    console.log(auth);
     if (auth != null && auth.access_token) {
         $.ajax({
-            url: 'https://firefox-ci-tc.services.mozilla.com/login/oauth/credentials',
+            url: config.taskclusterRootUrl + '/login/oauth/credentials',
             async: false,
             headers: {
                 Authorization: 'Bearer ' + auth.access_token,
@@ -94,7 +95,7 @@ window.tcauth.setup = function(service, default_service_url) {
     $login.on('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        var url = 'https://firefox-ci-tc.services.mozilla.com/login/oauth/authorize?client_id=releng-tooltool-localdev&redirect_uri=https%3A%2F%2Flocalhost%3A8010%2Fstatic%2Flogin.html&response_type=code&scope=project%3Areleng%3Aservices%2Ftooltool%2F*&state=5&expires=5%20minutes';
+        var url = config.taskclusterRootUrl + '/login/oauth/authorize?client_id=releng-tooltool-localdev&redirect_uri=https%3A%2F%2Flocalhost%3A8010%2Fstatic%2Flogin.html&response_type=code&scope=project%3Areleng%3Aservices%2Ftooltool%2F*&state=5&expires=5%20minutes';
         window.location = url;
     });
 

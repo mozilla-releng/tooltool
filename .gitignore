@@ -76,3 +76,5 @@ build-tools
 wiki
 
 /api/docker.d/*.pem
+
+config.mjs

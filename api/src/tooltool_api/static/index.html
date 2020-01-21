@@ -122,10 +122,13 @@
   <script src="buffer.js" type="text/javascript"></script>
   <script src="hawk.js" type="text/javascript"></script>
   <script src="relengapi.js" type="text/javascript"></script>
-  <script src="tcauth.js" type="text/javascript"></script>
+  <script src="tcauth.js" type="module"></script>
   <script src="tooltool.js" type="text/javascript"></script>
   <script type="text/javascript">
-    window.tcauth.setup('tooltool-api', window.location.origin);
+    // To try to avoid race conditions with window.tcauth not existing
+    window.setTimeout(function() {
+      window.tcauth.setup('tooltool-api', window.location.origin);
+    }, 1000);
   </script>
 </body>
 

@@ -1,3 +1,5 @@
+import config from './config.mjs';
+
 (function() {
 
 function parseQuery(q) {
@@ -23,14 +25,14 @@ window.login.handle = function() {
     }
     else if (qs.state === '5') {
       $.ajax({
-        url: 'https://firefox-ci-tc.services.mozilla.com/login/oauth/token',
+        url: config.taskclusterRootUrl + '/login/oauth/token',
         contentType: 'application/x-www-form-urlencoded',
         method: 'POST',
         data: {
           grant_type: 'authorization_code',
           code: qs.code,
-          redirect_uri: 'https://localhost:8010/static/login.html',
-          client_id: 'releng-tooltool-localdev',
+          redirect_uri: config.redirectUri,
+          client_id: config.clientId,
         },
         error: function(xhr, status, error) {
           alert("Login failed: " + error);
@@ -44,6 +46,6 @@ window.login.handle = function() {
       });
     }
   }
-}
+};
 
 })();
