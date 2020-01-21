@@ -92,8 +92,8 @@ tasks:
               else:
                 $if: 'event.ref[0:21] == "refs/heads/production"'
                 then: 'config.prod.mjs'
-                else: 'unknown'
-            else: 'unknown'
+                else: 'config.local.mjs'
+            else: 'config.local.mjs'
         in:
           $match:
             # Run code linting and unit tests for each project 
