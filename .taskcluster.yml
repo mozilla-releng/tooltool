@@ -84,6 +84,16 @@ tasks:
                 $if: 'tasks_for == "github-push" && event.ref[0:11] == "refs/heads/"'
                 then: '${event.ref[11:]}'
                 else: 'unknown'
+          frontend_config:
+            $if: 'tasks_for == "github-push"'
+            then:
+              $if: 'event.ref[0:18] == "refs/heads/staging"'
+              then: 'config.stage.mjs'
+              else:
+                $if: 'event.ref[0:21] == "refs/heads/production"'
+                then: 'config.prod.mjs'
+                else: 'config.local.mjs'
+            else: 'config.local.mjs'
         in:
           $match:
             # Run code linting and unit tests for each project 
@@ -165,6 +175,7 @@ tasks:
                   DOCKERHUB_USER: 'mozillarelengservices'
                   DOCKER_REPO: '${dockerhub_repo}'
                   DOCKER_TAG: '${docker_tag}'
+                  FRONTEND_CONFIG: '${frontend_config}'
                   GIT_HEAD_REV: '${HEAD_REV}'
                   PROJECT_NAME: '${project_name}'
                   PUSH_DOCKER_IMAGE: '${push_docker_image}'

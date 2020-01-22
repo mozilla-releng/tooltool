@@ -61,7 +61,7 @@ def create_app(project_name, extensions=[], config=None, enable_dockerflow=True,
 
         logger.debug("Extension initialized", extension=extension_name, app=app.name)
 
-    app.add_url_rule("/", "root", lambda: flask.redirect("/static/ui/index.html"))
+    app.add_url_rule("/", "root", lambda: flask.redirect("/static/index.html"))
 
     if enable_dockerflow:
         app.add_url_rule("/__heartbeat__", view_func=tooltool_api.lib.dockerflow.heartbeat_response)
