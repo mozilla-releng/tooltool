@@ -95,7 +95,7 @@ window.tcauth.setup = function(service, default_service_url) {
     $login.on('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        var url = config.taskclusterRootUrl + '/login/oauth/authorize?client_id=' + config.clientId + '&releng-tooltool-localdev&redirect_uri=' + config.redirectUri + '&response_type=code&scope=project%3Areleng%3Aservices%2Ftooltool%2F*&state=5&expires=5%20minutes';
+        var url = config.taskclusterRootUrl + '/login/oauth/authorize?client_id=' + config.clientId + '&redirect_uri=' + config.redirectUri + '&response_type=code&scope=project%3Areleng%3Aservices%2Ftooltool%2F*&state=5&expires=5%20minutes';
         window.location = url;
     });
 
