@@ -279,9 +279,11 @@ def download_file(digest: str) -> werkzeug.Response:
         regions = ", ".join(s3_regions.keys())
         logger2.debug(f"Looking for file in following regions: {regions}")
 
-        # preferred region not found, so pick one from the available set
-        selected_region = random.choice([inst.region for inst in file_row.instances])
+        available_regions = set(s3_regions).intersection(set([inst.region for inst in file_row.instances]))
+        if not available_regions:
+            raise werkzeug.exceptions.InternalServerError(f"No available regions for file")
 
+        selected_region = random.choice(list(available_regions))
         bucket = s3_regions.get(selected_region)
         if bucket is None:
             raise werkzeug.exceptions.InternalServerError(f"Region `{selected_region}` can not be found in S3_REGIONS.")
