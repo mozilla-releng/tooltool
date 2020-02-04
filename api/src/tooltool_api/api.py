@@ -281,7 +281,7 @@ def download_file(digest: str) -> werkzeug.Response:
 
         available_regions = set(s3_regions).intersection(set([inst.region for inst in file_row.instances]))
         if not available_regions:
-            raise werkzeug.exceptions.InternalServerError(f"No available regions for file")
+            raise werkzeug.exceptions.InternalServerError("No available regions for file")
 
         selected_region = random.choice(list(available_regions))
         bucket = s3_regions.get(selected_region)
