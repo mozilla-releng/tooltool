@@ -42,11 +42,14 @@ import tempfile
 import threading
 import time
 import zipfile
+from contextlib import contextmanager, closing
 
 from io import open
 from io import BytesIO
 from subprocess import PIPE
 from subprocess import Popen
+
+from redo import retriable
 
 __version__ = '1'
 
@@ -709,6 +712,15 @@ def touch(f):
         log.warn('impossible to update utime of file %s' % f)
 
 
+@contextmanager
+@retriable(sleeptime=2)
+def request(url, auth_file=None):
+    req = Request(url)
+    _authorize(req, auth_file)
+    with closing(urllib2.urlopen(req)) as f:
+        yield f
+
+
 def fetch_file(base_urls, file_record, grabchunk=1024 * 4, auth_file=None, region=None):
     # A file which is requested to be fetched that exists locally will be
     # overwritten by this function
@@ -726,27 +738,24 @@ def fetch_file(base_urls, file_record, grabchunk=1024 * 4, auth_file=None, regio
 
         # Well, the file doesn't exist locally.  Let's fetch it.
         try:
-            req = Request(url)
-            _authorize(req, auth_file)
-            f = urllib2.urlopen(req)
-            log.debug("opened %s for reading" % url)
-            with open(temp_path, **open_attrs) as out:
-                k = True
-                size = 0
-                while k:
-                    # TODO: print statistics as file transfers happen both for info and to stop
-                    # buildbot timeouts
-                    indata = f.read(grabchunk)
-                    if PY3:
-                        indata = to_text(indata)
-                    out.write(indata)
-                    size += len(indata)
-                    if len(indata) == 0:
-                        k = False
-                log.info("File %s fetched from %s as %s" %
-                         (file_record.filename, base_url, temp_path))
-                fetched_path = temp_path
-                break
+            with request(url, auth_file) as f:
+                with open(temp_path, **open_attrs) as out:
+                    k = True
+                    size = 0
+                    while k:
+                        # TODO: print statistics as file transfers happen both for info and to stop
+                        # buildbot timeouts
+                        indata = f.read(grabchunk)
+                        if PY3:
+                            indata = to_text(indata)
+                        out.write(indata)
+                        size += len(indata)
+                        if len(indata) == 0:
+                            k = False
+                    log.info("File %s fetched from %s as %s" %
+                             (file_record.filename, base_url, temp_path))
+                    fetched_path = temp_path
+                    break
         except (URLError, HTTPError, ValueError):
             log.info("...failed to fetch '%s' from %s" %
                      (file_record.filename, base_url), exc_info=True)
