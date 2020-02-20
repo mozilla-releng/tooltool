@@ -25,14 +25,24 @@ from nose.tools import eq_
 PY3 = sys.version_info[0] == 3
 CWD_PATH = os.getcwd()
 
-from tooltool import to_binary, get_hexdigest, open_attrs, URLError, HTTPError
+from tooltool import get_hexdigest, URLError, HTTPError
 
 if PY3:
+    open_attrs = dict(mode='w', encoding='utf-8')
+    six_text_type = str
     urlopen_module_as_str = 'urllib.request.urlopen'
     import http.server as BaseHTTPServer
 else:
+    open_attrs = dict(mode='wb')
+    six_text_type = unicode
     urlopen_module_as_str = 'urllib2.urlopen'
     import BaseHTTPServer
+
+
+def to_binary(val):
+    if isinstance(val, six_text_type):
+        return val.encode('utf-8')
+    return val
 
 
 class TestDirMixin(object):
@@ -701,7 +711,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
             eq_(self.headers['content-type'], 'application/octet-stream')
             content_length = int(self.headers.get('content-length', -1))
             data = self.rfile.read(content_length)
-            digest = get_hexdigest(data)
+            digest = get_hexdigest(to_binary(data))
             self.test_case.server_requests.setdefault('PUT', []).append(digest)
             assert self.path.endswith(digest)
             if digest in cfg.get('upload_failures', []):
@@ -749,7 +759,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         self.content = "FILE DATA"
         with open("testfile.txt", **open_attrs) as f:
             f.write(self.content)
-        self.digest = get_hexdigest(self.content)
+        self.digest = get_hexdigest(to_binary(self.content))
 
     def tearDown(self):
         if hasattr(self, 'httpd'):
@@ -761,7 +771,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
                  version=None, visibility='internal', unpack=False):
         data = os.urandom(1024)
         open(filename, 'wb').write(data)
-        digest = get_hexdigest(data)
+        digest = get_hexdigest(to_binary(data))
         tooltool.add_files('manifest.tt', 'sha512', [filename],
             version, visibility, unpack)
         if on_server:
@@ -996,7 +1006,7 @@ def test_log_api_error_api_error():
 class FetchTests(TestDirMixin, unittest.TestCase):
 
     _server_files = ['one', 'two', 'three']
-    server_files_by_hash = dict((get_hexdigest(v), v)
+    server_files_by_hash = dict((get_hexdigest(to_binary(v)), v)
                                 for v in _server_files)
     server_corrupt = False
     urls = ['http://a', 'http://2']
@@ -1029,7 +1039,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
     def add_file_to_cache(self, file, corrupt=False):
         if not os.path.exists(self.cache_dir):
             os.mkdir(self.cache_dir)
-        digest = get_hexdigest(file)
+        digest = get_hexdigest(to_binary(file))
         content = 'X' * len(file) if corrupt else file
         open(os.path.join(self.cache_dir, digest), **open_attrs).write(content)
 
@@ -1041,7 +1051,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
                 'filename': 'file-' + file,
                 'size': len(file),
                 'algorithm': 'sha512',
-                'digest': get_hexdigest(file),
+                'digest': get_hexdigest(to_binary(file)),
                 'unpack': unpack,
             })
         with open(filename, **open_attrs) as f:
@@ -1057,7 +1067,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
     def assert_cached_files(self, *files):
         if not files and not os.path.exists(self.cache_dir):
             return
-        hashes = [get_hexdigest(f) for f in files]
+        hashes = [get_hexdigest(to_binary(f)) for f in files]
         eq_(sorted(os.listdir(self.cache_dir)), sorted(hashes))
         for f, h in zip(files, hashes):
             eq_(open(os.path.join(self.cache_dir, h), encoding='utf-8').read(), f)
@@ -1324,21 +1334,21 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
 
     def test_fetch_file(self):
         # note: the first URL doesn't match, so this loops twice
-        with self.mocked_urllib2({'http://b/sha512/' + self.sample_hash: 'abcd'}):
+        with self.mocked_urllib2({'http://b/sha512/' + self.sample_hash: b'abcd'}):
             filename = tooltool.fetch_file(['http://a', 'http://b'], self.test_record)
             assert filename
             eq_(open(filename, encoding='utf-8').read(), 'abcd')
             os.unlink(filename)
 
     def test_fetch_file_region(self):
-        with self.mocked_urllib2({'http://a/sha512/%s?region=us-west-1' % self.sample_hash: 'abcd'}):
+        with self.mocked_urllib2({'http://a/sha512/%s?region=us-west-1' % self.sample_hash: b'abcd'}):
             filename = tooltool.fetch_file(['http://a'], self.test_record, region='us-west-1')
             assert filename
             eq_(open(filename, encoding='utf-8').read(), 'abcd')
             os.unlink(filename)
 
     def test_fetch_file_size(self):
-        with self.mocked_urllib2({'http://b/sha512/' + self.sample_hash: 'abcd'}, exp_size=1024):
+        with self.mocked_urllib2({'http://b/sha512/' + self.sample_hash: b'abcd'}, exp_size=1024):
             filename = tooltool.fetch_file(
                 ['http://a', 'http://b'], self.test_record, grabchunk=1024)
             assert filename
@@ -1346,7 +1356,7 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
             os.unlink(filename)
 
     def test_fetch_file_auth_file(self):
-        with self.mocked_urllib2({'http://b/sha512/' + self.sample_hash: 'abcd'}, exp_token='TOKTOK'):
+        with self.mocked_urllib2({'http://b/sha512/' + self.sample_hash: b'abcd'}, exp_token='TOKTOK'):
             with open("auth", **open_attrs) as f:
                 f.write('TOKTOK')
             filename = tooltool.fetch_file(
@@ -1357,7 +1367,7 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
 
     def test_fetch_file_auth_file_taskcluster(self):
         credentials = json.dumps({'clientId': '123', 'accessToken': '456'})
-        with self.mocked_urllib2({'http://b/sha512/' + self.sample_hash: 'abcd'}, exp_token=credentials):
+        with self.mocked_urllib2({'http://b/sha512/' + self.sample_hash: b'abcd'}, exp_token=credentials):
             with open("auth", **open_attrs) as f:
                 f.write(credentials)
             filename = tooltool.fetch_file(
@@ -1462,11 +1472,11 @@ class AddFiles(BaseManifestTest):
 
     def make_file(self, filename="a_file"):
         data = os.urandom(100)
-        open(filename, 'wb').write(data)
+        open(filename, 'wb').write(to_binary(data))
         return {
             'filename': filename,
             'algorithm': 'sha512',
-            'digest': get_hexdigest(data),
+            'digest': get_hexdigest(to_binary(data)),
             'size': len(data)
         }
 

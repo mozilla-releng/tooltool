@@ -684,8 +684,12 @@ def add_files(manifest_file, algorithm, filenames, version, visibility, unpack):
     for old_fr in old_manifest.file_records:
         if old_fr.filename not in new_filenames:
             new_manifest.file_records.append(old_fr)
-    with open(manifest_file, mode="w") as output:
-        new_manifest.dump(output, fmt='json')
+    if PY3:
+        with open(manifest_file, mode="w") as output:
+            new_manifest.dump(output, fmt='json')
+    else:
+        with open(manifest_file, mode="wb") as output:
+            new_manifest.dump(output, fmt='json')
     return all_files_added
 
 
