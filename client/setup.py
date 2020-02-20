@@ -22,7 +22,6 @@ with open(
 ) as f:
     tests_require = [i.strip() for i in f.readlines() if i and not i.startswith('-r')]
 
-
 setuptools.setup(
     name='mozilla-tooltool-client',
     version=version,
