@@ -1328,9 +1328,15 @@ def main(argv, _skip_logging=False):
 
     (options_obj, args) = parser.parse_args(argv[1:])
 
-    # default the options list if not provided
     if not options_obj.base_url:
-        options_obj.base_url = ['https://tooltool.mozilla-releng.net/']
+        tooltool_host = os.environ.get('TOOLTOOL_HOST', 'tooltool.mozilla-releng.net')
+        taskcluster_proxy_url = os.environ.get('TASKCLUSTER_PROXY_URL')
+        if taskcluster_proxy_url:
+            tooltool_url = '{}/{}'.format(taskcluster_proxy_url, tooltool_host)
+        else:
+            tooltool_url = 'https://{}'.format(tooltool_host)
+
+        options_obj.base_url = [tooltool_url]
 
     # ensure all URLs have a trailing slash
     def add_slash(url):
