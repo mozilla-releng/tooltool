@@ -97,7 +97,7 @@ def retrier(attempts=5, sleeptime=10, max_sleeptime=300, sleepscale=1.5, jitter=
 
     sleeptime_real = sleeptime
     for _ in range(attempts):
-        log.debug("attempt %i/%i", _ + 1, attempts)
+        log.info("attempt %i/%i", _ + 1, attempts)
 
         yield sleeptime_real
 
@@ -821,9 +821,12 @@ def touch(f):
 def request(url, auth_file=None):
     req = Request(url)
     _authorize(req, auth_file)
-    with closing(urllib2.urlopen(req)) as f:
-        log.debug("opened %s for reading" % url)
-        yield f
+    try:
+        with closing(urllib2.urlopen(req)) as f:
+            log.info("opened %s for reading" % url)
+            yield f
+    except (URLError, HTTPError, IOError):
+        log.info("Tooltool fownload failed. Retrying...")
 
 
 def fetch_file(base_urls, file_record, grabchunk=1024 * 4, auth_file=None, region=None):
@@ -858,7 +861,7 @@ def fetch_file(base_urls, file_record, grabchunk=1024 * 4, auth_file=None, regio
                          (file_record.filename, base_url, temp_path))
                 fetched_path = temp_path
                 break
-        except (URLError, HTTPError, ValueError):
+        except (ValueError, RuntimeError):
             log.info("...failed to fetch '%s' from %s" %
                      (file_record.filename, base_url), exc_info=True)
         except IOError:  # pragma: no cover
