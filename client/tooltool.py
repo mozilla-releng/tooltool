@@ -52,7 +52,7 @@ from random import random
 from subprocess import PIPE
 from subprocess import Popen
 
-__version__ = '1'
+__version__ = '1.3.0'
 
 # Allowed request header characters:
 # !#$%&'()*+,-./:;<=>?@[]^_`{|}~ and space, a-z, A-Z, 0-9, \, "
