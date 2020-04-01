@@ -57,7 +57,7 @@ def setup_sentry(project_name, env, SENTRY_DSN, flask_app=None):
 
         raven.contrib.flask.Sentry(flask_app, client=sentry_client)
 
-    sentry_handler = raven.handlers.logbook.SentryHandler(sentry_client, level=logbook.WARNING, bubble=True)
+    sentry_handler = raven.handlers.logbook.SentryHandler(sentry_client, level=logbook.ERROR, bubble=True)
     sentry_handler.push_application()
 
 
