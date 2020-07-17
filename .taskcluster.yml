@@ -18,7 +18,9 @@ tasks:
         # [ <PROJECT NAME>,   <PYTHON VERSION>, <SETUP COMMAND>,     <DOCKERHUB REPO>]
         - ['tooltool_client', '27',             '${client_setup_2}', '']
         - ['tooltool_client', '37',             '${client_setup_3}', '']
+        - ['tooltool_client', '38',             '${client_setup_3}', '']
         - ['tooltool_api',    '37',             '${api_setup}',      'mozilla/releng-tooltool']
+        - ['tooltool_api',    '38',             '${api_setup}',      '']
     # -------------------------------------------------------------------------
 
     HEAD_REV:
