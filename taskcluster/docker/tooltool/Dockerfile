@@ -12,7 +12,10 @@ ENV WEB_CONCURRENCY=3
 
 ENV PATH="/appenv/bin:${PATH}"
 
-COPY . /app
+# %include api
+COPY topsrcdir/api /app
+# %ARG FRONTEND_CONFIG
+RUN ln -s /app/src/tooltool_api/static/${FRONTEND_CONFIG} /app/src/tooltool_api/static/config.mjs
 
 RUN mkdir /appenv \
  && chown -R app:app /app /appenv

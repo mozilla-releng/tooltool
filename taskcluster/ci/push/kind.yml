@@ -1,0 +1,29 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - taskgraph.transforms.task:transforms
+
+job-defaults:
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: skopeo}
+        max-run-time: 3600
+        env: 
+            IMAGE_URL: {artifact-reference: "<push-image/public/image.tar.zst>"}
+            SECRET_URL: http://taskcluster/secrets/v1/secret/project/releng/tooltool/ci"
+
+jobs:
+    tooltool:
+        description: "Push to staging tooltool repository."
+        dependencies:
+            push-image: build-docker-image-tooltool
+            #FIXME: tests: tests-api
+        worker:
+            env: 
+                DOCKER_REPO: docker.io/mozilla/releng-tooltool
+                DOCKER_TAG: staging
