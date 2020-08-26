@@ -180,9 +180,9 @@ inflection==0.3.1 \
 itsdangerous==0.24 \
     --hash=sha256:cbb3fcf8d3e33df861709ecaf89d9e6629cff0a217bc2848f1b41cd30d360519 \
     # via -r base.in, flask, flask-oidc
-jinja2==2.10.3 \
-    --hash=sha256:74320bb91f31270f9551d46522e33af46a80c3d619f4a4bf42b3164d30b5911f \
-    --hash=sha256:9fe95f19286cfefaa917656583d020be14e7859c6b0252588391e47db34527de \
+jinja2==2.11.2 \
+    --hash=sha256:89aab215427ef59c34ad58735269eb58b1a5808103067f7bb9d5836c651b3bb0 \
+    --hash=sha256:f0a4641d3cf955324a89c04f3d94663aa4d638abe8f733ecd3582848e1c37035 \
     # via flask, swagger-ui-bundle
 jmespath==0.9.4 \
     --hash=sha256:3720a4b1bd659dd2eecad0666459b9788813e032b83e7ba58578e48254e0a0e6 \
