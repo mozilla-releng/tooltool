@@ -45,9 +45,9 @@ boto==2.49.0 \
     --hash=sha256:147758d41ae7240dc989f0039f27da8ca0d53734be0eb869ef16e3adcfa462e8 \
     --hash=sha256:ea0d3b40a2d852767be77ca343b58a9e3a4b00d9db440efb8da74b4e58025e5a \
     # via -r base.in
-botocore==1.13.39 \
-    --hash=sha256:2d2b0bf77c417e5fa42b64acfc5501f11537c3a3bc05a93ea3893d1d18c7a1c2 \
-    --hash=sha256:9a993f7650e9a6eabb12cb3cc14b339a0d1ca14a80a9f539a6d5a63f2392a781 \
+botocore==1.17.50 \
+    --hash=sha256:96e2d0fd2893f2899316142df58911ba0f70c65016320f40bf1c366cd5a23090 \
+    --hash=sha256:9bad0c66527099103f52d836f4294b1f87372cff942bb8ff498996253ce8be44 \
     # via -r base.in
 certifi==2019.11.28 \
     --hash=sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3 \
