@@ -1314,7 +1314,7 @@ def change_visibility(base_urls, digest, visibility, auth_file):
         "op": "set_visibility",
         "visibility": visibility,
     }]
-    return send_operation_on_file(data, base_urls, digest, visibility, auth_file)
+    return send_operation_on_file(data, base_urls, digest, auth_file)
 
 
 def delete_instances(base_urls, digest, auth_file):
