@@ -43,21 +43,17 @@ Deployed Environments
 
 We have a number of deployed ToolTool environments.
 
-- Dev
+- Dev (currently broken, possibly permanently)
 
    :URL: https://dev.tooltool.mozilla-releng.net/
-   :Taskcluster Secret: repo:github.com/mozilla-releng/services:branch:testing
-   :Taskcluster Client ID: project/releng/services/heroku-testing
-
+   :Deploys from: `dev` branch
 
 - Staging
 
    :URL: https://stage.tooltool.mozilla-releng.net/
-   :Taskcluster Secret: repo:github.com/mozilla-releng/services:branch:staging
-   :Taskcluster Client ID: project/releng/services/heroku-staging
+   :Deploys from: `staging` branch
 
 - Production
 
    :URL: https://tooltool.mozilla-releng.net/
-   :Taskcluster Secret: repo:github.com/mozilla-releng/services:branch:production
-   :Taskcluster Client ID: project/releng/services/heroku-production
+   :Deploys from: `production` branch
