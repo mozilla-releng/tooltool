@@ -1113,9 +1113,8 @@ def purge(folder, gigs):
 def _log_api_error(e):
     if hasattr(e, 'hdrs') and e.hdrs['content-type'] == 'application/json':
         json_resp = json.load(e.fp)
-        if 'error' in json_resp:
-            log.error(json_resp['error']['detail'])
-        log.error(json_resp['detail'])
+        log.error("%s: %s" % (json_resp['error']['name'],
+                              json_resp['error']['description']))
     else:
         log.exception("Error making RelengAPI request:")
 
@@ -1152,7 +1151,7 @@ def _send_batch(base_url, auth_file, batch, region):
     req = Request(url, data, {'Content-Type': 'application/json'})
     _authorize(req, auth_file)
     try:
-        resp = urllib2.urlopen(req, cafile="../api/docker.d/cert.pem")
+        resp = urllib2.urlopen(req)
     except (URLError, HTTPError) as e:
         _log_api_error(e)
         return None
@@ -1303,8 +1302,7 @@ def send_operation_on_file(data, base_urls, digest, auth_file):
     _authorize(req, auth_file)
 
     try:
-        #urllib2.urlopen(req)
-        resp = urllib2.urlopen(req, cafile="../api/docker.d/cert.pem")
+        urllib2.urlopen(req)
     except (URLError, HTTPError) as e:
         _log_api_error(e)
         return False
@@ -1316,7 +1314,7 @@ def change_visibility(base_urls, digest, visibility, auth_file):
         "op": "set_visibility",
         "visibility": visibility,
     }]
-    return send_operation_on_file(data, base_urls, digest, visibility, auth_file)
+    return send_operation_on_file(data, base_urls, digest, auth_file)
 
 
 def delete_instances(base_urls, digest, auth_file):
