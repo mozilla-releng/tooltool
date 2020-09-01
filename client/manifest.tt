@@ -1,0 +1,9 @@
+[
+{
+"algorithm": "sha512",
+"visibility": "public",
+"filename": "test_file.ogg",
+"digest": "8e93bf75032fb28130fe448f5581deda30dac259fff009148ba5a500d20896ba698a241dcc345efe18280733e37789b6b2f9f4304fbeb250d32f9daf5ffd49cb",
+"size": 87986
+}
+]
