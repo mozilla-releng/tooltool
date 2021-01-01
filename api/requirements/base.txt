@@ -379,7 +379,7 @@ rsa==4.6 \
 six==1.15.0 \
     --hash=sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259 \
     --hash=sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced \
-    # via cryptography, ecdsa, flask-cors, flask-oidc, flask-talisman, jsonschema, mohawk, oauth2client, openapi-spec-validator, pyrsistent, python-dateutil, python-jose, structlog, taskcluster
+    # via cryptography, ecdsa, flask-cors, flask-oidc, flask-talisman, jsonschema, mohawk, oauth2client, openapi-spec-validator, pyrsistent, python-dateutil, python-jose, taskcluster
 slugid==2.0.0 \
     --hash=sha256:a950d98b72691178bdd4d6c52743c4a2aa039207cf7a97d71060a111ff9ba297 \
     --hash=sha256:aec8b0e01c4ad32e38e12d609eab3ec912fd129aaf6b2ded0199b56a5f8fd67c \
@@ -418,9 +418,9 @@ sqlalchemy==1.3.19 \
     --hash=sha256:f2e8a9c0c8813a468aa659a01af6592f71cd30237ec27c4cc0683f089f90dcfc \
     --hash=sha256:fe7fe11019fc3e6600819775a7d55abc5446dda07e9795f5954fdbf8a49e1c37 \
     # via -r base.in, alembic, flask-sqlalchemy
-structlog==20.1.0 \
-    --hash=sha256:7a48375db6274ed1d0ae6123c486472aa1d0890b08d314d2b016f3aa7f35990b \
-    --hash=sha256:8a672be150547a93d90a7d74229a29e765be05bd156a35cdcc527ebf68e9af92 \
+structlog==20.2.0 \
+    --hash=sha256:33dd6bd5f49355e52c1c61bb6a4f20d0b48ce0328cc4a45fe872d38b97a05ccd \
+    --hash=sha256:af79dfa547d104af8d60f86eac12fb54825f54a46bc998e4504ef66177103174 \
     # via -r base.in
 swagger-ui-bundle==0.0.8 \
     --hash=sha256:f5255f786cde67a2638111f4a7d04355836743198a83c4ecbe815d9fc384b0c8 \
