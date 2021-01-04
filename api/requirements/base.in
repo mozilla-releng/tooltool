@@ -18,7 +18,7 @@ flask-talisman
 gunicorn
 itsdangerous==0.24
 kombu
-mohawk<0.4,>=0.3.4
+mohawk>=0.3.4,<1.2
 psycopg2
 python-dateutil<2.7.0,>=2.1
 python-jose

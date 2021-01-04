@@ -32,7 +32,7 @@ inotify  # needed by gunicorn for faster/better reload
 isort
 itsdangerous==0.24
 kombu
-mohawk<0.4,>=0.3.4
+mohawk>=0.3.4,<1.2
 pdbpp
 pip-compile-multi
 pytest
