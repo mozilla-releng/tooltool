@@ -16,7 +16,7 @@ cryptography
 flask-oidc
 flask-talisman
 gunicorn
-itsdangerous==0.24
+itsdangerous==1.1.0
 kombu
 mohawk<0.4,>=0.3.4
 psycopg2
