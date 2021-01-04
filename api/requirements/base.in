@@ -20,7 +20,7 @@ itsdangerous==0.24
 kombu
 mohawk<0.4,>=0.3.4
 psycopg2
-python-dateutil<2.7.0,>=2.1
+python-dateutil>=2.1,<2.9.0
 python-jose
 pytz
 raven
