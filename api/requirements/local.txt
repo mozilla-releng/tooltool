@@ -258,9 +258,9 @@ flask-caching==1.9.0 \
     --hash=sha256:a0356ad868b1d8ec2d0e675a6fe891c41303128f8904d5d79e180d8b3f952aff \
     --hash=sha256:e6ef2e2af84e13c4fd32c1839c1943a42f11b6b0fbcfdd6bf46547ea5482dbfe \
     # via -r test.in
-flask-cors==3.0.9 \
-    --hash=sha256:6bcfc100288c5d1bcb1dbb854babd59beee622ffd321e444b05f24d6d58466b8 \
-    --hash=sha256:cee4480aaee421ed029eaa788f4049e3e26d15b5affb6a880dade6bafad38324 \
+flask-cors==3.0.10 \
+    --hash=sha256:74efc975af1194fc7891ff5cd85b0f7478be4f7f59fe158102e91abb72bb4438 \
+    --hash=sha256:b60839393f3b84a0f3746f6cdca56c1ad7426aa738b70d6c61375857823181de \
     # via -r base.in, -r test.in
 flask-login==0.5.0 \
     --hash=sha256:6d33aef15b5bcead780acc339464aae8a6e28f13c90d8b1cf9de8b549d1c0b4b \
