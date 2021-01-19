@@ -78,9 +78,9 @@ boto==2.49.0 \
     --hash=sha256:147758d41ae7240dc989f0039f27da8ca0d53734be0eb869ef16e3adcfa462e8 \
     --hash=sha256:ea0d3b40a2d852767be77ca343b58a9e3a4b00d9db440efb8da74b4e58025e5a \
     # via -r base.in, -r test.in
-botocore==1.19.47 \
-    --hash=sha256:15584a86d6cb1f94ea785e8d3c98faeff8ddd0105356e1c106118d9ac12fa891 \
-    --hash=sha256:4989ff6ca4104f641d966f6bb2f3c4207f1a7a8d879b2e21224c7713dd9dc9b8 \
+botocore==1.19.56 \
+    --hash=sha256:01496e4c2c06aab79689f2c345a0e2cceb5fe1da7858a7e7df189bcf97703223 \
+    --hash=sha256:a37d073c2f166753cc3799e77d87d4096e24433fcca5e7c8cc8e77e5dbfe60e9 \
     # via -r base.in
 build==0.1.0 \
     --hash=sha256:08b2b58098ff617d1154056c79f8a70beed18f7cfa710bca23a072196910d5b4 \
