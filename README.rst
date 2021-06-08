@@ -45,7 +45,7 @@ Use the `tooltool.py` client to build a manifest containing the files you would 
 
     python tooltool.py add --visibility public gcc.tar.gz
 
-Next, you will need credentials for the upload. Tooltool uses Taskcluster for authentication. To retrieve taskcluster credentials, run::
+Next, you will need credentials for the upload. Tooltool uses `Taskcluster`_ for authentication. To retrieve taskcluster credentials, run::
 
     export TASKCLUSTER_ROOT_URL=https://firefox-ci-tc.services.mozilla.com/
     taskcluster signin
@@ -61,6 +61,7 @@ Now, you're ready to upload with a command like::
 
    python tooltool.py upload --authentication-file=~/.tooltool-token --message "Bug 1234567: add new frobnicator binaries"
 
+.. _`Taskcluster`: https://github.com/taskcluster/taskcluster/tree/main/clients/client-shell
 
 Local Development
 ^^^^^^^^^^^^^^^^^
