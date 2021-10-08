@@ -1,4 +1,6 @@
-Flask
+# Need Flask<2 due to a dependency conflict with connexion==2.9.0. We can
+# likely drop this when a newer version of 'connexion' is available.
+Flask<2
 Flask-Cors
 Flask-Login
 Flask-Migrate
@@ -16,7 +18,6 @@ cryptography
 flask-oidc
 flask-talisman
 gunicorn
-itsdangerous==0.24
 kombu
 mohawk<0.4,>=0.3.4
 psycopg2

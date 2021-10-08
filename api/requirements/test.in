@@ -1,23 +1,11 @@
 -r base.in
 
-Click
-Flask
 Flask-Caching
-Flask-Cors
-Flask-Login
-Flask-Migrate
-Flask-SQLAlchemy
 Jinja2
-Logbook
-SQLAlchemy
-Werkzeug
-aioamqp
 black
-boto
 check-manifest
 codecov
-connexion[swagger-ui]
-coverage==4.5.4
+coverage
 coveralls
 flake8
 flake8-coding
@@ -26,22 +14,11 @@ flake8-debugger
 flake8-isort
 flake8-mypy
 flake8-quotes
-flask-oidc
-flask-talisman
 inotify  # needed by gunicorn for faster/better reload
 isort
-itsdangerous==0.24
-kombu
-mohawk<0.4,>=0.3.4
 pdbpp
 pip-compile-multi
 pytest
 pytest-cov
-python-dateutil<2.7.0,>=2.1
 python-hglib
-python-jose
-raven
-requests
 responses
-structlog
-taskcluster
