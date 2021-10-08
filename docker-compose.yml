@@ -17,7 +17,7 @@ services:
       - APP_URL=https://localhost:8010
       - APP_SETTINGS=/app/settings.py
       - ENV=localdev
-      - DATABASE_URL=postgres://tooltooluser:tooltoolpassword@db/tooltooldb
+      - DATABASE_URL=postgresql://tooltooluser:tooltoolpassword@db/tooltooldb
       # "notasecret"
       - SECRET_KEY=bm90YXNlY3JldA==
       # Used by the taskcluster library, not by us directly

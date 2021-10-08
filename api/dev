@@ -10,7 +10,7 @@ export FLASK_APP=${FLASK_APP:="tooltool_api.flask:app"}
 export APP_SETTINGS=${APP_SETTINGS:=`realpath ./settings.py`}
 export HOST=${HOST:="127.0.0.1"}
 export PORT=${PORT:="8010"}
-export DATABASE_URL=${DATABASE_URL:="postgres://tooltooluser:tooltoolpassword@localhost:8102/tooltooldb"}
+export DATABASE_URL=${DATABASE_URL:="postgresql://tooltooluser:tooltoolpassword@localhost:8102/tooltooldb"}
 #export TASKCLUSTER_ROOT_URL=${TASKCLUSTER_ROOT_URL:="https://stage.taskcluster.nonprod.cloudops.mozgcp.net"}
 export TASKCLUSTER_ROOT_URL=${TASKCLUSTER_ROOT_URL:="https://firefox-ci-tc.services.mozilla.com"}
 
