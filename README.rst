@@ -96,7 +96,7 @@ usually takes around 5min for deployment to be done. For more how things are
 configures you can check `cloudops infrastructure`_.:
 
 You can check that the service was deployed correctly by visiting the
-``/__version__`` endpoint which should include
+``/__version__`` endpoint which should include the revision it was built from.
 
 .. _`GCP`: https://cloud.google.com
 .. _`mozilla/releng-tooltool`: https://hub.docker.com/r/mozilla/releng-tooltool
