@@ -100,7 +100,7 @@ tasks:
             'run_tests == "1"':
               taskId: '${as_slugid(project_name + python_version)}'
               provisionerId: 'releng-t'
-              workerType: 'linux'
+              workerType: 'linux-gcp'
               created: { $fromNow: '' }
               deadline: { $fromNow: '4 hours' }
               payload:
@@ -158,7 +158,7 @@ tasks:
               dependencies:
                 - '${as_slugid(project_name + python_version)}'
               provisionerId: 'releng-${worker_level}'
-              workerType: 'linux'
+              workerType: 'linux-gcp'
               created: { $fromNow: '' }
               deadline: { $fromNow: '24 hours' }
               payload:
