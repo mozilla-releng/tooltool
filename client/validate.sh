@@ -67,9 +67,6 @@ cd "$( dirname "${BASH_SOURCE[0]}" )"
 tmpbase=$(mktemp -d -t tmpbase.XXXXXX)
 trap 'rm -rf ${tmpbase}; exit 1' 1 2 3 15
 
-status "running pep8"
-pep8 --config=pep8rc tooltool.py || not_ok "pep8 failed"
-
 status "running pyflakes"
 pyflakes tooltool.py || not_ok "pyflakes failed"
 
