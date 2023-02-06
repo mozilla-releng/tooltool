@@ -34,6 +34,7 @@ import os
 import pprint
 import re
 import shutil
+import stat
 import sys
 import tarfile
 import tempfile
@@ -46,7 +47,7 @@ from io import BytesIO, open
 from random import random
 from subprocess import PIPE, Popen
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 
 # Allowed request header characters:
 # !#$%&'()*+,-./:;<=>?@[]^_`{|}~ and space, a-z, A-Z, 0-9, \, "
@@ -955,6 +956,26 @@ def clean_path(dirname):
 CHECKSUM_SUFFIX = ".checksum"
 
 
+def validate_tar_member(member, path):
+    def _is_within_directory(directory, target):
+        abs_directory = os.path.abspath(directory)
+        abs_target = os.path.abspath(target)
+        prefix = os.path.commonprefix([abs_directory, abs_target])
+        return prefix == abs_directory
+
+    member_path = os.path.join(path, member.name)
+    if not _is_within_directory(path, member_path):
+        raise Exception("Attempted path traversal in tar file: " + member.name)
+    if member.mode & (stat.S_ISUID | stat.S_ISGID):
+        raise Exception("Attempted setuid or setgid in tar file: " + member.name)
+
+
+def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+    for member in tar.getmembers():
+        validate_tar_member(member, path)
+    tar.extractall(path, members, numeric_owner=numeric_owner)
+
+
 def unpack_file(filename):
     """Untar `filename`, assuming it is uncompressed or compressed with bzip2,
     xz, gzip, zst, or unzip a zip file. The file is assumed to contain a single
@@ -965,9 +986,8 @@ def unpack_file(filename):
         base_file, tar_ext = os.path.splitext(tar_file)
         clean_path(base_file)
         log.info('untarring "%s"' % filename)
-        tar = tarfile.open(filename)
-        tar.extractall()
-        tar.close()
+        with tarfile.open(filename) as tar:
+            safe_extract(tar)
     elif os.path.isfile(filename) and filename.endswith(".tar.xz"):
         base_file = filename.replace(".tar.xz", "")
         clean_path(base_file)
@@ -980,9 +1000,8 @@ def unpack_file(filename):
         fileobj = BytesIO()
         fileobj.write(stdout)
         fileobj.seek(0)
-        tar = tarfile.open(fileobj=fileobj, mode="r|")
-        tar.extractall()
-        tar.close()
+        with tarfile.open(fileobj=fileobj, mode="r|") as tar:
+            safe_extract(tar)
     elif os.path.isfile(filename) and filename.endswith(".tar.zst"):
         import zstandard
 
@@ -991,9 +1010,8 @@ def unpack_file(filename):
         log.info('untarring "%s"' % filename)
         dctx = zstandard.ZstdDecompressor()
         with dctx.stream_reader(open(filename, "rb")) as fileobj:
-            tar = tarfile.open(fileobj=fileobj, mode="r|")
-            tar.extractall()
-            tar.close()
+            with tarfile.open(fileobj=fileobj, mode="r|") as tar:
+                safe_extract(tar)
     elif os.path.isfile(filename) and zipfile.is_zipfile(filename):
         base_file = filename.replace(".zip", "")
         clean_path(base_file)
