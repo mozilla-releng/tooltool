@@ -1290,6 +1290,12 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         open('basename.tar.shrink', **open_attrs).write('not a tarfile')
         self.assertFalse(tooltool.unpack_file('basename.tar.shrink'))
 
+    def test_unpack_escape_tarfile(self):
+        self.assertRaises(Exception, lambda: tooltool.unpack_file(os.path.join(CWD_PATH, 'archive-escape.tar')))
+
+    def test_unpack_setuid_tarfile(self):
+        self.assertRaises(Exception, lambda: tooltool.unpack_file(os.path.join(CWD_PATH, 'archive-setuid.tar')))
+
 
 class FetchFileTests(BaseFileRecordTest, TestDirMixin):
 
