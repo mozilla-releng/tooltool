@@ -968,6 +968,10 @@ def validate_tar_member(member, path):
         raise Exception("Attempted path traversal in tar file: " + member.name)
     if member.mode & (stat.S_ISUID | stat.S_ISGID):
         raise Exception("Attempted setuid or setgid in tar file: " + member.name)
+    if member.issym():
+        link_path = os.path.join(path, member.linkname)
+        if not _is_within_directory(path, link_path):
+            raise Exception("Attempted link path traversal in tar file: " + member.name)
 
 
 def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
