@@ -1299,6 +1299,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
     def test_unpack_link_tarfile(self):
         self.assertRaises(Exception, lambda: tooltool.unpack_file(os.path.join(CWD_PATH, 'archive-link.tar')))
         self.assertRaises(Exception, lambda: tooltool.unpack_file(os.path.join(CWD_PATH, 'archive-link-abs.tar')))
+        self.assertRaises(Exception, lambda: tooltool.unpack_file(os.path.join(CWD_PATH, 'archive-double-link.tar')))
 
 
 class FetchFileTests(BaseFileRecordTest, TestDirMixin):
