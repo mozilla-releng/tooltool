@@ -18,7 +18,7 @@ tasks:
         # [ <PROJECT NAME>,   <PYTHON VERSION>, <SETUP COMMAND>,     <DOCKERHUB REPO>]
         - ['tooltool_client', '27',             '${client_setup_2}', '']
         - ['tooltool_client', '37',             '${client_setup_3}', '']
-        - ['tooltool_api',    '37',             '${api_setup}',      'mozilla/releng-tooltool']
+        - ['tooltool_api',    '38',             '${api_setup}',      'mozilla/releng-tooltool']
     # -------------------------------------------------------------------------
 
     HEAD_REV:
@@ -135,7 +135,7 @@ tasks:
                       tar zxf ${HEAD_REV}.tar.gz &&
                       mv tooltool-${HEAD_REV}/* /src/ &&
                       cd /src &&
-                      pip install --user tox &&
+                      pip install --user tox --no-warn-script-location &&
                       /src/.local/bin/tox -e ${project_name}-py${python_version}
                       "
               scopes:
