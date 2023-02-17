@@ -11,13 +11,11 @@ tasks:
     # -------------------------------------------------------------------------
     PROJECTS:
       $let:
-        client_setup_2: 'apt-get update && apt-get install -y zip xz-utils build-essential libssl-dev libffi-dev python-dev &&'
         client_setup_3: 'apt-get update && apt-get install -y zip xz-utils build-essential libssl-dev libffi-dev python3-dev &&'
         api_setup: 'apt-get update && apt-get install -y postgresql &&'
       in:
         # [ <PROJECT NAME>,   <PYTHON VERSION>, <SETUP COMMAND>,     <DOCKERHUB REPO>]
-        - ['tooltool_client', '27',             '${client_setup_2}', '']
-        - ['tooltool_client', '37',             '${client_setup_3}', '']
+        - ['tooltool_client', '38',             '${client_setup_3}', '']
         - ['tooltool_api',    '37',             '${api_setup}',      'mozilla/releng-tooltool']
     # -------------------------------------------------------------------------
 
@@ -135,7 +133,7 @@ tasks:
                       tar zxf ${HEAD_REV}.tar.gz &&
                       mv tooltool-${HEAD_REV}/* /src/ &&
                       cd /src &&
-                      pip install --user tox &&
+                      pip install --user tox --no-warn-script-location &&
                       /src/.local/bin/tox -e ${project_name}-py${python_version}
                       "
               scopes:
