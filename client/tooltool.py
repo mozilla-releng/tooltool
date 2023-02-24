@@ -974,7 +974,7 @@ def validate_tar_member(member, path):
         raise Exception("Attempted setuid or setgid in tar file: " + member.name)
 
 
-def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+def safe_extract(tar, path=".", *, numeric_owner=False):
     def _files(tar, path):
         for member in tar:
             validate_tar_member(member, path)
