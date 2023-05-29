@@ -18,7 +18,7 @@ class File(tooltool_api.lib.db.db.Model):
     __tablename__ = "releng_tooltool_files"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    size = sa.Column(sa.Integer, nullable=False)
+    size = sa.Column(sa.BigInteger, nullable=False)
     sha512 = sa.Column(sa.String(128), unique=True, nullable=False)
     visibility = sa.Column(sa.Enum("public", "internal", name="visibility"), nullable=False)
 
