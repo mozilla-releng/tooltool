@@ -1,6 +1,4 @@
-# Need Flask<2 due to a dependency conflict with connexion==2.9.0. We can
-# likely drop this when a newer version of 'connexion' is available.
-Flask<2
+Flask<2.3
 Flask-Cors
 Flask-Login
 Flask-Migrate
@@ -21,10 +19,12 @@ gunicorn
 kombu
 mohawk<0.4,>=0.3.4
 psycopg2
-python-dateutil<2.7.0,>=2.1
+python-dateutil>=2.1
 python-jose
 pytz
 raven
 requests
 structlog
 taskcluster
+# itsdangerous 2.1 is incompatible with flask-oidc 1.4.0
+itsdangerous<2.1
