@@ -1537,7 +1537,7 @@ def process_command(options, args):
         )
     elif cmd == "delete":
         if not options.get("digest"):
-            log.critical("change-visibility command requires a digest option")
+            log.critical("delete command requires a digest option")
             return False
         return delete_instances(
             options.get("base_url"),
@@ -1551,7 +1551,18 @@ def process_command(options, args):
 
 def main(argv, _skip_logging=False):
     # Set up option parsing
-    parser = optparse.OptionParser()
+    usage = """usage: %prog [options] command [FILES]
+
+Supported commands are:
+    - list: list files in the manifest
+    - validate: validate the manifest
+    - add: add records for FILES to the manifest
+    - purge: cleans up the cache folder
+    - fetch: retrieve files listed in the manifest (or FILES if specified)
+    - upload: upload files listed in the manifest; message is required
+    - change-visibility: sets the visibility of the file identified by the given digest
+    - delete: deletes the file identified by the given digest"""
+    parser = optparse.OptionParser(usage=usage)
     parser.add_option(
         "-q",
         "--quiet",
