@@ -563,7 +563,7 @@ class FileRecordJSONEncoder(json.JSONEncoder):
                 "FileRecordJSONEncoder is only for FileRecord and lists of FileRecords, "
                 "not %s" % obj.__class__.__name__
             )
-            log.warn(err)
+            log.warning(err)
             raise FileRecordJSONEncoderException(err)
         else:
             rv = {
@@ -878,7 +878,7 @@ def touch(f):
     try:
         os.utime(f, None)
     except OSError:
-        log.warn("impossible to update utime of file %s" % f)
+        log.warning("impossible to update utime of file %s" % f)
 
 
 @contextmanager
@@ -1105,7 +1105,7 @@ def fetch_files(
                 else:
                     # the file copied from the cache is invalid, better to
                     # clean up the cache version itself as well
-                    log.warn(
+                    log.warning(
                         "File %s retrieved from cache is invalid! I am deleting it from the "
                         "cache as well" % f.filename
                     )
