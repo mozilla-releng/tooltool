@@ -20,7 +20,6 @@ import unittest
 
 from io import StringIO, BytesIO
 from io import open
-from nose.tools import eq_
 
 PY3 = sys.version_info[0] == 3
 CWD_PATH = os.getcwd()
@@ -310,7 +309,7 @@ class TestFileRecordJSONCodecs(BaseFileRecordListTest):
 
     def test_decode_dict_not_filerecord(self):
         decoder = tooltool.FileRecordJSONDecoder()
-        eq_(decoder.decode('{"filename": "foo.txt"}'), {'filename': 'foo.txt'})
+        self.assertEqual(decoder.decode('{"filename": "foo.txt"}'), {'filename': 'foo.txt'})
 
     def test_json_dumps(self):
         json_string = json.dumps(
@@ -341,7 +340,7 @@ class TestFileRecordJSONCodecs(BaseFileRecordListTest):
         json_string = json.dumps(
             self.record_list, cls=tooltool.FileRecordJSONEncoder)
         new_list = json.loads(json_string, cls=tooltool.FileRecordJSONDecoder)
-        self.assertEquals(len(new_list), len(self.record_list))
+        self.assertEqual(len(new_list), len(self.record_list))
         for record in range(0, len(self.record_list)):
             self.assertEqual(new_list[record], self.record_list[record])
 
@@ -420,7 +419,7 @@ class TestManifest(BaseFileRecordTest):
         self.assertNotEqual(one, two)
         # on Python2.6, __ne__ isn't called automatically,
         # so just verify manually
-        self.failUnless(one.__ne__(two))
+        self.assertTrue(one.__ne__(two))
 
     def test_inequality_different_records(self):
         one = tooltool.Manifest([self.test_record])
@@ -461,7 +460,7 @@ class TestManifestOperations(BaseManifestTest):
 
     def test_open_manifest(self):
         manifest = tooltool.open_manifest(self.sample_manifest_file)
-        eq_(manifest.file_records[0].filename, 'test_file.ogg')
+        self.assertEqual(manifest.file_records[0].filename, 'test_file.ogg')
 
     def test_open_manifest_missing(self):
         self.assertRaises(tooltool.InvalidManifest, lambda:
@@ -481,99 +480,99 @@ def call_main(*args):
 
 
 def test_main_help():
-    eq_(call_main('tooltool', '--help'), "exit 0")
+    assert call_main('tooltool', '--help') == "exit 0"
 
 
 def test_main_no_command():
-    eq_(call_main('tooltool'), "exit 2")
+    assert call_main('tooltool') == "exit 2"
 
 
 def test_main_bad_command():
-    eq_(call_main('tooltool', 'foo'), 1)
+    assert call_main('tooltool', 'foo') == 1
 
 
 def test_main_bad_algorithm():
-    eq_(call_main('tooltool', '--algorithm', 'sha13', 'fetch'), 'exit 2')
+    assert call_main('tooltool', '--algorithm', 'sha13', 'fetch') == 'exit 2'
 
 
 def test_command_list():
     with mock.patch('tooltool.list_manifest') as list_manifest:
-        eq_(call_main('tooltool', 'list', '--manifest', 'foo.tt'), 0)
+        assert call_main('tooltool', 'list', '--manifest', 'foo.tt') == 0
         list_manifest.assert_called_with('foo.tt')
 
 
 def test_command_validate():
     with mock.patch('tooltool.validate_manifest') as validate_manifest:
-        eq_(call_main('tooltool', 'validate'), 0)
+        assert call_main('tooltool', 'validate') == 0
         validate_manifest.assert_called_with('manifest.tt')
 
 
 def test_command_add():
     with mock.patch('tooltool.add_files') as add_files:
-        eq_(call_main('tooltool', 'add', 'a', 'b'), 0)
+        assert call_main('tooltool', 'add', 'a', 'b') == 0
         add_files.assert_called_with('manifest.tt', 'sha512', ['a', 'b'],
             None, None, False)
 
 def test_command_add_unpack():
     with mock.patch('tooltool.add_files') as add_files:
-        eq_(call_main('tooltool', 'add', '--unpack', 'a', 'b'), 0)
+        assert call_main('tooltool', 'add', '--unpack', 'a', 'b') == 0
         add_files.assert_called_with('manifest.tt', 'sha512', ['a', 'b'],
             None, None, True)
 
 def test_command_add_version():
     with mock.patch('tooltool.add_files') as add_files:
         version = 'foo 1.7.12-beta.2+test'
-        eq_(call_main('tooltool', 'add', '--version', version, 'foo.tar.gz'), 0)
+        assert call_main('tooltool', 'add', '--version', version, 'foo.tar.gz') == 0
         add_files.assert_called_with('manifest.tt', 'sha512', ['foo.tar.gz'],
                 version, None, False)
 
 def test_command_add_visibility_internal():
     with mock.patch('tooltool.add_files') as add_files:
-        eq_(call_main('tooltool', 'add', '--visibility', 'internal', 'a', 'b'), 0)
+        assert call_main('tooltool', 'add', '--visibility', 'internal', 'a', 'b') == 0
         add_files.assert_called_with('manifest.tt', 'sha512', ['a', 'b'],
             None, 'internal', False)
 
 def test_command_add_visibility_internal_unpack():
     with mock.patch('tooltool.add_files') as add_files:
-        eq_(call_main('tooltool', 'add', '--visibility', 'internal',
-          '--unpack', 'a', 'b'), 0)
+        assert call_main('tooltool', 'add', '--visibility', 'internal',
+          '--unpack', 'a', 'b') == 0
         add_files.assert_called_with('manifest.tt', 'sha512', ['a', 'b'],
             None, 'internal', True)
 
 def test_command_add_visibility_public():
     with mock.patch('tooltool.add_files') as add_files:
-        eq_(call_main('tooltool', 'add', '--visibility', 'public', 'a', 'b'), 0)
+        assert call_main('tooltool', 'add', '--visibility', 'public', 'a', 'b') == 0
         add_files.assert_called_with('manifest.tt', 'sha512', ['a', 'b'],
             None, 'public', False)
 
 def test_command_add_visibility_public_unpack():
     with mock.patch('tooltool.add_files') as add_files:
-        eq_(call_main('tooltool', 'add', '--visibility', 'public',
-          '--unpack','a', 'b'), 0)
+        assert call_main('tooltool', 'add', '--visibility', 'public',
+          '--unpack','a', 'b') == 0
         add_files.assert_called_with('manifest.tt', 'sha512', ['a', 'b'],
             None, 'public', True)
 
 def test_command_purge_no_folder():
     with mock.patch('tooltool.purge') as purge:
-        eq_(call_main('tooltool', 'purge'), 1)
+        assert call_main('tooltool', 'purge') == 1
         assert not purge.called
 
 
 def test_command_purge():
     with mock.patch('tooltool.purge') as purge:
-        eq_(call_main('tooltool', 'purge', '--cache', 'foo'), 1)
+        assert call_main('tooltool', 'purge', '--cache', 'foo') == 1
         purge.assert_called_with(folder='foo', gigs=0)
 
 
 def test_command_purge_size():
     with mock.patch('tooltool.purge') as purge:
-        eq_(call_main('tooltool', 'purge', '--size', '10', '--cache', 'foo'), 1)
+        assert call_main('tooltool', 'purge', '--size', '10', '--cache', 'foo') == 1
         purge.assert_called_with(folder='foo', gigs=10)
 
 
 def test_command_fetch_no_url():
     with mock.patch('tooltool.fetch_files') as fetch_files:
-        eq_(call_main('tooltool', 'fetch'), 0)
+        assert call_main('tooltool', 'fetch') == 0
         fetch_files.assert_called_with('manifest.tt',
                                        ['https://tooltool.mozilla-releng.net/'],
                                        [], cache_folder=None, auth_file=None,
@@ -582,7 +581,7 @@ def test_command_fetch_no_url():
 
 def test_command_fetch():
     with mock.patch('tooltool.fetch_files') as fetch_files:
-        eq_(call_main('tooltool', 'fetch', 'a', 'b', '--url', 'http://foo/bar/'), 0)
+        assert call_main('tooltool', 'fetch', 'a', 'b', '--url', 'http://foo/bar/') == 0
         fetch_files.assert_called_with('manifest.tt', ['http://foo/bar/'], ['a', 'b'],
                                        cache_folder=None, auth_file=None,
                                        region=None)
@@ -590,7 +589,7 @@ def test_command_fetch():
 
 def test_command_fetch_no_trailing_slash():
     with mock.patch('tooltool.fetch_files') as fetch_files:
-        eq_(call_main('tooltool', 'fetch', 'a', 'b', '--url', 'http://foo/bar'), 0)
+        assert call_main('tooltool', 'fetch', 'a', 'b', '--url', 'http://foo/bar') == 0
         fetch_files.assert_called_with('manifest.tt', ['http://foo/bar/'], ['a', 'b'],
                                        cache_folder=None, auth_file=None,
                                        region=None)
@@ -598,8 +597,8 @@ def test_command_fetch_no_trailing_slash():
 
 def test_command_fetch_region():
     with mock.patch('tooltool.fetch_files') as fetch_files:
-        eq_(call_main('tooltool', 'fetch', 'a', 'b', '--url', 'http://foo/bar/',
-                      '--region', 'us-east-1'), 0)
+        assert call_main('tooltool', 'fetch', 'a', 'b', '--url', 'http://foo/bar/',
+                      '--region', 'us-east-1') == 0
         fetch_files.assert_called_with('manifest.tt', ['http://foo/bar/'], ['a', 'b'],
                                        cache_folder=None, auth_file=None,
                                        region='us-east-1')
@@ -613,8 +612,8 @@ def test_command_fetch_auth_file():
     try:
         with mock.patch('tooltool.fetch_files') as fetch_files:
             os.path.expanduser.side_effect = lambda path: path.replace("~", "HOME")
-            eq_(call_main('tooltool', 'fetch', 'a', 'b', '--url', 'http://foo/bar/',
-                          '--authentication-file', '~/.tooltool-token'), 0)
+            assert call_main('tooltool', 'fetch', 'a', 'b', '--url', 'http://foo/bar/',
+                          '--authentication-file', '~/.tooltool-token') == 0
             fetch_files.assert_called_with('manifest.tt', ['http://foo/bar/'],
                                            ['a', 'b'], cache_folder=None,
                                            auth_file="HOME/.tooltool-token",
@@ -625,27 +624,27 @@ def test_command_fetch_auth_file():
 
 def test_command_upload():
     with mock.patch('tooltool.upload') as upload:
-        eq_(call_main('tooltool', 'upload', '--url', 'http://foo/',
-                      '--message', 'msg'), 0)
+        assert call_main('tooltool', 'upload', '--url', 'http://foo/',
+                      '--message', 'msg') == 0
         upload.assert_called_with('manifest.tt', 'msg', ['http://foo/'], None, None)
 
 
 def test_command_upload_region():
     with mock.patch('tooltool.upload') as upload:
-        eq_(call_main('tooltool', 'upload', '--url', 'http://foo/',
-                      '--message', 'msg', '--region=us-west-3'), 0)
+        assert call_main('tooltool', 'upload', '--url', 'http://foo/',
+                      '--message', 'msg', '--region=us-west-3') == 0
         upload.assert_called_with('manifest.tt', 'msg', ['http://foo/'], None, 'us-west-3')
 
 
 def test_command_upload_no_message():
     with mock.patch('tooltool.upload') as upload:
-        eq_(call_main('tooltool', 'upload', '--url', 'http://foo/'), 1)
+        assert call_main('tooltool', 'upload', '--url', 'http://foo/') == 1
         assert not upload.called
 
 
 def test_command_upload_no_url():
     with mock.patch('tooltool.upload') as upload:
-        eq_(call_main('tooltool', 'upload', '--message', 'msg'), 0)
+        assert call_main('tooltool', 'upload', '--message', 'msg') == 0
         upload.assert_called_with('manifest.tt', 'msg',
                                   ['https://tooltool.mozilla-releng.net/'],
                                   None, None)
@@ -679,13 +678,13 @@ class UploadTests(TestDirMixin, unittest.TestCase):
             cfg = self.test_case.server_config
             if '?region=' in self.path:
                 self.path, self.test_case.server_got_region = self.path.split('?')
-            eq_(self.path, '/tooltool/upload')
-            eq_(self.headers['content-type'], 'application/json')
+            assert self.path == '/tooltool/upload'
+            assert self.headers['content-type'] == 'application/json'
             if not self.verify_auth():
                 return
             body = json.loads(self.rfile.read(int(self.headers['content-length'])))
             self.test_case.server_requests.setdefault('POST', []).append(copy.deepcopy(body))
-            eq_(body['message'], 'hi mom')
+            assert body['message'] == 'hi mom'
 
             files_on_server = cfg.get('files_on_server', [])
             for filename, file in body['files'].items():
@@ -708,7 +707,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         def do_PUT(self):  # S3 upload
             cfg = self.test_case.server_config
             assert self.path.startswith('/sha512/'), self.path
-            eq_(self.headers['content-type'], 'application/octet-stream')
+            assert self.headers['content-type'] == 'application/octet-stream'
             content_length = int(self.headers.get('content-length', -1))
             data = self.rfile.read(content_length)
             digest = get_hexdigest(to_binary(data))
@@ -794,7 +793,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         bar_digest = self.add_file("bar.txt", on_server=False)
         assert tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], None, None)
         self.server_requests['POST'].sort()
-        eq_(self.server_requests, {
+        assert self.server_requests == {
             'POST': [{
                 'files': {
                     'foo.txt': {
@@ -814,7 +813,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
             }],
             'PUT': [bar_digest],
             'GET': [bar_digest],
-        })
+        }
 
     def test_upload_success_auth(self):
         """An upload with authentication information succeeds when the server expects
@@ -824,7 +823,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         self.server_config['exp_auth_token'] = token = 'abcABC'
         open("auth", **open_attrs).write(token)
         assert tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], 'auth', None)
-        eq_(self.server_requests, {
+        assert self.server_requests == {
             'POST': [{
                 'files': {
                     'foo.txt': {
@@ -836,7 +835,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
                 },
                 'message': 'hi mom',
             }],
-        })
+        }
 
     def test_upload_success_region(self):
         """An upload with a region specified results in a POST with that region in
@@ -844,7 +843,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         self.start_server()
         self.add_file("foo.txt", on_server=True)
         assert tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], None, 'us-west-1')
-        eq_(self.server_got_region, 'region=us-west-1')
+        assert self.server_got_region == 'region=us-west-1'
 
     def test_upload_failure_auth(self):
         """An upload with incorrect authentication information fails"""
@@ -860,7 +859,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         self.start_server()
         foo_digest = self.add_file("foo.txt", upload_fails=True)
         assert not tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], None, None)
-        eq_(self.server_requests, {
+        assert self.server_requests == {
             'POST': [{
                 'files': {
                     'foo.txt': {
@@ -873,7 +872,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
                 'message': 'hi mom',
             }],
             'PUT': [foo_digest],
-        })
+        }
 
     def test_upload_send_batch_fails(self):
         """When the upload request to RelengAPI fails, upload fails."""
@@ -881,7 +880,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         self.server_config['post_fails'] = True
         foo_digest = self.add_file("foo.txt", upload_fails=True)
         assert not tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], None, None)
-        eq_(self.server_requests, {
+        assert self.server_requests == {
             'POST': [{
                 'files': {
                     'foo.txt': {
@@ -893,7 +892,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
                 },
                 'message': 'hi mom',
             }],
-        })
+        }
 
     def test_no_manifest(self):
         """When given a manifest that doesn't exist, upload fails."""
@@ -913,28 +912,28 @@ class UploadTests(TestDirMixin, unittest.TestCase):
     def test_send_batch_success(self):
         self.start_server()
         batch = {'message': 'hi mom', 'files': {}}
-        eq_(tooltool._send_batch(self.mkurl(''), None, batch, None), batch)
-        eq_(self.server_requests, {'POST': [batch]})
+        assert tooltool._send_batch(self.mkurl(''), None, batch, None) == batch
+        assert self.server_requests == {'POST': [batch]}
 
     def test_send_batch_region(self):
         self.start_server()
         batch = {'message': 'hi mom', 'files': {}}
-        eq_(tooltool._send_batch(self.mkurl(''), None, batch, 'us-south-1'), batch)
-        eq_(self.server_requests, {'POST': [batch]})
-        eq_(self.server_got_region, 'region=us-south-1')
+        assert tooltool._send_batch(self.mkurl(''), None, batch, 'us-south-1') == batch
+        assert self.server_requests == {'POST': [batch]}
+        assert self.server_got_region == 'region=us-south-1'
 
     def test_send_batch_failure(self):
         self.start_server()
         self.server_config['post_fails'] = True
         batch = {'message': 'hi mom', 'files': {}}
-        eq_(tooltool._send_batch(self.mkurl(''), None, batch, None), None)
-        eq_(self.server_requests, {'POST': [batch]})
+        assert tooltool._send_batch(self.mkurl(''), None, batch, None) == None
+        assert self.server_requests == {'POST': [batch]}
 
     def test_s3_upload(self):
         self.start_server()
         file = {'put_url': self.s3url('/sha512/' + self.digest)}
         tooltool._s3_upload('testfile.txt', file)
-        eq_(self.server_requests, {'PUT': [self.digest]})
+        assert self.server_requests == {'PUT': [self.digest]}
         assert file['upload_ok']
 
     def test_s3_upload_fails(self):
@@ -942,7 +941,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         self.server_config['upload_failures'] = [self.digest]
         file = {'put_url': self.s3url('/sha512/' + self.digest)}
         tooltool._s3_upload('testfile.txt', file)
-        eq_(self.server_requests, {'PUT': [self.digest]})
+        assert self.server_requests == {'PUT': [self.digest]}
         assert not file['upload_ok'], file
         assert 'upload_exception' in file, file
 
@@ -950,7 +949,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         self.start_server()
         file = {'algorithm': 'sha512', 'digest': self.digest}
         tooltool._notify_upload_complete(self.mkurl(''), None, file)
-        eq_(self.server_requests, {'GET': [self.digest]})
+        assert self.server_requests == {'GET': [self.digest]}
 
     def test_notify_upload_wait(self):
         self.start_server()
@@ -959,7 +958,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         with mock.patch('time.sleep') as fake_sleep:
             tooltool._notify_upload_complete(self.mkurl(''), None, file)
         fake_sleep.assert_called_with(10)
-        eq_(self.server_requests, {'GET': [self.digest, self.digest]})  # two reqs
+        assert self.server_requests == {'GET': [self.digest, self.digest]}  # two reqs
 
     def test_notify_upload_fails(self):
         self.start_server()
@@ -967,8 +966,8 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         file = {'algorithm': 'sha512', 'digest': self.digest}
         with BufferHandler.capture('tooltool') as logged:
             tooltool._notify_upload_complete(self.mkurl(''), None, file)
-        eq_(self.server_requests, {'GET': [self.digest]})
-        eq_(logged, [(logging.ERROR, 'Error making RelengAPI request:')])
+        assert self.server_requests == {'GET': [self.digest]}
+        assert logged == [(logging.ERROR, 'Error making RelengAPI request:')]
 
     def test_notify_upload_exception(self):
         self.start_server()
@@ -978,15 +977,15 @@ class UploadTests(TestDirMixin, unittest.TestCase):
             with mock.patch(urlopen_module_as_str) as urlopen:
                 urlopen.side_effect = RuntimeError('oh noes')
                 tooltool._notify_upload_complete(self.mkurl(''), None, file)
-        eq_(self.server_requests, {})
-        eq_(logged[0],
-            (logging.ERROR, 'While notifying server of upload completion:'))
+        assert self.server_requests == {}
+        assert logged[0] == \
+            (logging.ERROR, 'While notifying server of upload completion:')
 
 
 def test_log_api_error_generic():
     with BufferHandler.capture('tooltool') as logged:
         tooltool._log_api_error(RuntimeError('uhoh'))
-    eq_(logged, [(logging.ERROR, 'Error making RelengAPI request:')])
+    assert logged == [(logging.ERROR, 'Error making RelengAPI request:')]
 
 
 def test_log_api_error_api_error():
@@ -1000,7 +999,7 @@ def test_log_api_error_api_error():
                         {'content-type': 'application/json'},
                         fp)
         tooltool._log_api_error(exc)
-    eq_(logged, [(logging.ERROR, 'Bad Request: Nice try')])
+    assert logged == [(logging.ERROR, 'Bad Request: Nice try')]
 
 
 class FetchTests(TestDirMixin, unittest.TestCase):
@@ -1019,7 +1018,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         self.tearDownTestDir()
 
     def fake_fetch_file(self, urls, file_record, auth_file=None, region=None):
-        eq_(urls, self.urls)
+        assert urls == self.urls
         if file_record.digest in self.server_files_by_hash:
             if self.server_corrupt:
                 content = 'XXX'
@@ -1058,25 +1057,25 @@ class FetchTests(TestDirMixin, unittest.TestCase):
             json.dump(manifest, f)
 
     def assert_files(self, *files):
-        eq_(sorted([f for f in os.listdir(self.test_dir)
-                    if f != 'cache' and not f.endswith('.tt')]),
-            sorted(['file-' + f for f in files]))
+        assert sorted([f for f in os.listdir(self.test_dir)
+                       if f != 'cache' and not f.endswith('.tt')]) == \
+            sorted(['file-' + f for f in files])
         for f in files:
-            eq_(open('file-' + f, encoding='utf-8').read(), f)
+            assert open('file-' + f, encoding='utf-8').read() == f
 
     def assert_cached_files(self, *files):
         if not files and not os.path.exists(self.cache_dir):
             return
         hashes = [get_hexdigest(to_binary(f)) for f in files]
-        eq_(sorted(os.listdir(self.cache_dir)), sorted(hashes))
+        assert sorted(os.listdir(self.cache_dir)) == sorted(hashes)
         for f, h in zip(files, hashes):
-            eq_(open(os.path.join(self.cache_dir, h), encoding='utf-8').read(), f)
+            assert open(os.path.join(self.cache_dir, h), encoding='utf-8').read() == f
 
     # tests
 
     def test_no_manifest(self):
         """If the given manifest isn't present, fetch_files fails"""
-        eq_(tooltool.fetch_files('not-present.tt', self.urls), False)
+        assert tooltool.fetch_files('not-present.tt', self.urls) == False
 
     def test_all_present(self):
         """When all expected files are present, fetch_files does not fetch anything"""
@@ -1085,8 +1084,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         self.make_manifest('manifest.tt', 'one', 'two')
         with mock.patch('tooltool.fetch_file') as fetch_file:
             fetch_file.side_effect = RuntimeError
-            eq_(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'),
-                True)
+            self.assertTrue(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'))
         self.assert_files('one', 'two')
         self.assert_cached_files()
 
@@ -1098,8 +1096,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         self.make_manifest('manifest.tt', 'one', 'two')
         with mock.patch('tooltool.fetch_file') as fetch_file:
             fetch_file.side_effect = RuntimeError
-            eq_(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'),
-                True)
+            self.assertTrue(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'))
         self.assert_files('one', 'two')
         self.assert_cached_files('one', 'two')
 
@@ -1108,8 +1105,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         self.make_manifest('manifest.tt', 'one', 'two')
         with mock.patch('tooltool.fetch_file') as fetch_file:
             fetch_file.side_effect = self.fake_fetch_file
-            eq_(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'),
-                True)
+            self.assertTrue(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'))
         self.assert_files('one', 'two')
         self.assert_cached_files('one', 'two')
 
@@ -1118,8 +1114,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         self.make_manifest('manifest.tt', 'ninetynine')
         with mock.patch('tooltool.fetch_file') as fetch_file:
             fetch_file.side_effect = self.fake_fetch_file
-            eq_(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'),
-                False)
+            self.assertFalse(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'))
         self.assert_files()
         self.assert_cached_files()
 
@@ -1129,8 +1124,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         with mock.patch('tooltool.fetch_file') as fetch_file:
             self.server_corrupt = True
             fetch_file.side_effect = self.fake_fetch_file
-            eq_(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'),
-                False)
+            self.assertFalse(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'))
         self.assert_files()
         self.assert_cached_files()
 
@@ -1141,8 +1135,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         self.make_manifest('manifest.tt', 'one')
         with mock.patch('tooltool.fetch_file') as fetch_file:
             fetch_file.side_effect = RuntimeError
-            eq_(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'),
-                True)
+            self.assertTrue(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'))
         self.assert_files('one')
         self.assert_cached_files('one')
 
@@ -1152,8 +1145,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         self.make_manifest('manifest.tt', 'one')
         with mock.patch('tooltool.fetch_file') as fetch_file:
             fetch_file.side_effect = self.fake_fetch_file
-            eq_(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'),
-                True)
+            self.assertTrue(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'))
         self.assert_files('one')
         self.assert_cached_files('one')
 
@@ -1164,8 +1156,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         try:
             with mock.patch('tooltool.fetch_file') as fetch_file:
                 fetch_file.side_effect = self.fake_fetch_file
-                eq_(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'),
-                    True)
+                self.assertTrue(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'))
             self.assert_files('one')
             self.assert_cached_files()
         finally:
@@ -1180,8 +1171,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         self.make_manifest('manifest.tt', 'one', 'two', 'three', 'four', 'five')
         with mock.patch('tooltool.fetch_file') as fetch_file:
             fetch_file.side_effect = self.fake_fetch_file
-            eq_(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'),
-                True)
+            self.assertTrue(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache'))
         self.assert_files('one', 'two', 'three', 'four', 'five')
         self.assert_cached_files('one', 'two', 'three', 'five')
 
@@ -1190,9 +1180,8 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         self.make_manifest('manifest.tt', 'one')
         with mock.patch('tooltool.fetch_file') as fetch_file:
             fetch_file.side_effect = self.fake_fetch_file
-            eq_(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache',
-                                     region='ca-north-2'),
-                True)
+            self.assertTrue(tooltool.fetch_files('manifest.tt', self.urls, cache_folder='cache',
+                                                 region='ca-north-2'))
             fetch_file.assert_called_with(self.urls, mock.ANY, auth_file=None,
                                           region='ca-north-2')
         self.assert_files('one')
@@ -1205,10 +1194,9 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         self.make_manifest('manifest.tt', 'one', 'five', 'nine')
         with mock.patch('tooltool.fetch_file') as fetch_file:
             fetch_file.side_effect = self.fake_fetch_file
-            eq_(tooltool.fetch_files('manifest.tt', self.urls,
+            self.assertTrue(tooltool.fetch_files('manifest.tt', self.urls,
                                      cache_folder='cache',
-                                     filenames=['five']),
-                True)
+                                     filenames=['five']))
         self.assert_files('one', 'five')
         self.assert_cached_files('five')
 
@@ -1220,9 +1208,8 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         with mock.patch('tooltool.fetch_file') as fetch_file:
             fetch_file.side_effect = self.fake_fetch_file
             with mock.patch('tooltool.unpack_file') as unpack_file:
-                eq_(tooltool.fetch_files('manifest.tt', self.urls,
-                                         cache_folder='cache'),
-                    True)
+                self.assertTrue(tooltool.fetch_files('manifest.tt', self.urls,
+                                                     cache_folder='cache'))
                 unpack_file.assert_has_calls([
                     mock.call('file-three'),
                     mock.call('file-four'),
@@ -1238,19 +1225,18 @@ class FetchTests(TestDirMixin, unittest.TestCase):
             fetch_file.side_effect = self.fake_fetch_file
             with mock.patch('tooltool.unpack_file') as unpack_file:
                 unpack_file.side_effect = lambda f: False
-                eq_(tooltool.fetch_files('manifest.tt', self.urls,
-                                         cache_folder='cache'),
-                    False)
+                self.assertFalse(tooltool.fetch_files('manifest.tt', self.urls,
+                                                      cache_folder='cache'))
                 unpack_file.assert_called_with('file-one')
         self.assert_files('one')
 
     def try_unpack_file(self, filename):
         os.mkdir('basename')
         open("basename/LEFTOVER.txt", **open_attrs).write("rm me")
-        self.failUnless(tooltool.unpack_file(filename))
-        self.failUnless(os.path.exists('basename'))
-        self.failUnless(os.path.exists('basename/README.txt'))
-        self.failIf(os.path.exists('basename/LEFTOVER.txt'))
+        self.assertTrue(tooltool.unpack_file(filename))
+        self.assertTrue(os.path.exists('basename'))
+        self.assertTrue(os.path.exists('basename/README.txt'))
+        self.assertFalse(os.path.exists('basename/LEFTOVER.txt'))
 
     def setup_archive(self, cmd):
         os.mkdir('basename')
@@ -1316,7 +1302,7 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
     def mocked_urllib2(self, data, exp_size=4096, exp_token=None):
         with mock.patch(urlopen_module_as_str) as urlopen:
             def fake_read(url, size):
-                eq_(size, exp_size)
+                assert size == exp_size
                 remaining = data[url]
                 rv, remaining = remaining[:size], remaining[size:]
                 data[url] = remaining
@@ -1331,7 +1317,7 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
                         assert 'id="{}"'.format(exp_token_['clientId']) in \
                             tooltool.make_taskcluster_header(exp_token_, req)
                     else:
-                        eq_(auth, 'Bearer %s' % exp_token)
+                        assert auth == 'Bearer %s' % exp_token
                 else:
                     assert not exp_token, "got token auth when not expecting it"
                 url = req.get_full_url()
@@ -1348,14 +1334,14 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
         with self.mocked_urllib2({'http://b/sha512/' + self.sample_hash: b'abcd'}):
             filename = tooltool.fetch_file(['http://a', 'http://b'], self.test_record)
             assert filename
-            eq_(open(filename, encoding='utf-8').read(), 'abcd')
+            assert open(filename, encoding='utf-8').read() == 'abcd'
             os.unlink(filename)
 
     def test_fetch_file_region(self):
         with self.mocked_urllib2({'http://a/sha512/%s?region=us-west-1' % self.sample_hash: b'abcd'}):
             filename = tooltool.fetch_file(['http://a'], self.test_record, region='us-west-1')
             assert filename
-            eq_(open(filename, encoding='utf-8').read(), 'abcd')
+            assert open(filename, encoding='utf-8').read() == 'abcd'
             os.unlink(filename)
 
     def test_fetch_file_size(self):
@@ -1363,7 +1349,7 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
             filename = tooltool.fetch_file(
                 ['http://a', 'http://b'], self.test_record, grabchunk=1024)
             assert filename
-            eq_(open(filename, encoding='utf-8').read(), 'abcd')
+            assert open(filename, encoding='utf-8').read() == 'abcd'
             os.unlink(filename)
 
     def test_fetch_file_auth_file(self):
@@ -1373,7 +1359,7 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
             filename = tooltool.fetch_file(
                 ['http://a', 'http://b'], self.test_record, auth_file='auth')
             assert filename
-            eq_(open(filename, encoding='utf-8').read(), 'abcd')
+            assert open(filename, encoding='utf-8').read() == 'abcd'
             os.unlink(filename)
 
     def test_fetch_file_auth_file_taskcluster(self):
@@ -1384,7 +1370,7 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
             filename = tooltool.fetch_file(
                 ['http://a', 'http://b'], self.test_record, auth_file='auth')
             assert filename
-            eq_(open(filename, encoding='utf-8').read(), 'abcd')
+            assert open(filename, encoding='utf-8').read() == 'abcd'
             os.unlink(filename)
 
     def test_fetch_file_fails(self):
@@ -1417,7 +1403,7 @@ class PurgeTests(TestDirMixin, unittest.TestCase):
 
     def fake_freespace(self, p):
         # A fake 10G drive, with each file = 1G
-        eq_(p, self.test_dir)
+        assert p == self.test_dir
         return 1024 ** 3 * (10 - len(os.listdir(self.test_dir)))
 
     def add_files(self, *files):
@@ -1435,7 +1421,7 @@ class PurgeTests(TestDirMixin, unittest.TestCase):
         os.chmod(self.test_dir, 0o500)  # prevent delete
         try:
             tooltool.purge(self.test_dir, 0)
-            eq_(os.listdir(self.test_dir), ['sticky'])
+            assert os.listdir(self.test_dir) == ['sticky']
         finally:
             os.chmod(self.test_dir, 0o700)
 
@@ -1443,7 +1429,7 @@ class PurgeTests(TestDirMixin, unittest.TestCase):
         path = os.path.join(self.test_dir, 'somedir')
         os.mkdir(path)
         tooltool.purge(self.test_dir, 0)
-        eq_(os.listdir(self.test_dir), ['somedir'])
+        assert os.listdir(self.test_dir) == ['somedir']
 
     def test_purge_nonzero(self):
         # six files means six gigs consumed, so we'll delete two
@@ -1451,7 +1437,7 @@ class PurgeTests(TestDirMixin, unittest.TestCase):
         with mock.patch('tooltool.freespace') as freespace:
             freespace.side_effect = self.fake_freespace
             tooltool.purge(self.test_dir, 6)
-        eq_(sorted(os.listdir(self.test_dir)),
+        self.assertEqual(sorted(os.listdir(self.test_dir)),
             sorted(['three', 'four', 'five', 'six']))
 
     def test_purge_no_need(self):
@@ -1459,13 +1445,13 @@ class PurgeTests(TestDirMixin, unittest.TestCase):
         with mock.patch('tooltool.freespace') as freespace:
             freespace.side_effect = self.fake_freespace
             tooltool.purge(self.test_dir, 4)
-        eq_(sorted(os.listdir(self.test_dir)),
+        self.assertEqual(sorted(os.listdir(self.test_dir)),
             sorted(['one', 'two']))
 
     def test_purge_zero(self):
         self.add_files("one", "two", "three")
         tooltool.purge(self.test_dir, 0)
-        eq_(os.listdir(self.test_dir), [])
+        assert os.listdir(self.test_dir) == []
 
     def test_freespace(self):
         # we can't set up a dedicated partition for this test, so just assume
@@ -1479,7 +1465,7 @@ class AddFiles(BaseManifestTest):
         got_manifest = json.load(open(manifest or self.sample_manifest_file, encoding='utf-8'))
         got_manifest.sort(key=lambda f: f['digest'])
         exp_manifest.sort(key=lambda f: f['digest'])
-        eq_(got_manifest, exp_manifest)
+        assert got_manifest == exp_manifest
 
     def make_file(self, filename="a_file"):
         data = os.urandom(100)
@@ -1592,7 +1578,7 @@ class ListManifest(BaseManifestTest):
         finally:
             output = sys.stdout.getvalue()
             sys.stdout = old_stdout
-        eq_(sorted(output.strip().split('\n')), sorted([
+        self.assertEqual(sorted(output.strip().split('\n')), sorted([
             '-\t-\ttest_file.ogg',
             'P\t-\tbar.txt',
             'P\tV\tfoo.txt',
