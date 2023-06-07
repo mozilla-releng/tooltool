@@ -791,9 +791,9 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         self.start_server()
         foo_digest = self.add_file("foo.txt", on_server=True)
         bar_digest = self.add_file("bar.txt", on_server=False)
-        assert tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], None, None)
+        self.assertTrue(tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], None, None))
         self.server_requests['POST'].sort()
-        assert self.server_requests == {
+        self.assertEqual(self.server_requests, {
             'POST': [{
                 'files': {
                     'foo.txt': {
@@ -813,7 +813,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
             }],
             'PUT': [bar_digest],
             'GET': [bar_digest],
-        }
+        })
 
     def test_upload_success_auth(self):
         """An upload with authentication information succeeds when the server expects
@@ -822,8 +822,8 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         foo_digest = self.add_file("foo.txt", on_server=True)
         self.server_config['exp_auth_token'] = token = 'abcABC'
         open("auth", **open_attrs).write(token)
-        assert tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], 'auth', None)
-        assert self.server_requests == {
+        self.assertTrue(tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], 'auth', None))
+        self.assertEqual(self.server_requests, {
             'POST': [{
                 'files': {
                     'foo.txt': {
@@ -835,15 +835,15 @@ class UploadTests(TestDirMixin, unittest.TestCase):
                 },
                 'message': 'hi mom',
             }],
-        }
+        })
 
     def test_upload_success_region(self):
         """An upload with a region specified results in a POST with that region in
         the URL."""
         self.start_server()
         self.add_file("foo.txt", on_server=True)
-        assert tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], None, 'us-west-1')
-        assert self.server_got_region == 'region=us-west-1'
+        self.assertTrue(tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], None, 'us-west-1'))
+        self.assertEqual(self.server_got_region, 'region=us-west-1')
 
     def test_upload_failure_auth(self):
         """An upload with incorrect authentication information fails"""
@@ -851,15 +851,15 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         self.add_file("foo.txt", on_server=True)
         self.server_config['exp_auth_token'] = 'abcABC'
         open("auth", **open_attrs).write('not-the-token')
-        assert not tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], 'auth', None)
+        self.assertFalse(tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], 'auth', None))
 
     def test_upload_s3_fails(self):
         """When an S3 upload fails, the upload fails and no notification takes
         place."""
         self.start_server()
         foo_digest = self.add_file("foo.txt", upload_fails=True)
-        assert not tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], None, None)
-        assert self.server_requests == {
+        self.assertFalse(tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], None, None))
+        self.assertEqual(self.server_requests, {
             'POST': [{
                 'files': {
                     'foo.txt': {
@@ -872,15 +872,15 @@ class UploadTests(TestDirMixin, unittest.TestCase):
                 'message': 'hi mom',
             }],
             'PUT': [foo_digest],
-        }
+        })
 
     def test_upload_send_batch_fails(self):
         """When the upload request to RelengAPI fails, upload fails."""
         self.start_server()
         self.server_config['post_fails'] = True
         foo_digest = self.add_file("foo.txt", upload_fails=True)
-        assert not tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], None, None)
-        assert self.server_requests == {
+        self.assertFalse(tooltool.upload('manifest.tt', 'hi mom', [self.mkurl('')], None, None))
+        self.assertEqual(self.server_requests, {
             'POST': [{
                 'files': {
                     'foo.txt': {
@@ -892,64 +892,64 @@ class UploadTests(TestDirMixin, unittest.TestCase):
                 },
                 'message': 'hi mom',
             }],
-        }
+        })
 
     def test_no_manifest(self):
         """When given a manifest that doesn't exist, upload fails."""
-        assert not tooltool.upload('nosuch.tt', 'hi mom', ['http://'], None, None)
+        self.assertFalse(tooltool.upload('nosuch.tt', 'hi mom', ['http://'], None, None))
 
     def test_manifest_without_visibility(self):
         """When given a manifest with a file record without visibility, upload fails."""
         self.add_file("foo.txt", visibility=None)
-        assert not tooltool.upload('manifest.tt', 'hi mom', ['http://'], None, None)
+        self.assertFalse(tooltool.upload('manifest.tt', 'hi mom', ['http://'], None, None))
 
     def test_invalid_manifest(self):
         """When given a manifest that doesn't validate, upload fails"""
         self.add_file("foo.txt")
         open("foo.txt", **open_attrs).write('bogus')
-        assert not tooltool.upload('manifest.tt', 'hi mom', ['http://'], None, None)
+        self.assertFalse(tooltool.upload('manifest.tt', 'hi mom', ['http://'], None, None))
 
     def test_send_batch_success(self):
         self.start_server()
         batch = {'message': 'hi mom', 'files': {}}
-        assert tooltool._send_batch(self.mkurl(''), None, batch, None) == batch
-        assert self.server_requests == {'POST': [batch]}
+        self.assertEqual(tooltool._send_batch(self.mkurl(''), None, batch, None), batch)
+        self.assertEqual(self.server_requests, {'POST': [batch]})
 
     def test_send_batch_region(self):
         self.start_server()
         batch = {'message': 'hi mom', 'files': {}}
-        assert tooltool._send_batch(self.mkurl(''), None, batch, 'us-south-1') == batch
-        assert self.server_requests == {'POST': [batch]}
-        assert self.server_got_region == 'region=us-south-1'
+        self.assertEqual(tooltool._send_batch(self.mkurl(''), None, batch, 'us-south-1'), batch)
+        self.assertEqual(self.server_requests, {'POST': [batch]})
+        self.assertEqual(self.server_got_region, 'region=us-south-1')
 
     def test_send_batch_failure(self):
         self.start_server()
         self.server_config['post_fails'] = True
         batch = {'message': 'hi mom', 'files': {}}
-        assert tooltool._send_batch(self.mkurl(''), None, batch, None) == None
-        assert self.server_requests == {'POST': [batch]}
+        self.assertIsNone(tooltool._send_batch(self.mkurl(''), None, batch, None))
+        self.assertEqual(self.server_requests, {'POST': [batch]})
 
     def test_s3_upload(self):
         self.start_server()
         file = {'put_url': self.s3url('/sha512/' + self.digest)}
         tooltool._s3_upload('testfile.txt', file)
-        assert self.server_requests == {'PUT': [self.digest]}
-        assert file['upload_ok']
+        self.assertEqual(self.server_requests, {'PUT': [self.digest]})
+        self.assertTrue(file['upload_ok'])
 
     def test_s3_upload_fails(self):
         self.start_server()
         self.server_config['upload_failures'] = [self.digest]
         file = {'put_url': self.s3url('/sha512/' + self.digest)}
         tooltool._s3_upload('testfile.txt', file)
-        assert self.server_requests == {'PUT': [self.digest]}
-        assert not file['upload_ok'], file
-        assert 'upload_exception' in file, file
+        self.assertEqual(self.server_requests, {'PUT': [self.digest]})
+        self.assertFalse(file['upload_ok'], file)
+        self.assertIn('upload_exception', file)
 
     def test_notify_upload(self):
         self.start_server()
         file = {'algorithm': 'sha512', 'digest': self.digest}
         tooltool._notify_upload_complete(self.mkurl(''), None, file)
-        assert self.server_requests == {'GET': [self.digest]}
+        self.assertEqual(self.server_requests, {'GET': [self.digest]})
 
     def test_notify_upload_wait(self):
         self.start_server()
@@ -958,7 +958,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         with mock.patch('time.sleep') as fake_sleep:
             tooltool._notify_upload_complete(self.mkurl(''), None, file)
         fake_sleep.assert_called_with(10)
-        assert self.server_requests == {'GET': [self.digest, self.digest]}  # two reqs
+        self.assertEqual(self.server_requests, {'GET': [self.digest, self.digest]})  # two reqs
 
     def test_notify_upload_fails(self):
         self.start_server()
@@ -966,8 +966,8 @@ class UploadTests(TestDirMixin, unittest.TestCase):
         file = {'algorithm': 'sha512', 'digest': self.digest}
         with BufferHandler.capture('tooltool') as logged:
             tooltool._notify_upload_complete(self.mkurl(''), None, file)
-        assert self.server_requests == {'GET': [self.digest]}
-        assert logged == [(logging.ERROR, 'Error making RelengAPI request:')]
+        self.assertEqual(self.server_requests, {'GET': [self.digest]})
+        self.assertEqual(logged, [(logging.ERROR, 'Error making RelengAPI request:')])
 
     def test_notify_upload_exception(self):
         self.start_server()
@@ -977,9 +977,9 @@ class UploadTests(TestDirMixin, unittest.TestCase):
             with mock.patch(urlopen_module_as_str) as urlopen:
                 urlopen.side_effect = RuntimeError('oh noes')
                 tooltool._notify_upload_complete(self.mkurl(''), None, file)
-        assert self.server_requests == {}
-        assert logged[0] == \
-            (logging.ERROR, 'While notifying server of upload completion:')
+        self.assertEqual(self.server_requests, {})
+        self.assertEqual(logged[0],
+            (logging.ERROR, 'While notifying server of upload completion:'))
 
 
 def test_log_api_error_generic():
@@ -1018,7 +1018,7 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         self.tearDownTestDir()
 
     def fake_fetch_file(self, urls, file_record, auth_file=None, region=None):
-        assert urls == self.urls
+        self.assertEqual(urls, self.urls)
         if file_record.digest in self.server_files_by_hash:
             if self.server_corrupt:
                 content = 'XXX'
@@ -1057,25 +1057,25 @@ class FetchTests(TestDirMixin, unittest.TestCase):
             json.dump(manifest, f)
 
     def assert_files(self, *files):
-        assert sorted([f for f in os.listdir(self.test_dir)
-                       if f != 'cache' and not f.endswith('.tt')]) == \
-            sorted(['file-' + f for f in files])
+        self.assertEqual(sorted([f for f in os.listdir(self.test_dir)
+                       if f != 'cache' and not f.endswith('.tt')]),
+            sorted(['file-' + f for f in files]))
         for f in files:
-            assert open('file-' + f, encoding='utf-8').read() == f
+            self.assertEqual(open('file-' + f, encoding='utf-8').read(), f)
 
     def assert_cached_files(self, *files):
         if not files and not os.path.exists(self.cache_dir):
             return
         hashes = [get_hexdigest(to_binary(f)) for f in files]
-        assert sorted(os.listdir(self.cache_dir)) == sorted(hashes)
+        self.assertEqual(sorted(os.listdir(self.cache_dir)), sorted(hashes))
         for f, h in zip(files, hashes):
-            assert open(os.path.join(self.cache_dir, h), encoding='utf-8').read() == f
+            self.assertEqual(open(os.path.join(self.cache_dir, h), encoding='utf-8').read(), f)
 
     # tests
 
     def test_no_manifest(self):
         """If the given manifest isn't present, fetch_files fails"""
-        assert tooltool.fetch_files('not-present.tt', self.urls) == False
+        self.assertFalse(tooltool.fetch_files('not-present.tt', self.urls))
 
     def test_all_present(self):
         """When all expected files are present, fetch_files does not fetch anything"""
@@ -1302,7 +1302,7 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
     def mocked_urllib2(self, data, exp_size=4096, exp_token=None):
         with mock.patch(urlopen_module_as_str) as urlopen:
             def fake_read(url, size):
-                assert size == exp_size
+                self.assertEqual(size, exp_size)
                 remaining = data[url]
                 rv, remaining = remaining[:size], remaining[size:]
                 data[url] = remaining
@@ -1313,13 +1313,13 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
                 if auth:
                     if exp_token.strip()[0] == '{':
                         exp_token_ = json.loads(exp_token)
-                        assert 'id="{}"'.format(exp_token_['clientId']) in auth
-                        assert 'id="{}"'.format(exp_token_['clientId']) in \
-                            tooltool.make_taskcluster_header(exp_token_, req)
+                        self.assertIn('id="{}"'.format(exp_token_['clientId']), auth)
+                        self.assertIn('id="{}"'.format(exp_token_['clientId']),
+                            tooltool.make_taskcluster_header(exp_token_, req))
                     else:
-                        assert auth == 'Bearer %s' % exp_token
+                        self.assertEqual(auth, 'Bearer %s' % exp_token)
                 else:
-                    assert not exp_token, "got token auth when not expecting it"
+                    self.assertFalse(exp_token, "got token auth when not expecting it")
                 url = req.get_full_url()
                 if url not in data:
                     raise URLError("bogus url")
@@ -1333,23 +1333,23 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
         # note: the first URL doesn't match, so this loops twice
         with self.mocked_urllib2({'http://b/sha512/' + self.sample_hash: b'abcd'}):
             filename = tooltool.fetch_file(['http://a', 'http://b'], self.test_record)
-            assert filename
-            assert open(filename, encoding='utf-8').read() == 'abcd'
+            self.assertTrue(filename)
+            self.assertEqual(open(filename, encoding='utf-8').read(), 'abcd')
             os.unlink(filename)
 
     def test_fetch_file_region(self):
         with self.mocked_urllib2({'http://a/sha512/%s?region=us-west-1' % self.sample_hash: b'abcd'}):
             filename = tooltool.fetch_file(['http://a'], self.test_record, region='us-west-1')
-            assert filename
-            assert open(filename, encoding='utf-8').read() == 'abcd'
+            self.assertTrue(filename)
+            self.assertEqual(open(filename, encoding='utf-8').read(), 'abcd')
             os.unlink(filename)
 
     def test_fetch_file_size(self):
         with self.mocked_urllib2({'http://b/sha512/' + self.sample_hash: b'abcd'}, exp_size=1024):
             filename = tooltool.fetch_file(
                 ['http://a', 'http://b'], self.test_record, grabchunk=1024)
-            assert filename
-            assert open(filename, encoding='utf-8').read() == 'abcd'
+            self.assertTrue(filename)
+            self.assertEqual(open(filename, encoding='utf-8').read(), 'abcd')
             os.unlink(filename)
 
     def test_fetch_file_auth_file(self):
@@ -1358,8 +1358,8 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
                 f.write('TOKTOK')
             filename = tooltool.fetch_file(
                 ['http://a', 'http://b'], self.test_record, auth_file='auth')
-            assert filename
-            assert open(filename, encoding='utf-8').read() == 'abcd'
+            self.assertTrue(filename)
+            self.assertEqual(open(filename, encoding='utf-8').read(), 'abcd')
             os.unlink(filename)
 
     def test_fetch_file_auth_file_taskcluster(self):
@@ -1369,14 +1369,14 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
                 f.write(credentials)
             filename = tooltool.fetch_file(
                 ['http://a', 'http://b'], self.test_record, auth_file='auth')
-            assert filename
-            assert open(filename, encoding='utf-8').read() == 'abcd'
+            self.assertTrue(filename)
+            self.assertEqual(open(filename, encoding='utf-8').read(), 'abcd')
             os.unlink(filename)
 
     def test_fetch_file_fails(self):
         with self.mocked_urllib2({}):
             filename = tooltool.fetch_file(['http://a'], self.test_record)
-            assert filename is None
+            self.assertIsNone(filename)
 
 
 def test_touch():
@@ -1403,7 +1403,7 @@ class PurgeTests(TestDirMixin, unittest.TestCase):
 
     def fake_freespace(self, p):
         # A fake 10G drive, with each file = 1G
-        assert p == self.test_dir
+        self.assertEqual(p, self.test_dir)
         return 1024 ** 3 * (10 - len(os.listdir(self.test_dir)))
 
     def add_files(self, *files):
@@ -1421,7 +1421,7 @@ class PurgeTests(TestDirMixin, unittest.TestCase):
         os.chmod(self.test_dir, 0o500)  # prevent delete
         try:
             tooltool.purge(self.test_dir, 0)
-            assert os.listdir(self.test_dir) == ['sticky']
+            self.assertEqual(os.listdir(self.test_dir), ['sticky'])
         finally:
             os.chmod(self.test_dir, 0o700)
 
@@ -1429,7 +1429,7 @@ class PurgeTests(TestDirMixin, unittest.TestCase):
         path = os.path.join(self.test_dir, 'somedir')
         os.mkdir(path)
         tooltool.purge(self.test_dir, 0)
-        assert os.listdir(self.test_dir) == ['somedir']
+        self.assertEqual(os.listdir(self.test_dir), ['somedir'])
 
     def test_purge_nonzero(self):
         # six files means six gigs consumed, so we'll delete two
@@ -1451,12 +1451,12 @@ class PurgeTests(TestDirMixin, unittest.TestCase):
     def test_purge_zero(self):
         self.add_files("one", "two", "three")
         tooltool.purge(self.test_dir, 0)
-        assert os.listdir(self.test_dir) == []
+        self.assertEqual(os.listdir(self.test_dir), [])
 
     def test_freespace(self):
         # we can't set up a dedicated partition for this test, so just assume
         # the disk isn't full (other tests assume this too, really)
-        assert tooltool.freespace(self.test_dir) > 0
+        self.assertGreater(tooltool.freespace(self.test_dir), 0)
 
 
 class AddFiles(BaseManifestTest):
@@ -1465,7 +1465,7 @@ class AddFiles(BaseManifestTest):
         got_manifest = json.load(open(manifest or self.sample_manifest_file, encoding='utf-8'))
         got_manifest.sort(key=lambda f: f['digest'])
         exp_manifest.sort(key=lambda f: f['digest'])
-        assert got_manifest == exp_manifest
+        self.assertEqual(got_manifest, exp_manifest)
 
     def make_file(self, filename="a_file"):
         data = os.urandom(100)
@@ -1481,8 +1481,8 @@ class AddFiles(BaseManifestTest):
         """Adding a new file to an existing manifest results in a manifest with
         two files"""
         file_json = self.make_file()
-        assert tooltool.add_files('manifest.tt', 'sha512',
-            [file_json['filename']], None, None, False)
+        self.assertTrue(tooltool.add_files('manifest.tt', 'sha512',
+            [file_json['filename']], None, None, False))
         self.assert_manifest([self.test_record_json, file_json])
 
     def test_append_internal(self):
@@ -1490,8 +1490,8 @@ class AddFiles(BaseManifestTest):
         two files, with the visibility set on the new one"""
         file_json = self.make_file()
         file_json['visibility'] = 'internal'
-        assert tooltool.add_files('manifest.tt', 'sha512',
-            [file_json['filename']], None, 'internal', False)
+        self.assertTrue(tooltool.add_files('manifest.tt', 'sha512',
+            [file_json['filename']], None, 'internal', False))
         self.assert_manifest([self.test_record_json, file_json])
 
     def test_append_public(self):
@@ -1499,8 +1499,8 @@ class AddFiles(BaseManifestTest):
         two files, with the visibility set on the new one"""
         file_json = self.make_file()
         file_json['visibility'] = 'public'
-        assert tooltool.add_files('manifest.tt', 'sha512',
-            [file_json['filename']], None, 'public', False)
+        self.assertTrue(tooltool.add_files('manifest.tt', 'sha512',
+            [file_json['filename']], None, 'public', False))
         self.assert_manifest([self.test_record_json, file_json])
 
     def test_append_unpack(self):
@@ -1509,33 +1509,33 @@ class AddFiles(BaseManifestTest):
         file_json = self.make_file()
         file_json['visibility'] = 'public'
         file_json['unpack'] = True
-        assert tooltool.add_files('manifest.tt', 'sha512',
-            [file_json['filename']], None, 'public', True)
+        self.assertTrue(tooltool.add_files('manifest.tt', 'sha512',
+            [file_json['filename']], None, 'public', True))
         self.assert_manifest([self.test_record_json, file_json])
 
     def test_new_manifest(self):
         """Adding a new file to a new manifest results in a manifest with one
         file"""
         file_json = self.make_file()
-        assert tooltool.add_files('new_manifest.tt', 'sha512',
-            [file_json['filename']], None, None, False)
+        self.assertTrue(tooltool.add_files('new_manifest.tt', 'sha512',
+            [file_json['filename']], None, None, False))
         self.assert_manifest([file_json], manifest='new_manifest.tt')
 
     def test_file_already_exists(self):
         """Adding a file to a manifest that is already in that manifest fails"""
-        assert not tooltool.add_files('manifest.tt', 'sha512',
+        self.assertFalse(tooltool.add_files('manifest.tt', 'sha512',
                                       [os.path.join(os.path.dirname(__file__),
                                                     self.sample_file)],
-                                      None, None, False)
+                                      None, None, False))
         self.assert_manifest([self.test_record_json])
 
     def test_filename_already_exists(self):
         """Adding a file to a manifest that has the same name as an existing
         file fails"""
         self.make_file(self.sample_file)
-        assert not tooltool.add_files('manifest.tt', 'sha512',
+        self.assertFalse(tooltool.add_files('manifest.tt', 'sha512',
                                       [self.sample_file],
-                                      None, None, False)
+                                      None, None, False))
         self.assert_manifest([self.test_record_json])
 
 
@@ -1544,18 +1544,18 @@ class ValidateManifest(BaseManifestTest):
     def test_validate_exists(self):
         sample_file_src = os.path.join(os.path.dirname(__file__), self.sample_file)
         shutil.copyfile(sample_file_src, self.sample_file)
-        assert tooltool.validate_manifest('manifest.tt')
+        self.assertTrue(tooltool.validate_manifest('manifest.tt'))
 
     def test_validate_missing_files(self):
-        assert not tooltool.validate_manifest('manifest.tt')
+        self.assertFalse(tooltool.validate_manifest('manifest.tt'))
 
     def test_validate_invalid_files(self):
         open(self.sample_file, **open_attrs).write("BOGUS")
-        assert not tooltool.validate_manifest('manifest.tt')
+        self.assertFalse(tooltool.validate_manifest('manifest.tt'))
 
     def test_validate_invalid_manifest(self):
         open('manifest.tt', **open_attrs).write("BOGUS")
-        assert not tooltool.validate_manifest('manifest.tt')
+        self.assertFalse(tooltool.validate_manifest('manifest.tt'))
 
 
 class ListManifest(BaseManifestTest):
@@ -1574,7 +1574,7 @@ class ListManifest(BaseManifestTest):
             sys.stdout = BytesIO()
 
         try:
-            assert tooltool.list_manifest('manifest.tt')
+            self.assertTrue(tooltool.list_manifest('manifest.tt'))
         finally:
             output = sys.stdout.getvalue()
             sys.stdout = old_stdout
@@ -1586,4 +1586,4 @@ class ListManifest(BaseManifestTest):
 
     def test_list_invalid_manifest(self):
         open("manifest.tt", **open_attrs).write("BOGUS")
-        assert not tooltool.list_manifest("manifest.tt")
+        self.assertFalse(tooltool.list_manifest("manifest.tt"))
