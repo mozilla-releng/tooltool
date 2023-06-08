@@ -77,7 +77,7 @@ fi
 
 status "running tests (under coverage)"
 coverage erase || not_ok "coverage failed"
-coverage run --rcfile=coveragerc --source=tooltool `which nosetests` test_tooltool.py || not_ok "tests failed"
+coverage run --rcfile=coveragerc --source=tooltool `which pytest` test_tooltool.py || not_ok "tests failed"
 
 status "checking coverage"
 coverage report --rcfile=coveragerc >${tmpbase}/covreport

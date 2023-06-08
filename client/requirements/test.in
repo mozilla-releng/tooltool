@@ -3,5 +3,5 @@
 coverage
 coveralls
 mock
-nose
+pytest
 pyflakes
