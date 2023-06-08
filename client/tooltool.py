@@ -1316,9 +1316,7 @@ def _s3_upload(filename, file):
     try:
         req_path = "%s?%s" % (url.path, url.query) if url.query else url.path
         with open(filename, "rb") as f:
-            content = f.read()
-            content_length = len(content)
-            f.seek(0)
+            content_length = file["size"]
             conn.request(
                 "PUT",
                 req_path,

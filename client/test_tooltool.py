@@ -931,7 +931,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
 
     def test_s3_upload(self):
         self.start_server()
-        file = {'put_url': self.s3url('/sha512/' + self.digest)}
+        file = {'put_url': self.s3url('/sha512/' + self.digest), 'size': len(self.content)}
         tooltool._s3_upload('testfile.txt', file)
         self.assertEqual(self.server_requests, {'PUT': [self.digest]})
         self.assertTrue(file['upload_ok'])
@@ -939,7 +939,7 @@ class UploadTests(TestDirMixin, unittest.TestCase):
     def test_s3_upload_fails(self):
         self.start_server()
         self.server_config['upload_failures'] = [self.digest]
-        file = {'put_url': self.s3url('/sha512/' + self.digest)}
+        file = {'put_url': self.s3url('/sha512/' + self.digest), 'size': len(self.content)}
         tooltool._s3_upload('testfile.txt', file)
         self.assertEqual(self.server_requests, {'PUT': [self.digest]})
         self.assertFalse(file['upload_ok'], file)
