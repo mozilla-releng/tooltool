@@ -108,11 +108,6 @@ Deployed Environments
 
 We have a number of deployed ToolTool environments.
 
-- Dev (currently broken, possibly permanently)
-
-   :URL: https://dev.tooltool.mozilla-releng.net/
-   :Deploys from: `dev` branch
-
 - Staging
 
    :URL: https://stage.tooltool.mozilla-releng.net/
