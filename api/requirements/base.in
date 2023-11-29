@@ -27,4 +27,4 @@ requests
 structlog
 taskcluster
 # itsdangerous 2.1 is incompatible with flask-oidc 1.4.0
-itsdangerous<2.1
+itsdangerous<2.2
