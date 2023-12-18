@@ -6,6 +6,7 @@
 import importlib
 import os
 
+import connexion
 import flask
 
 import tooltool_api.lib.dockerflow
@@ -24,7 +25,8 @@ def create_app(project_name, extensions=[], config=None, enable_dockerflow=True,
     """
     logger.debug("Initializing", app=project_name)
 
-    app = flask.Flask(import_name=project_name, **kw)
+    connexion_app = connexion.FlaskApp(import_name=project_name, server_args=kw)
+    app = connexion_app.app
     app.name = project_name
     app.__extensions = extensions
 
