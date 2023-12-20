@@ -16,7 +16,14 @@ tasks:
       in:
         # [ <PROJECT NAME>,   <PYTHON VERSION>, <SETUP COMMAND>,     <DOCKERHUB REPO>]
         - ['tooltool_client', '38',             '${client_setup_3}', '']
-        - ['tooltool_api',    '37',             '${api_setup}',      'mozilla/releng-tooltool']
+        - ['tooltool_client', '39',             '${client_setup_3}', '']
+        - ['tooltool_client', '310',            '${client_setup_3}', '']
+        - ['tooltool_client', '311',            '${client_setup_3}', '']
+        - ['tooltool_client', '312',            '${client_setup_3}', '']
+        - ['tooltool_api',    '38',             '${api_setup}',      'mozilla/releng-tooltool']
+        - ['tooltool_api',    '39',             '${api_setup}',      '']
+        - ['tooltool_api',    '310',            '${api_setup}',      '']
+        - ['tooltool_api',    '311',            '${api_setup}',      '']
     # -------------------------------------------------------------------------
 
     HEAD_REV:
@@ -105,7 +112,7 @@ tasks:
                 features:
                   taskclusterProxy: true
                 maxRunTime: 3600
-                image: 'python:${python_version[0]}.${python_version[1]}'
+                image: 'python:${python_version[0]}.${python_version[1:]}'
                 env:
                   CI_HEAD_REV: '${HEAD_REV}'
                   CI_BRANCH_NAME:
@@ -147,7 +154,7 @@ tasks:
                       else: '${i+1}'
                   in:
                     '${number_prefix}${test_task_number}. ${project_name}-py${python_version}: Run tox [on ${BRANCH_NAME}]'
-                description: 'Code linting and unit tests for ${project_name} on python ${python_version[0]}.${python_version[1]}'
+                description: 'Code linting and unit tests for ${project_name} on python ${python_version[0]}.${python_version[1:]}'
                 owner: '${OWNER}'
                 source: '${REPO_URL}/raw/${HEAD_REV}/.taskcluster.yml'
             # Build docker image and (optionally) push to docker hub
