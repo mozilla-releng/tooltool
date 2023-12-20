@@ -28,16 +28,6 @@ class Api:
         """
         self.__app = app
 
-        logger.debug("Setting JSON encoder.")
-        app.json_encoder = FlaskJSONEncoder
-
-        logger.debug("Setting common error handler for all error codes.")
-        # FlaskApp sets up error handler automatically, but FlaskApi doesn't.
-        # We have to set them up manually.
-        for error_code in default_exceptions:
-            app.register_error_handler(error_code, FlaskApp.common_error_handler)
-
-        app.register_error_handler(ProblemException, FlaskApp.common_error_handler)
 
     def register(
         self,
