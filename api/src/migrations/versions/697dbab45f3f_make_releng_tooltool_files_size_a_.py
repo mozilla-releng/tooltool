@@ -1,7 +1,7 @@
 """Make releng_tooltool_files.size a BigInteger
 
 Revision ID: 697dbab45f3f
-Revises: 
+Revises:
 Create Date: 2023-05-29 17:24:48.868951
 
 """
