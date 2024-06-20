@@ -21,3 +21,5 @@ pytest
 pytest-cov
 python-hglib
 responses
+types-boto
+types-pytz
