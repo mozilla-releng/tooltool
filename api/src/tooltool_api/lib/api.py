@@ -6,8 +6,7 @@
 import pathlib
 
 from connexion.apis.flask_api import FlaskApi
-from connexion.apps.flask_app import FlaskApp
-from connexion.apps.flask_app import FlaskJSONEncoder
+from connexion.apps.flask_app import FlaskApp, FlaskJSONEncoder
 from connexion.exceptions import ProblemException
 from werkzeug.exceptions import default_exceptions
 
