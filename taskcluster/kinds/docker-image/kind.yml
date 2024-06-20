@@ -35,21 +35,6 @@ tasks:
         args:
             BASE_IMAGE: python:3.12
             SETUP_COMMAND: 'apt-get update && apt-get install -y zip xz-utils build-essential libssl-dev libffi-dev python3-dev'
-    api-tox-py38:
-        definition: tox
-        args:
-            BASE_IMAGE: python:3.8
-            SETUP_COMMAND: 'apt-get update && apt-get install -y postgresql'
-    api-tox-py39:
-        definition: tox
-        args:
-            BASE_IMAGE: python:3.9
-            SETUP_COMMAND: 'apt-get update && apt-get install -y postgresql'
-    api-tox-py310:
-        definition: tox
-        args:
-            BASE_IMAGE: python:3.10
-            SETUP_COMMAND: 'apt-get update && apt-get install -y postgresql'
     api-tox-py311:
         definition: tox
         args:
