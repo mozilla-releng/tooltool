@@ -84,7 +84,7 @@ def verify_file_instance(sha512, size, key):
 
     if key.get_redirect():  # pragma: no cover
         # (not covered because moto doesn't support redirects)
-        logger2.warning("File {} was uploaded with a website redirect set".format(sha512, key.storage_class))
+        logger2.warning("File {} was uploaded with a website redirect set".format(sha512))
         return False
 
     # verifying the ACL is a bit tricky, so just set it correctly
