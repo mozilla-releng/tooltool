@@ -8,7 +8,6 @@ codecov
 coverage
 coveralls
 flake8
-flake8-coding
 flake8-copyright
 flake8-debugger
 flake8-isort
