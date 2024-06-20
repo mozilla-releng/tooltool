@@ -21,8 +21,7 @@ USER app
 WORKDIR /app
 
 RUN python -m venv /appenv \
- && /appenv/bin/pip install --upgrade pip \
- && /appenv/bin/pip install -r requirements/base.txt \
+ && /appenv/bin/pip install --no-deps -r requirements/base.txt \
  && /appenv/bin/pip install -e .
 
 CMD ["/app/docker.d/run.sh"]
