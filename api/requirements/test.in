@@ -11,10 +11,10 @@ flake8
 flake8-copyright
 flake8-debugger
 flake8-isort
-flake8-mypy
 flake8-quotes
 inotify  # needed by gunicorn for faster/better reload
 isort
+mypy
 pdbpp
 pip-compile-multi
 pytest
