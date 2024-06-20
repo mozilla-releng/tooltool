@@ -142,8 +142,7 @@ class Auth(object):
                 return False
 
     def require_login(self, method):
-        """Decorator to check if user is authenticated
-        """
+        """Decorator to check if user is authenticated"""
 
         @functools.wraps(method)
         def wrapper(*args, **kwargs):
@@ -169,7 +168,7 @@ class Auth(object):
 
     def require_permissions(self, permissions):
         """Decorator to check if user has required permissions or set of
-           permissions
+        permissions
         """
 
         def decorator(method):
@@ -262,8 +261,7 @@ def parse_header_taskcluster(request):
 
 @auth.login_manager.request_loader
 def parse_header(request):
-    """Parse header and try to authenticate
-    """
+    """Parse header and try to authenticate"""
     if flask.current_app.config.get("TASKCLUSTER_AUTH", False) is True:
         user = parse_header_taskcluster(request)
         if user != NO_AUTH:

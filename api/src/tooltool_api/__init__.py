@@ -18,8 +18,7 @@ import tooltool_api.view
 
 
 def custom_handle_default_exceptions(e: Exception) -> typing.Tuple[int, str]:
-    """Conform structure of errors as before, to make it work with client (tooltool.py).
-    """
+    """Conform structure of errors as before, to make it work with client (tooltool.py)."""
     code = getattr(e, "code", 500)
     description = getattr(e, "description", str(e))
     error = {

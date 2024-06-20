@@ -18,7 +18,7 @@ logger = tooltool_api.lib.log.get_logger(__name__)
 
 class Api:
     """TODO: add description
-       TODO: annotate class
+    TODO: annotate class
     """
 
     def __init__(self, app):
@@ -27,7 +27,6 @@ class Api:
         TODO: annotate function
         """
         self.__app = app
-
 
     def register(
         self,
@@ -45,8 +44,7 @@ class Api:
         pass_context_arg_name=None,
         options=dict(swagger_url="apidocs"),
     ):
-        """Adds an API to the application based on a swagger file
-        """
+        """Adds an API to the application based on a swagger file"""
 
         app = self.__app
         logger.debug(f"Adding API: {specification}")

@@ -61,8 +61,7 @@ def replicate_file(session, file, regions_config, aws):
 
 
 def verify_file_instance(sha512, size, key):
-    """Verify that the given S3 Key matches the given size and digest.
-    """
+    """Verify that the given S3 Key matches the given size and digest."""
 
     logger2 = logger.bind(tooltool_sha512=sha512)
     if key.size != size:
@@ -157,8 +156,7 @@ def check_pending_upload(session, pending_upload):
 
 
 async def check_file_pending_uploads(channel, body, envelope, properties):
-    """Check for pending uploads for a single file.
-    """
+    """Check for pending uploads for a single file."""
     body = json.loads(body.decode("utf-8"))
     digest = body["payload"]["digest"]
     session = flask.current_app.db.session
@@ -173,8 +171,7 @@ async def check_file_pending_uploads(channel, body, envelope, properties):
 @click.command()
 @flask.cli.with_appcontext
 def cmd_check_pending_uploads():
-    """Check for any pending uploads and verify them if found.
-    """
+    """Check for any pending uploads and verify them if found."""
     session = flask.current_app.db.session
     pending_uploads = tooltool_api.models.PendingUpload.query.all()
     for pending_upload in pending_uploads:
@@ -185,8 +182,7 @@ def cmd_check_pending_uploads():
 @click.command()
 @flask.cli.with_appcontext
 def cmd_replicate():
-    """Replicate objects between regions as necessary.
-    """
+    """Replicate objects between regions as necessary."""
     # fetch all files with at least one instance, but not a full complement
     # of instances
     regions = flask.current_app.config["S3_REGIONS"]
@@ -208,8 +204,7 @@ def cmd_replicate():
 @click.command()
 @flask.cli.with_appcontext
 def cmd_worker():
-    """Check for pending uploads for a single file.
-    """
+    """Check for pending uploads for a single file."""
     pulse_user = flask.current_app.config["PULSE_USER"]
     pulse_pass = flask.current_app.config["PULSE_PASSWORD"]
     exchange = f"exchange/{pulse_user}/{tooltool_api.config.PROJECT_NAME}"
