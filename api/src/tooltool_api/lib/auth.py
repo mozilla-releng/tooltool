@@ -5,6 +5,7 @@
 
 import functools
 import json
+import typing
 
 import flask
 import flask_login
@@ -30,7 +31,7 @@ UNAUTHORIZED_JSON = {
 class BaseUser(object):
 
     anonymous = False
-    type = None
+    type: typing.Optional[str] = None
 
     def __eq__(self, other):
         return isinstance(other, BaseUser) and self.get_id() == other.get_id()

@@ -17,7 +17,7 @@ import tooltool_api.models  # noqa
 import tooltool_api.view
 
 
-def custom_handle_default_exceptions(e: Exception) -> typing.Tuple[int, str]:
+def custom_handle_default_exceptions(e: Exception) -> typing.Tuple[flask.Response, int]:
     """Conform structure of errors as before, to make it work with client (tooltool.py)."""
     code = getattr(e, "code", 500)
     description = getattr(e, "description", str(e))
@@ -32,10 +32,10 @@ def custom_handle_default_exceptions(e: Exception) -> typing.Tuple[int, str]:
     }
     import flask  # for some reason flask needs to be imported here
 
-    return flask.jsonify(dict(error=error)), error["status"]
+    return flask.jsonify(dict(error=error)), code
 
 
-def create_app(config: dict = None) -> flask.Flask:
+def create_app(config: typing.Optional[dict] = None) -> flask.Flask:
     app = tooltool_api.lib.flask.create_app(
         project_name=tooltool_api.config.PROJECT_NAME,
         config=config,
