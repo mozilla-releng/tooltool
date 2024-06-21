@@ -1,0 +1,25 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+transforms:
+    - tooltool_taskgraph.transforms.codecov
+
+
+task-defaults:
+  worker-type: test
+  worker:
+    max-run-time: 1800
+    env:
+      SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/tooltool/ci'
+  run:
+    using: run-task
+    checkout:
+      tooltool: {}
+    cwd: '{checkout}'
+  scopes:
+    - 'secrets:get:project/releng/tooltool/ci'
+
+tasks-from:
+  - api.yml
+  - client.yml
