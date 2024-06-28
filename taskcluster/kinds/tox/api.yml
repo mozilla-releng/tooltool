@@ -1,0 +1,27 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+task-defaults:
+  description: test the tooltool api
+
+api-py38:
+  worker:
+    docker-image: {in-tree: api-tox-py38}
+  run:
+    command: tox -e tooltool_api-py38
+api-py39:
+  worker:
+    docker-image: {in-tree: api-tox-py39}
+  run:
+    command: tox -e tooltool_api-py39
+api-py310:
+  worker:
+    docker-image: {in-tree: api-tox-py310}
+  run:
+    command: tox -e tooltool_api-py310
+api-py311:
+  worker:
+    docker-image: {in-tree: api-tox-py311}
+  run:
+    command: tox -e tooltool_api-py311

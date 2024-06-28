@@ -1,0 +1,49 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+transforms:
+  - tooltool_taskgraph.transforms.push_image
+
+kind-dependencies:
+  - docker-image
+
+task-defaults:
+  description: push tooltool_api docker image to docker hub
+  worker-type: images
+  worker:
+    max-run-time: 1800
+    env:
+      SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/tooltool/deploy'
+      DOCKER_REPO: mozilla/releng-tooltool
+    docker-image: {in-tree: skopeo}
+  scopes:
+    - 'secrets:get:project/releng/tooltool/deploy'
+  run:
+    using: run-task
+    command: 'push_image.sh'
+    checkout: false
+  run-on-tasks-for: [github-push]
+  fetches:
+    parent-image:
+      - artifact: image.tar.zst
+        extract: false
+
+tasks:
+  staging:
+    run-on-git-branches: [^staging$]
+    worker:
+      env:
+        NAME: tooltool-api-staging
+        DOCKER_TAG: staging
+    dependencies:
+      parent-image: build-docker-image-tooltool-api-staging
+
+  production:
+    run-on-git-branches: [^production$]
+    worker:
+      env:
+        NAME: tooltool-api-staging
+        DOCKER_TAG: production
+    dependencies:
+      parent-image: build-docker-image-tooltool-api-production
