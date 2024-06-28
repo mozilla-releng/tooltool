@@ -17,6 +17,7 @@ task-defaults:
       SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/tooltool/deploy'
       DOCKER_REPO: mozilla/releng-tooltool
     docker-image: {in-tree: skopeo}
+    taskcluster-proxy: true
   scopes:
     - 'secrets:get:project/releng/tooltool/deploy'
   run:
