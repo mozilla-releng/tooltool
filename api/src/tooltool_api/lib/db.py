@@ -73,9 +73,11 @@ def init_database(app):
 
     with app.app_context():
 
-        # Needed to init potential migrations later on
-        # Use a separate alembic_version table per app
-        options = {f"version_table": "{app.import_name}_alembic_version"}
+        # Our version table is called (literally)
+        # `{app.import_name}_alembic_version`, because of missing formatting;
+        # changing it now is risky, and the problem is cosmetic since we have
+        # only the one app, so let's leave it...
+        options = {"version_table": "{app.import_name}_alembic_version"}
         migrate.init_app(app, directory=migrations_dir, **options)
 
         if os.path.isdir(migrations_dir):

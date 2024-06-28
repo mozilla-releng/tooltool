@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.11
 
 RUN groupadd --gid 10001 app && \
     useradd -g app --uid 10001 --shell /usr/sbin/nologin --create-home --home-dir /app app
@@ -21,8 +21,7 @@ USER app
 WORKDIR /app
 
 RUN python -m venv /appenv \
- && /appenv/bin/pip install --upgrade pip \
- && /appenv/bin/pip install -r requirements/base.txt \
+ && /appenv/bin/pip install --no-deps -r requirements/base.txt \
  && /appenv/bin/pip install -e .
 
 CMD ["/app/docker.d/run.sh"]

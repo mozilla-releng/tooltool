@@ -104,11 +104,11 @@ with open(os.path.join(os.path.dirname(__file__), "version.txt")) as f:
     VERSION = f.read().strip()
 
 if CLOUDFRONT_PRIVATE_KEY:
-    with open(CLOUDFRONT_PRIVATE_KEY, "rb") as f:
-        CLOUDFRONT_PRIVATE_KEY = f.read().strip()
+    with open(CLOUDFRONT_PRIVATE_KEY, "rb") as key:
+        CLOUDFRONT_PRIVATE_KEY = key.read().strip()
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_DATABASE_URI = secrets["DATABASE_URL"]
 
-if ENV == "localdev":  # noqa: F821
+if ENV == "localdev":  # type: ignore[name-defined]  # noqa: F821
     SQLALCHEMY_ECHO = True

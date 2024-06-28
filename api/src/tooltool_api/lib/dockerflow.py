@@ -22,7 +22,7 @@ logger = tooltool_api.lib.log.get_logger(__name__)
 
 class HeartbeatException(Exception):
     """Error messages that are being collected from each extension which
-       implements app_heartbeat.
+    implements app_heartbeat.
     """
 
     def __init__(self, message, *arg, **kw):

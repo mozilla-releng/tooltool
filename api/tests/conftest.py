@@ -77,7 +77,7 @@ requests_mock = responses.RequestsMock(assert_all_requests_are_fired=False)
 def parse_header(header):
     """Parse a fake Hawk header
 
-       Extract client id and ext data
+    Extract client id and ext data
     """
     if not header.startswith("Hawk "):
         raise Exception("Missing Hawk prefix")
@@ -103,8 +103,7 @@ def parse_header(header):
 
 
 def mock_auth_taskcluster(request):
-    """Mock the hawk header validation from Taskcluster.
-    """
+    """Mock the hawk header validation from Taskcluster."""
     payload = json.loads(request.body)
     try:
         # Parse fake hawk header
@@ -134,8 +133,7 @@ def mock_auth_taskcluster(request):
 
 
 def configure_app(app):
-    """Configure flask application and ensure all mocks are in place
-    """
+    """Configure flask application and ensure all mocks are in place"""
 
     if hasattr(app, "db"):
         app.db.drop_all()
@@ -144,8 +142,7 @@ def configure_app(app):
 
 @pytest.fixture(autouse=True)
 def client(app):
-    """A Flask test client for uplift/backend with mockups enabled.
-    """
+    """A Flask test client for uplift/backend with mockups enabled."""
     with app.test_client() as client:
         with requests_mock:
 

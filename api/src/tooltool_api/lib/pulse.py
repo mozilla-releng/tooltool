@@ -41,8 +41,8 @@ async def _create_consumer(user, password, exchange, topic, callback):
     exchange_name = exchange
     if exchange.startswith(f"exchange/{user}/"):
         exchange_name = exchange[len(f"exchange/{user}/") :]
-    elif exchange.startswith(f"exchange/"):
-        exchange_name = exchange[len(f"exchange/") :]
+    elif exchange.startswith("exchange/"):
+        exchange_name = exchange[len("exchange/") :]
 
     # full exchange name should start with "exchange/"
     if not exchange.startswith("exchange/"):
@@ -110,10 +110,10 @@ def run_consumer(consumer):
 
 
 class Pulse(object):
-    """ Documentation about Pulse
+    """Documentation about Pulse
 
-        https://wiki.mozilla.org/Auto-tools/Projects/Pulse
-        https://wiki.mozilla.org/Auto-tools/Projects/Pulse/Exchanges
+    https://wiki.mozilla.org/Auto-tools/Projects/Pulse
+    https://wiki.mozilla.org/Auto-tools/Projects/Pulse/Exchanges
     """
 
     def __init__(self, host, port, user, password, virtual_host="/", ssl=True, connect_timeout=5):

@@ -11,7 +11,7 @@ blinker
 boto
 botocore
 click
-connexion[swagger-ui]
+connexion[swagger-ui]<3
 cryptography
 flask-oidc
 flask-talisman
@@ -26,5 +26,3 @@ raven
 requests
 structlog
 taskcluster
-# itsdangerous 2.1 is incompatible with flask-oidc 1.4.0
-itsdangerous<2.1

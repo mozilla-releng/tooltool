@@ -8,17 +8,18 @@ codecov
 coverage
 coveralls
 flake8
-flake8-coding
 flake8-copyright
 flake8-debugger
 flake8-isort
-flake8-mypy
 flake8-quotes
 inotify  # needed by gunicorn for faster/better reload
 isort
+mypy
 pdbpp
 pip-compile-multi
 pytest
 pytest-cov
 python-hglib
 responses
+types-boto
+types-pytz

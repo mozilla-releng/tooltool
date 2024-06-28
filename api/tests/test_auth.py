@@ -14,8 +14,7 @@ import pytest
 
 
 def build_header(client_id, ext_data=None):
-    """Build a fake Hawk header to share client id & scopes.
-    """
+    """Build a fake Hawk header to share client id & scopes."""
 
     out = collections.OrderedDict({"id": client_id, "ts": int(time.time()), "nonce": random.randint(0, 100000)})
     if ext_data is not None:
