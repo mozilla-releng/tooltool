@@ -5,5 +5,5 @@
 
 PROJECT_NAME = "tooltool_api"
 PULSE_ROUTE_CHECK_FILE_PENDING_UPLOADS = "check_file_pending_uploads"
-SCOPE_PREFIX = f"project:releng:services/tooltool/api"
+SCOPE_PREFIX = "project:releng:services/tooltool/api"
 SCOPE_MANAGE = f"{SCOPE_PREFIX}/manage"

@@ -12,7 +12,7 @@ ALLOWED_REGIONS = ("us-east-1", "us-west-1", "us-west-2")
 
 class File(tooltool_api.lib.db.db.Model):
     """An file, identified by size and digest.  The server may have zero
-       or many copies of a file.
+    or many copies of a file.
     """
 
     __tablename__ = "releng_tooltool_files"
@@ -38,8 +38,7 @@ class File(tooltool_api.lib.db.db.Model):
 
 
 class Batch(tooltool_api.lib.db.db.Model):
-    """Upload batches, with batch metadata, linked to the uploaded files.
-    """
+    """Upload batches, with batch metadata, linked to the uploaded files."""
 
     __tablename__ = "releng_tooltool_batches"
 
@@ -65,8 +64,7 @@ class Batch(tooltool_api.lib.db.db.Model):
 
 
 class FileInstance(tooltool_api.lib.db.db.Model):
-    """A verified instance of a file in a single region.
-    """
+    """A verified instance of a file in a single region."""
 
     __tablename__ = "releng_tooltool_file_instances"
 
@@ -75,8 +73,7 @@ class FileInstance(tooltool_api.lib.db.db.Model):
 
 
 class BatchFile(tooltool_api.lib.db.db.Model):
-    """An association of upload batches to files, with filenames
-    """
+    """An association of upload batches to files, with filenames"""
 
     __tablename__ = "releng_tooltool_batch_files"
 
@@ -89,9 +86,9 @@ class BatchFile(tooltool_api.lib.db.db.Model):
 
 class PendingUpload(tooltool_api.lib.db.db.Model):
     """Files for which upload URLs have been generated, but which haven't yet
-       been uploaded.  This table is used to poll for completed uploads, and to
-       prevent trusting files for which there is an outstanding signed upload
-       URL.
+    been uploaded.  This table is used to poll for completed uploads, and to
+    prevent trusting files for which there is an outstanding signed upload
+    URL.
     """
 
     __tablename__ = "releng_tooltool_pending_upload"
