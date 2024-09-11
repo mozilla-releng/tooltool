@@ -1287,6 +1287,11 @@ class FetchTests(TestDirMixin, unittest.TestCase):
         self.assertRaises(Exception, lambda: tooltool.unpack_file(os.path.join(CWD_PATH, 'archive-link-abs.tar')))
         self.assertRaises(Exception, lambda: tooltool.unpack_file(os.path.join(CWD_PATH, 'archive-double-link.tar')))
 
+    def test_unpack_deferred_symlink(self):
+        with mock.patch('os.symlink') as symlink:
+            symlink.side_effect = NotImplementedError()
+            assert tooltool.unpack_file(os.path.join(CWD_PATH, "archive-deferred-symlink.tar.zst"))
+
 
 class FetchFileTests(BaseFileRecordTest, TestDirMixin):
 
