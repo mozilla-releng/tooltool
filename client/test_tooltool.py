@@ -1308,7 +1308,7 @@ class FetchFileTests(BaseFileRecordTest, TestDirMixin):
                 data[url] = remaining
                 return rv
 
-            def replacement(req):
+            def replacement(req, **kwargs):
                 auth = req.get_header('Authorization')
                 if auth:
                     if exp_token.strip()[0] == '{':
