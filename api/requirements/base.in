@@ -4,7 +4,7 @@ Flask-Login
 Flask-Migrate
 Flask-SQLAlchemy<3.1
 Logbook
-SQLAlchemy<2
+SQLAlchemy<3
 Werkzeug
 aioamqp
 blinker
