@@ -10,3 +10,9 @@ api-py311:
     docker-image: {in-tree: api-tox-py311}
   run:
     command: tox -e tooltool_api-py311
+
+api-check:
+  worker:
+    docker-image: {in-tree: api-tox-py311}
+  run:
+    command: tox -e tooltool_api-check
