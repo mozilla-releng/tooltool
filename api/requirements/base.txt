@@ -8,7 +8,7 @@
 aioamqp==0.15.0 \
     --hash=sha256:0f38cc4db8db6fd062504b7c4b6703c800d2130d14d5492cf47d727de1929740 \
     --hash=sha256:fcad924d7658e65ef074522a7e9527e0b0adad09b10774340ea9f3fd277452d8
-    # via -r requirements/base.in
+    # via -r base.in
 aiohappyeyeballs==2.6.1 \
     --hash=sha256:c3f9d0113123803ccadfdf3f0faa505bc78e6a72d1cc4806cbd719826e943558 \
     --hash=sha256:f349ba8f4b75cb25c99c5c2d84e997e485204d2902a9597802b0371f09331fb8
@@ -111,7 +111,9 @@ amqp==5.3.1 \
 async-timeout==5.0.1 \
     --hash=sha256:39e3809566ff85354557ec2398b55e096c8364bacac9405a7a1fa429e77fe76c \
     --hash=sha256:d9321a7a3d5a6a5e187e824d2fa0793ce379a202935782d555d6e9d2735677d3
-    # via taskcluster
+    # via
+    #   aiohttp
+    #   taskcluster
 attrs==25.3.0 \
     --hash=sha256:427318ce031701fea540783410126f03899a97ffc6f61596ad581ac2e40e3bc3 \
     --hash=sha256:75d7cefc7fb576747b2c81b4442d4d4a1ce0900973527c011d1030fd3bf4af1b
@@ -127,16 +129,16 @@ blinker==1.9.0 \
     --hash=sha256:b4ce2265a7abece45e7cc896e98dbebe6cead56bcf805a3d23136d145f5445bf \
     --hash=sha256:ba0efaa9080b619ff2f3459d1d500c57bddea4a6b424b60a91141db6fd2f08bc
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   flask-oidc
 boto==2.49.0 \
     --hash=sha256:147758d41ae7240dc989f0039f27da8ca0d53734be0eb869ef16e3adcfa462e8 \
     --hash=sha256:ea0d3b40a2d852767be77ca343b58a9e3a4b00d9db440efb8da74b4e58025e5a
-    # via -r requirements/base.in
+    # via -r base.in
 botocore==1.37.18 \
     --hash=sha256:99e8eefd5df6347ead15df07ce55f4e62a51ea7b54de1127522a08597923b726 \
     --hash=sha256:a8b97d217d82b3c4f6bcc906e264df7ebb51e2c6a62b3548a97cd173fb8759a1
-    # via -r requirements/base.in
+    # via -r base.in
 certifi==2025.1.31 \
     --hash=sha256:3d5da6925056f6f18f119200434a4780a94263f10d1c21d032a6f6b2baa20651 \
     --hash=sha256:ca78db4565a652026a4db2bcdf68f2fb589ea80d0be70e03929ed730746b84fe
@@ -308,7 +310,7 @@ click==8.1.8 \
     --hash=sha256:63c132bbbed01578a06712a2d1f497bb62d9c1c0d329b7903a866228027263b2 \
     --hash=sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   clickclick
     #   flask
 clickclick==20.10.2 \
@@ -318,7 +320,7 @@ clickclick==20.10.2 \
 connexion[swagger-ui]==2.14.2 \
     --hash=sha256:a73b96a0e07b16979a42cde7c7e26afe8548099e352cf350f80c57185e0e0b36 \
     --hash=sha256:dbc06f52ebeebcf045c9904d570f24377e8bbd5a6521caef15a06f634cf85646
-    # via -r requirements/base.in
+    # via -r base.in
 cryptography==44.0.2 \
     --hash=sha256:04abd71114848aa25edb28e225ab5f268096f44cf0127f3d36975bdf1bdf3390 \
     --hash=sha256:0529b1d5a0105dd3731fa65680b45ce49da4d8115ea76e9da77a875396727b41 \
@@ -356,7 +358,7 @@ cryptography==44.0.2 \
     --hash=sha256:efcfe97d1b3c79e486554efddeb8f6f53a4cdd4cf6086642784fa31fc384e1d7 \
     --hash=sha256:f514ef4cd14bb6fb484b4a60203e912cfcb64f2ab139e88c2274511514bf7308
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   authlib
 ecdsa==0.19.1 \
     --hash=sha256:30638e27cf77b7e15c4c4cc1973720149e1033827cfd00661ca5c8cc0cdb24c3 \
@@ -366,7 +368,7 @@ flask==2.2.5 \
     --hash=sha256:58107ed83443e86067e41eff4631b058178191a355886f8e479e347fa1285fdf \
     --hash=sha256:edee9b0a7ff26621bd5a8c10ff484ae28737a2410d99b0bb9a6850c7fb977aa0
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   connexion
     #   flask-cors
     #   flask-login
@@ -376,29 +378,29 @@ flask==2.2.5 \
 flask-cors==5.0.1 \
     --hash=sha256:6ccb38d16d6b72bbc156c1c3f192bc435bfcc3c2bc864b2df1eb9b2d97b2403c \
     --hash=sha256:fa5cb364ead54bbf401a26dbf03030c6b18fb2fcaf70408096a572b409586b0c
-    # via -r requirements/base.in
+    # via -r base.in
 flask-login==0.6.3 \
     --hash=sha256:5e23d14a607ef12806c699590b89d0f0e0d67baeec599d75947bf9c147330333 \
     --hash=sha256:849b25b82a436bf830a054e74214074af59097171562ab10bfa999e6b78aae5d
-    # via -r requirements/base.in
+    # via -r base.in
 flask-migrate==4.1.0 \
     --hash=sha256:1a336b06eb2c3ace005f5f2ded8641d534c18798d64061f6ff11f79e1434126d \
     --hash=sha256:24d8051af161782e0743af1b04a152d007bad9772b2bca67b7ec1e8ceeb3910d
-    # via -r requirements/base.in
+    # via -r base.in
 flask-oidc==2.3.1 \
     --hash=sha256:ecf04a79fe27410e111ff861a40ec63ce73d641deecddad91b68fbae6f06f733 \
     --hash=sha256:f30f64549a14a622cbd427232ea535c85b3b1c33576c5270ae0e531c31ec0088
-    # via -r requirements/base.in
+    # via -r base.in
 flask-sqlalchemy==3.0.5 \
     --hash=sha256:c5765e58ca145401b52106c0f46178569243c5da25556be2c231ecc60867c5b1 \
     --hash=sha256:cabb6600ddd819a9f859f36515bb1bd8e7dbf30206cc679d2b081dff9e383283
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   flask-migrate
 flask-talisman==1.1.0 \
     --hash=sha256:3c42b610ebe49b0e35ca150e179bf51aa1da01e4635b49a674868ea681046208 \
     --hash=sha256:c5f486f5f54420729f84b3c3850cd63f96e8b033a9629bee66c524ea363797ff
-    # via -r requirements/base.in
+    # via -r base.in
 frozenlist==1.5.0 \
     --hash=sha256:000a77d6034fbad9b6bb880f7ec073027908f1b40254b5d6f26210d2dab1240e \
     --hash=sha256:03d33c2ddbc1816237a67f66336616416e2bbb6beb306e5f890f2eb22b959cdf \
@@ -573,13 +575,17 @@ greenlet==3.1.1 \
 gunicorn==23.0.0 \
     --hash=sha256:ec400d38950de4dfd418cff8328b2c8faed0edb0d517d3394e457c317908ca4d \
     --hash=sha256:f014447a0101dc57e294f6c18ca6b40227a4c90e9bdb586042628030cba004ec
-    # via -r requirements/base.in
+    # via -r base.in
 idna==3.10 \
     --hash=sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9 \
     --hash=sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3
     # via
     #   requests
     #   yarl
+importlib-metadata==8.7.0 \
+    --hash=sha256:d13b81ad223b890aa16c5471f2ac3056cf76c5f10f82d6f9292f0b415f389000 \
+    --hash=sha256:e5dd1551894c77868a30651cef00984d50e1002d06942a7101d34870c5f02afd
+    # via flask
 inflection==0.5.1 \
     --hash=sha256:1a29730d366e996aaacffb2f1f1cb9593dc38e2ddd30c91250c6dde09ea9b417 \
     --hash=sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2
@@ -611,45 +617,55 @@ jsonschema-specifications==2024.10.1 \
 kombu==5.5.0 \
     --hash=sha256:526c6cf038c986b998639109a1eb762502f831e8da148cc928f1f95cd91eb874 \
     --hash=sha256:72e65c062e903ee1b4e8b68d348f63c02afc172eda409e3aca85867752e79c0b
-    # via -r requirements/base.in
-logbook==1.8.1 \
-    --hash=sha256:084265d5ccf48c9259b49477bbf30913f405c2812b96f739d5feebea828cc275 \
-    --hash=sha256:221e6f884f035fffd77935802ab47dc0a3aa7c833010cd7b51354649a7eb462d \
-    --hash=sha256:27aefba2d67b9c3d752d3b03db24d5747a483f8585312d8fc534447c1a94f9e5 \
-    --hash=sha256:2ee8107845319fc0f974a86af8b029b555a1488616c979ba42245c18278178af \
-    --hash=sha256:32d1d5bd60edeced76832eec1b6cd97aa0eb1948f2f05333a21cb34361f00e68 \
-    --hash=sha256:3c1b47fa2af7f04314e28e1bb6c1dae3dcc1944ac0ce64ec969eff5dc809848b \
-    --hash=sha256:3d206ceb1f505518ae87daa9313d67264013075fcfb354fcdfddded3be0baa2b \
-    --hash=sha256:426919de534dc908e42f0bfd71fb1700e0a7d14ff4d08f1f949444c28162c3c3 \
-    --hash=sha256:432102b278f6b086fa7ba045343238b151974327a9daec751914eb534535e082 \
-    --hash=sha256:5997282b4a9e93f723bbf0a073536d0e271f28f04e4ec5e4dc33e993b97db9cd \
-    --hash=sha256:5fc87db3bddbec7fc60ca980c1d610b91b0a2bdbca80b73fe7ee9ae36dea3e05 \
-    --hash=sha256:6075277b4593116018620c3669b743a121bef0bf6b900f2c93085ec1afc03136 \
-    --hash=sha256:6af33504897244833a99596b5e938c018125e8cb1d061b56536b37aa8f8cfb04 \
-    --hash=sha256:6cff3c08eb8ea69aef545967d40021807b96d24097a3f7bdf01e62c7831ee4e1 \
-    --hash=sha256:85f88f25116cad0748fa326bccf2826451a0d6bc67ead6302d7011e17524373a \
-    --hash=sha256:8f014540a52ac2ac47195d4bbd41d72e938049b31104b291295d1f0c78ced6b2 \
-    --hash=sha256:8f2bc17673831e5efd9f232317950b360f04d6c8c737f6cac2a239428bedefe0 \
-    --hash=sha256:942d2d689e0c845a28e01bb5d63b5e0d681cbd4562bd932b6963f5103c02f60e \
-    --hash=sha256:95e7a7ba8610f0fd49e04e8cd2ac986d9e27cf1d232633d46563de1e0aeadacb \
-    --hash=sha256:a42cff837831b7509c2e54e39f71e489763266bd6d4afa29d89f6f1fdd9ca1cc \
-    --hash=sha256:a4d30983ac1dce2f09d9acbf86ecf78696158148354162faff26c575b3a52ec7 \
-    --hash=sha256:a6c0d52293645aa46b2edfe7da8d61cf7839955d4ccf073c615972b55a44cefc \
-    --hash=sha256:a84fe78f743586fd853f5f7543b2fb623a620c551d52af081aa7036f2baa76cb \
-    --hash=sha256:ad0f935eb9330f6d7154613e5c7dd9a8ca0c1b700c1e4824bc0d71e37fbe9281 \
-    --hash=sha256:bc3a0155d9baee138be8163b50af7bb127560e7259939a84b54c27b8e21734ab \
-    --hash=sha256:c218ec203603182dda08a04b850c7baf249ce6f4d11a746ebcf1862892ab007b \
-    --hash=sha256:c88eec448e23e79b889dc1548a767fecf0b0f37f5270c753fee113f2af2bb2a8 \
-    --hash=sha256:cae13a3f616027c558b76e34039c262d117ad4cb9064506ec8f29466eb03e76e \
-    --hash=sha256:d094397b624aa70656a8575230fd9b8373dd9c978dfc912691e5227cb3c804fc \
-    --hash=sha256:d4263a589662ca3f83e30a0a1a46659c0c680fbf7447be3f42d56406c18e3426 \
-    --hash=sha256:db3e6fa563f1ddc711cac8af2d3fe2a9301dd27e723afe691528161e89c0756a \
-    --hash=sha256:db7213329c72f85d78d3c806d30c31b4e76c9da72eea98be4f986f581fd18ed9 \
-    --hash=sha256:dca5277818c273d16e094fde89ac71dde132a1d6dbd3e15ed1f219c220feb952 \
-    --hash=sha256:dd062935d30f4b7fd36f470f11a50988d325eafff5fcd1345a94617d472bdbf6 \
-    --hash=sha256:e35c6122a1decaf1c9e9cb0e12b8fada82c5f2bc84dee99cb83ba024998b8a2e \
-    --hash=sha256:f9aefd9e456a64236c5a0516df00c6c9a654ab27b1d2f1227326c3b24bc3c285
-    # via -r requirements/base.in
+    # via -r base.in
+logbook==1.8.2 \
+    --hash=sha256:0162091df9b175cfd24fe558d15c8bdddfbc1f9a23c3d080eaade5de0f5663ae \
+    --hash=sha256:02d7c06372a57c4f5f1fe25a29628084fd45f355eae5b0cc1f1feca30b7627c6 \
+    --hash=sha256:0a8902d83196de77092418f198500eda43f2a855a90a605439005db67a7b9d9f \
+    --hash=sha256:1d7c132c6152c8088af59550b730757dbcfd88bd3e860ddac204d8968dffea34 \
+    --hash=sha256:230f284d95aa625ca253c44b8df2022ae66e89d14ada2afc4170a84aaa019b73 \
+    --hash=sha256:25f269f9789233be8605ab91e62893a43dc4f5ebf1016aae2e8071b1e2ecc8da \
+    --hash=sha256:2eff4f16feb5577cf68aa09470fa33b8d8e68abe0fb3ac9dee1a822837c6c5df \
+    --hash=sha256:3586bc0b2f4e74e87c4b927885e705db76c37f8ba127c788d20836930340f803 \
+    --hash=sha256:37562c1c26579f9b7f22eabcc92f4fd80dd0765e5418df2a9d34422da45d530f \
+    --hash=sha256:3e10b90375fa66885b9a5300977db48fb7cd14f25ea0299a349c3a8da929aa36 \
+    --hash=sha256:4255354fb0055dc03e557912352f36a548b614c0f04cd570f40c9e227bda589b \
+    --hash=sha256:46b00a73c626c0a14863b5c773eaf832d1d4b8c3d4d455ef7a2bd042ee25e20b \
+    --hash=sha256:48be336595d1d57769f90cf263b04fe4220d16921b39f3bea2eebd923ec58e5f \
+    --hash=sha256:49cf77b1476192c81859d43e9171f9fc2f1dea43799186fff590ffb9dbfd8c70 \
+    --hash=sha256:49d2b1c337e16f875507a159f1d062badbf6d1ecbd03eca8d205bb2978afbb87 \
+    --hash=sha256:4a5ea5f6217ec7523696e060b62f3fab017837a4007986a933e38a2e758ff146 \
+    --hash=sha256:6050c54cdfca4850e39160dfbc894614c5dfc83c262035fd81d48e4e1fb8af41 \
+    --hash=sha256:6d19797c1646ef2f518fe207ae88d2415487085044f5fa5f1cd725b9ab0dd329 \
+    --hash=sha256:79566d2b9013c524dba18dcbc66913ffa1efefaaf8c54e71a65c1841bf617bcb \
+    --hash=sha256:84da977d13cd14118ad74024433ceacf5ae525d7d9898b0de37501558c965e9f \
+    --hash=sha256:854e2b0c7342a86913af7554711580debdfe9fa1f8079ff711351601c42afbe0 \
+    --hash=sha256:89afb521264ff35f41df6db749eb64e1ea525c0d84247e0b9d0302ef90187d8b \
+    --hash=sha256:8e2a6e97fac5e56f5a33d4d9b5733a852e15a91aa85ebf7e2346f6614d267f3c \
+    --hash=sha256:8e2aa839f8dc05b45052ea0cac66cb58842f979fd778672d497e023593cfd804 \
+    --hash=sha256:929d769ec69984935c0e017b5e5f3d0e5129ad856a30b8ef45492a5d0e0486f9 \
+    --hash=sha256:9ae6c7a057f82e31880646244c852d19400a00e9663970ee88743a54b4196399 \
+    --hash=sha256:9b3beeb2a4f3feef42ed8f6e10882ae055c86ffdb8ccec7c2387b310adf16aa0 \
+    --hash=sha256:9bc9008898f807b4bbf06539838bfc27e7ce92c9f8e8ee15243793114828c45e \
+    --hash=sha256:9f40a0c042ccc48c26d0f7173938851756ff4ae54a4390ffd88e3f6bbb4d667f \
+    --hash=sha256:a80e1eb23cb443b82c114e0c06a56182f6766f30d0595a38867c9ff80428e3a5 \
+    --hash=sha256:b0ca161ca0d39d1875d504f3de1141b1c92e91d4f208f2f250db3a777b121c44 \
+    --hash=sha256:b4043f3ab7d9a46a94c69267af2ce40f61e19d75038106f6b53d2aef4f1f85bc \
+    --hash=sha256:bb0ec1956e704c0619e0d1d53203ba40ba2dbe7de56a859b2b887a3a393a9648 \
+    --hash=sha256:c456c0b4c4aac5ee645430c73ee5f0240235e8fd48b150960c82735b890dffba \
+    --hash=sha256:c820f12a40c789ae0ac937b54545e8e02325ec42782199ef68f01ba8ceb91d71 \
+    --hash=sha256:cf525c749839777e69664fd5380c5227e8e3a02921fe5b6d90e7cfac6682d8ab \
+    --hash=sha256:cf8a9b9f231570f51c652010392df70742236d7ef02375bf82486444d0ca6cce \
+    --hash=sha256:d72ad793f2b62161544f5fc1c1b6abaa58620a59852e526bb57f1f7e1ee63781 \
+    --hash=sha256:dedc8ca0849035371b01d2146fb513cc195a90dac489672821a51eb3e3a3f880 \
+    --hash=sha256:e6d17da7f7cc0630eacbed092385cc7b76f4b73a23ee9a71edaf9dfcc38b3077 \
+    --hash=sha256:ecbf0e0c499bce7b8b13341438ffb7b0b9d01aa6af10272d2d2630eaec2fe711 \
+    --hash=sha256:ed4224a2b0ae404f91bc40c506af31a47b2f31a8d0013e5110aa2f930b2b2892 \
+    --hash=sha256:f19db3f8099596ea824ac433859a621521263ae7a6d73a652665f6c159138793 \
+    --hash=sha256:f2122c0d48fb9a24b8259083028f378bea15d88d0bdac3638d29ca6d48c6e40b \
+    --hash=sha256:fb9008479add6f8c6e30a95ccabc6207828b3cd4a0e67dd725ef0a4e675ad884 \
+    --hash=sha256:fbd75bd21450b65e0c056eb4aebc7a31fe4e65d3e78ea801cf40eed29ef4f4a8
+    # via -r base.in
 mako==1.3.9 \
     --hash=sha256:95920acccb578427a9aa38e37a186b1e43156c87260d7ba18ca63aa4c7cbd3a1 \
     --hash=sha256:b5d65ff3462870feec922dbccf38f6efb44e5714d7b593a656be86663d8600ac
@@ -724,7 +740,7 @@ mohawk==0.3.4 \
     --hash=sha256:b3f85ffa93a5c7d2f9cc591246ef9f8ac4a9fa716bfd5bae0377699a2d89d78c \
     --hash=sha256:e98b331d9fa9ece7b8be26094cbe2d57613ae882133cc755167268a984bc0ab3
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   taskcluster
 multidict==6.2.0 \
     --hash=sha256:0085b0afb2446e57050140240a8595846ed64d1cbd26cef936bfab3192c673b8 \
@@ -945,7 +961,7 @@ psycopg2==2.9.10 \
     --hash=sha256:91fd603a2155da8d0cfcdbf8ab24a2d54bca72795b90d2a3ed2b6da8d979dee2 \
     --hash=sha256:9d5b3b94b79a844a986d029eee38998232451119ad653aea42bb9220a8c5066b \
     --hash=sha256:c6f7b8561225f9e711a9c47087388a97fdc948211c10a4bccbf0ba68ab7b3b5a
-    # via -r requirements/base.in
+    # via -r base.in
 pyasn1==0.4.8 \
     --hash=sha256:39c7e2ec30515947ff4e87fb6f456dfc6e84857d34be479c9d4a4ba4bf46aa5d \
     --hash=sha256:aef77c9fb94a3ac588e87841208bdec464471d9871bd5050a287cc9a475cd0ba
@@ -960,17 +976,17 @@ python-dateutil==2.9.0.post0 \
     --hash=sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3 \
     --hash=sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   botocore
     #   taskcluster
 python-jose==3.4.0 \
     --hash=sha256:9a9a40f418ced8ecaf7e3b28d69887ceaa76adad3bcaa6dae0d9e596fec1d680 \
     --hash=sha256:9c9f616819652d109bd889ecd1e15e9a162b9b94d682534c9c2146092945b78f
-    # via -r requirements/base.in
+    # via -r base.in
 pytz==2025.1 \
     --hash=sha256:89dd22dca55b46eac6eda23b2d72721bf1bdfef212645d81513ef5d03038de57 \
     --hash=sha256:c2db42be2a2518b28e65f9207c4d05e6ff547d1efa4086469ef855e4ab70178e
-    # via -r requirements/base.in
+    # via -r base.in
 pyyaml==6.0.2 \
     --hash=sha256:01179a4a8559ab5de078078f37e5c1a30d76bb88519906844fd7bdea1b7729ff \
     --hash=sha256:0833f8694549e586547b576dcfaba4a6b55b9e96098b36cdc7ebefe667dfed48 \
@@ -1031,7 +1047,7 @@ pyyaml==6.0.2 \
 raven==6.10.0 \
     --hash=sha256:3fa6de6efa2493a7c827472e984ce9b020797d0da16f1db67197bcc23c8fae54 \
     --hash=sha256:44a13f87670836e153951af9a3c80405d36b43097db869a36e92809673692ce4
-    # via -r requirements/base.in
+    # via -r base.in
 referencing==0.36.2 \
     --hash=sha256:df2e89862cd09deabbdba16944cc3f10feb6b3e6f18e902f7cc25609a34775aa \
     --hash=sha256:e8699adbbf8b5c7de96d8ffa0eb5c158b3beafce084968e2ea8bb08c6794dcd0
@@ -1042,7 +1058,7 @@ requests==2.32.3 \
     --hash=sha256:55365417734eb18255590a9ff9eb97e9e1da868d4ccd6402399eaf68af20a760 \
     --hash=sha256:70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   connexion
     #   flask-oidc
     #   taskcluster
@@ -1214,13 +1230,13 @@ sqlalchemy==1.4.54 \
     --hash=sha256:fb59a11689ff3c58e7652260127f9e34f7f45478a2f3ef831ab6db7bcd72108f \
     --hash=sha256:fc9ffd9a38e21fad3e8c5a88926d57f94a32546e937e0be46142b2702003eba7
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   alembic
     #   flask-sqlalchemy
 structlog==25.2.0 \
     --hash=sha256:0fecea2e345d5d491b72f3db2e5fcd6393abfc8cd06a4851f21fcd4d1a99f437 \
     --hash=sha256:d9f9776944207d1035b8b26072b9b140c63702fd7aa57c2f85d28ab701bd8e92
-    # via -r requirements/base.in
+    # via -r base.in
 swagger-ui-bundle==0.0.9 \
     --hash=sha256:b462aa1460261796ab78fd4663961a7f6f347ce01760f1303bbbdf630f11f516 \
     --hash=sha256:cea116ed81147c345001027325c1ddc9ca78c1ee7319935c3c75d3669279d575
@@ -1228,7 +1244,7 @@ swagger-ui-bundle==0.0.9 \
 taskcluster==83.3.0 \
     --hash=sha256:0e882ca827109c32d9feea39232fbbc68451fb238618cf9c45c1e5053a845cc5 \
     --hash=sha256:e32531a13bd5c6652b1ab8f7a7f917dedb9a63a1ae9af0ed8a83498afa036a85
-    # via -r requirements/base.in
+    # via -r base.in
 taskcluster-urls==13.0.1 \
     --hash=sha256:5e25e7e6818e8877178b175ff43d2e6548afad72694aa125f404a7329ece0973 \
     --hash=sha256:b25e122ecec249c4299ac7b20b08db76e3e2025bdaeb699a9d444556de5fd367 \
@@ -1239,14 +1255,17 @@ typing-extensions==4.12.2 \
     --hash=sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8
     # via
     #   alembic
+    #   kombu
+    #   multidict
     #   referencing
+    #   structlog
 tzdata==2025.1 \
     --hash=sha256:24894909e88cdb28bd1636c6887801df64cb485bd593f2fd83ef29075a81d694 \
     --hash=sha256:7e127113816800496f027041c570f50bcd464a020098a3b6b199517772303639
     # via kombu
-urllib3==2.3.0 \
-    --hash=sha256:1cee9ad369867bfdbbb48b7dd50374c0967a0bb7710050facf0dd6911440e3df \
-    --hash=sha256:f8c5449b3cf0861679ce7e0503c7b44b5ec981bec0d1d3795a07f1ba96f0204d
+urllib3==1.26.20 \
+    --hash=sha256:0ed14ccfbf1c30a9072c7ca157e4319b70d65f623e91e7b32fadb2853431016e \
+    --hash=sha256:40c2dc0c681e47eb8f90e7e27bf6ff7df2e677421fd46756da1161c39ca70d32
     # via
     #   botocore
     #   requests
@@ -1260,7 +1279,7 @@ werkzeug==2.2.3 \
     --hash=sha256:2e1ccc9417d4da358b9de6f174e3ac094391ea1d4fbef2d667865d819dfd0afe \
     --hash=sha256:56433961bc1f12533306c624f3be5e744389ac61d722175d543e1751285da612
     # via
-    #   -r requirements/base.in
+    #   -r base.in
     #   connexion
     #   flask
     #   flask-cors
@@ -1349,3 +1368,7 @@ yarl==1.18.3 \
     --hash=sha256:fe57328fbc1bfd0bd0514470ac692630f3901c0ee39052ae47acd1d90a436719 \
     --hash=sha256:fea09ca13323376a2fdfb353a5fa2e59f90cd18d7ca4eaa1fd31f0a8b4f91e62
     # via aiohttp
+zipp==3.23.0 \
+    --hash=sha256:071652d6115ed432f5ce1d34c336c0adfd6a884660d1e9712a256d3d3bd4b14e \
+    --hash=sha256:a07157588a12518c9d4034df3fbbee09c814741a33ff63c05fa29d26a2404166
+    # via importlib-metadata
