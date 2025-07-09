@@ -34,7 +34,8 @@ services:
       - CLOUDFRONT_PRIVATE_KEY
       - DISABLE_PULSE=1
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:16
@@ -45,7 +46,7 @@ services:
       - POSTGRES_PASSWORD=tooltoolpassword
       - POSTGRES_DB=tooltooldb
     healthcheck:
-      test: ["CMD-SHELL", "-c", "pg_isready -U tooltooluser -d tooltooldb"]
+      test: ["CMD-SHELL", "pg_isready -U tooltooluser -d tooltooldb"]
       interval: 10s
       timeout: 5s
       retries: 5
