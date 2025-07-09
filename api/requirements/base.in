@@ -8,7 +8,7 @@ SQLAlchemy<2
 Werkzeug
 aioamqp
 blinker
-boto
+boto3
 botocore
 click
 connexion[swagger-ui]<3
