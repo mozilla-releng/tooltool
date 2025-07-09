@@ -1,5 +1,1 @@
-* @ahal @jcristau
-
-# prevent dependabot from requesting reviews
-api/requirements
-client/requirements
+* @mozilla-releng/releng
