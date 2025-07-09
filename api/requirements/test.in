@@ -6,7 +6,6 @@ black
 check-manifest
 codecov
 coverage
-coveralls
 flake8
 flake8-copyright
 flake8-debugger
