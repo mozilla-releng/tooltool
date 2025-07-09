@@ -1,7 +1,6 @@
 -r base.in
 
 coverage
-coveralls
 mock
 pytest
 pyflakes
