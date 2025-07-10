@@ -72,7 +72,6 @@ def init_database(app):
     migrations_dir = os.path.abspath(os.path.join(app.root_path, "..", "migrations"))
 
     with app.app_context():
-
         # Our version table is called (literally)
         # `{app.import_name}_alembic_version`, because of missing formatting;
         # changing it now is risky, and the problem is cosmetic since we have
@@ -87,13 +86,10 @@ def init_database(app):
                 logger.info("Completed migrations", app=app.name)
             except Exception as e:
                 logger.error("Migrations failure", app=app.name, error=e)
-
         else:
+            # tests don't have migrations
             logger.info("No migrations: creating full DB", app=app.name)
             db.create_all()
-
-
-ALLOWED_TABLES = ["relengapi_auth_tokens"]
 
 
 def init_app(app):
