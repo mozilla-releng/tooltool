@@ -8,6 +8,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import os
+
 import logbook
 import structlog
 import structlog.exceptions
@@ -101,7 +103,7 @@ def init_app(app):
     if app.debug:
         level = logbook.DEBUG
 
-    init_logger(app.name, env=app.config["ENV"], level=level, SENTRY_DSN=app.config.get("SENTRY_DSN"), flask_app=app)
+    init_logger(app.name, env=os.environ.get("ENV"), level=level, SENTRY_DSN=app.config.get("SENTRY_DSN"), flask_app=app)
 
 
 def app_heartbeat():
