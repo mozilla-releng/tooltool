@@ -22,7 +22,7 @@ psycopg2
 python-dateutil>=2.1
 python-jose
 pytz
-raven
 requests
+sentry-sdk[flask]
 structlog
 taskcluster

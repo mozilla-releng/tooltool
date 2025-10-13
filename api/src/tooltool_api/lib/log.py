@@ -40,8 +40,7 @@ def setup_sentry(project_name, env, SENTRY_DSN, flask_app=None):
     Setup sentry account using taskcluster secrets
     """
 
-    import raven
-    import raven.handlers.logbook
+    import sentry_sdk
 
     config = dict(dsn=SENTRY_DSN, environment=env)
 
@@ -50,15 +49,7 @@ def setup_sentry(project_name, env, SENTRY_DSN, flask_app=None):
         if version:
             config["release"] = version
 
-    sentry_client = raven.Client(**config)
-
-    if flask_app:
-        import raven.contrib.flask
-
-        raven.contrib.flask.Sentry(flask_app, client=sentry_client)
-
-    sentry_handler = raven.handlers.logbook.SentryHandler(sentry_client, level=logbook.ERROR, bubble=True)
-    sentry_handler.push_application()
+    sentry_sdk.init(**config)
 
 
 def init_logger(project_name, env, level=logbook.INFO, handler=None, SENTRY_DSN=None, flask_app=None, timestamp=False):
