@@ -14,6 +14,7 @@ import flask_login
 import logbook
 import pytest
 import responses
+from moto.core.models import override_responses_real_send
 
 
 @pytest.fixture(scope="session")
@@ -72,6 +73,8 @@ def get_app_config(extra_config):
 
 
 requests_mock = responses.RequestsMock(assert_all_requests_are_fired=False)
+
+override_responses_real_send(requests_mock)
 
 
 def parse_header(header):
@@ -164,3 +167,44 @@ def logger():
 
     tooltool_api.lib.log.init_logger("tooltool_api.lib", env="test", level=logbook.DEBUG)
     return tooltool_api.lib.log.get_logger(__name__)
+
+
+@pytest.fixture
+def real_app():
+    import tooltool_api
+
+    # Use unique auth instance
+    config = get_app_config(
+        {
+            "APP_TEMPLATES_FOLDER": "",
+            "SQLALCHEMY_DATABASE_URI": "sqlite://",
+            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+            "TASKCLUSTER_AUTH": True,
+            "TASKCLUSTER_ROOT_URL": "http://taskcluster.mock",
+            "S3_REGIONS_ACCESS_KEY_ID": "mock access key id",
+            "S3_REGIONS_SECRET_ACCESS_KEY": "mock secret access key",
+            "UPLOAD_EXPIRES_IN": 60,
+            "DOWLOAD_EXPIRES_IN": 60,
+            "S3_REGIONS": {"us-east-1": "bucket"},
+            "DISABLE_PULSE": True,
+            "ALLOW_ANONYMOUS_PUBLIC_DOWNLOAD": True,
+        }
+    )
+
+    app = tooltool_api.create_app(config=config)
+    with app.app_context():
+        configure_app(app)
+        yield app
+
+
+@pytest.fixture
+def real_client(real_app):
+    """A Flask test client for uplift/backend with mockups enabled."""
+    with real_app.test_client() as client:
+        with responses.RequestsMock(assert_all_requests_are_fired=False) as requests_mock:
+            if hasattr(real_app, "auth"):
+                requests_mock.add_callback(
+                    responses.POST, "http://taskcluster.mock/api/auth/v1/authenticate-hawk", callback=mock_auth_taskcluster, content_type="application/json"
+                )
+
+            yield client

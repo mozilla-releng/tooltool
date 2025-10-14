@@ -13,12 +13,15 @@ flake8-isort
 flake8-quotes
 inotify  # needed by gunicorn for faster/better reload
 isort
+moto
 mypy
 pdbpp
 pip-compile-multi
 pytest
 pytest-cov
+pytest-mock
 python-hglib
 responses
 types-boto
 types-pytz
+types-requests<2.31.0.7
