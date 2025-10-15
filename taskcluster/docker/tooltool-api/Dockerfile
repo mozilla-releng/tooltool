@@ -12,8 +12,11 @@ ENV WEB_CONCURRENCY=3
 
 ENV PATH="/appenv/bin:${PATH}"
 
+# This build argument lets us share the Dockerfile between docker compose and image_builder
+ARG SRC=topsrcdir
+
 # %include api
-COPY topsrcdir/api/ /app
+COPY ${SRC}/api/ /app
 
 RUN mkdir /appenv \
  && chown -R app:app /app /appenv
