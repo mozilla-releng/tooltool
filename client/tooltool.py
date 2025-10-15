@@ -1470,7 +1470,7 @@ def send_operation_on_file(data, base_urls, digest, auth_file):
     url = base_urls[0]
     url = urljoin(url, "file/sha512/" + digest)
 
-    data = json.dumps(data)
+    data = json.dumps(data).encode("ascii")
 
     req = Request(url, data, {"Content-Type": "application/json"})
     req.get_method = lambda: "PATCH"
