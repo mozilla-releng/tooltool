@@ -5,14 +5,14 @@
 task-defaults:
   description: test the tooltool api
 
-api-py311:
+api-py313:
   worker:
-    docker-image: {in-tree: api-tox-py311}
+    docker-image: {in-tree: api-tox-py313}
   run:
-    command: tox -e tooltool_api-py311
+    command: tox -e tooltool_api-py313
 
 api-check:
   worker:
-    docker-image: {in-tree: api-tox-py311}
+    docker-image: {in-tree: api-tox-py313}
   run:
     command: tox -e tooltool_api-check

@@ -40,10 +40,10 @@ tasks:
         args:
             BASE_IMAGE: python:3.13
             SETUP_COMMAND: 'apt-get update && apt-get install -y zip xz-utils build-essential libssl-dev libffi-dev python3-dev'
-    api-tox-py311:
+    api-tox-py313:
         definition: tox
         args:
-            BASE_IMAGE: python:3.11
+            BASE_IMAGE: python:3.13
             SETUP_COMMAND: 'apt-get update && apt-get install -y postgresql'
     tooltool-api-staging:
         definition: tooltool-api
