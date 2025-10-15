@@ -22,5 +22,4 @@ pytest-cov
 pytest-mock
 python-hglib
 responses
-types-pytz
 types-requests

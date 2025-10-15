@@ -11,7 +11,6 @@ import json
 import botocore.exceptions
 import click
 import flask
-import pytz
 import sqlalchemy as sa
 
 import tooltool_api.config
@@ -104,10 +103,10 @@ def check_pending_upload(session, pending_upload):
 
     logger2 = logger.bind(tooltool_sha512=sha512)
 
-    if tooltool_api.utils.now() < pending_upload.expires.replace(tzinfo=pytz.UTC):
+    if tooltool_api.utils.now() < pending_upload.expires.replace(tzinfo=datetime.timezone.utc):
         # URL is not expired yet
         return
-    elif tooltool_api.utils.now() > (pending_upload.expires + datetime.timedelta(days=1)).replace(tzinfo=pytz.UTC):
+    elif tooltool_api.utils.now() > (pending_upload.expires + datetime.timedelta(days=1)).replace(tzinfo=datetime.timezone.utc):
         # Upload will probably never complete
         logger2.info("Deleting abandoned pending upload for {}".format(sha512))
         session.delete(pending_upload)

@@ -9,7 +9,6 @@ import typing
 
 import flask
 import flask_login
-import pytz
 import sqlalchemy as sa
 import werkzeug
 import werkzeug.exceptions
@@ -152,7 +151,7 @@ def upload_complete(digest: str) -> typing.Union[werkzeug.Response, typing.Tuple
     file = tooltool_api.models.File.query.filter(tooltool_api.models.File.sha512 == digest).first()
     if file:
         for pending_upload in file.pending_uploads:
-            until = pending_upload.expires.replace(tzinfo=pytz.UTC) - tooltool_api.utils.now()
+            until = pending_upload.expires.replace(tzinfo=datetime.timezone.utc) - tooltool_api.utils.now()
             if until > datetime.timedelta(0):
                 # add 1 second to avoid rounding / skew errors
                 headers = {"X-Retry-After": str(1 + int(until.total_seconds()))}

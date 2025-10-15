@@ -7,11 +7,9 @@ import datetime
 import re
 import typing
 
-import pytz
-
 
 def now() -> datetime.datetime:
-    return datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+    return datetime.datetime.now(datetime.timezone.utc)
 
 
 def keyname(digest: str) -> str:
