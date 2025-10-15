@@ -111,12 +111,14 @@ def upload_batch(body: dict, region: typing.Optional[str] = None) -> dict:
 
             logger2.info(f'Generating signed S3 PUT URL to {info["digest"][:10]} for {flask_login.current_user}; expiring in {UPLOAD_EXPIRES_IN}s')
 
-            info["put_url"] = s3.generate_url(
-                method="PUT",
-                expires_in=UPLOAD_EXPIRES_IN,
-                bucket=bucket,
-                key=tooltool_api.utils.keyname(info["digest"]),
-                headers={"Content-Type": "application/octet-stream"},
+            info["put_url"] = s3.meta.client.generate_presigned_url(
+                ClientMethod="put_object",
+                ExpiresIn=UPLOAD_EXPIRES_IN,
+                Params={
+                    "Bucket": bucket,
+                    "Key": tooltool_api.utils.keyname(info["digest"]),
+                    "ContentType": "application/octet-stream",
+                },
             )
 
             # The PendingUpload row needs to reflect the updated expiration
@@ -217,8 +219,8 @@ def patch_file(digest: str, body: dict) -> dict:
                 if region_bucket is None:
                     raise werkzeug.exceptions.InternalServerError(f"No bucket for region `{instance.region}` defined.")
 
-                bucket = conn.get_bucket(region_bucket)
-                bucket.delete_key(key_name)
+                bucket = conn.Bucket(region_bucket)
+                bucket.Object(key_name).delete()
 
                 session.delete(instance)
 
@@ -290,6 +292,6 @@ def download_file(digest: str) -> werkzeug.Response:
 
         s3 = flask.current_app.aws.connect_to("s3", selected_region)
         logger2.info(f"Generating signed S3 GET URL for {digest[:10]}, expiring in {dowload_expires_in}s")
-        signed_url = s3.generate_url(method="GET", expires_in=dowload_expires_in, bucket=bucket, key=key)
+        signed_url = s3.meta.client.generate_presigned_url(ClientMethod="get_object", ExpiresIn=dowload_expires_in, Params={"Bucket": bucket, "Key": key})
 
         return flask.redirect(signed_url)

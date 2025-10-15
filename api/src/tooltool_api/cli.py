@@ -8,6 +8,7 @@ import datetime
 import hashlib
 import json
 
+import botocore.exceptions
 import click
 import flask
 import pytz
@@ -47,7 +48,7 @@ def replicate_file(session, file, regions_config, aws):
     for target_region in target_regions:
         target_bucket = regions_config[target_region]
         conn = aws.connect_to("s3", target_region)
-        bucket = conn.get_bucket(target_bucket)
+        bucket = conn.Bucket(target_bucket)
 
         # commit the session before replicating, since the DB connection may
         # otherwise go away while we're distracted.
@@ -64,12 +65,13 @@ def verify_file_instance(sha512, size, key):
     """Verify that the given S3 Key matches the given size and digest."""
 
     logger2 = logger.bind(tooltool_sha512=sha512)
-    if key.size != size:
-        logger2.warning("Uploaded file {} has unexpected size {}; expected {}".format(sha512, key.size, size))
+    if key.content_length != size:
+        logger2.warning("Uploaded file {} has unexpected size {}; expected {}".format(sha512, key.content_length, size))
         return False
 
+    response = key.get()
     m = hashlib.sha512()
-    for bytes in key:
+    for bytes in response["Body"]:
         m.update(bytes)
 
     if m.hexdigest() != sha512:
@@ -78,17 +80,16 @@ def verify_file_instance(sha512, size, key):
 
     # verify some settings on the key, in case the uploader configured
     # it differently
-    if key.storage_class != "STANDARD":
+    if key.storage_class and key.storage_class != "STANDARD":
         logger2.warning("File {} was uploaded with incorrect storage class {}".format(sha512, key.storage_class))
         return False
 
-    if key.get_redirect():  # pragma: no cover
-        # (not covered because moto doesn't support redirects)
+    if key.website_redirect_location:
         logger2.warning("File {} was uploaded with a website redirect set".format(sha512))
         return False
 
     # verifying the ACL is a bit tricky, so just set it correctly
-    key.set_acl("private")
+    key.Acl().put(ACL="private")
 
     return True
 
@@ -120,9 +121,12 @@ def check_pending_upload(session, pending_upload):
         session.delete(pending_upload)
         return
 
-    bucket = s3.get_bucket(s3_regions[pending_upload.region], validate=False)
-    key = bucket.get_key(tooltool_api.utils.keyname(sha512))
-    if not key:
+    bucket = s3.Bucket(s3_regions[pending_upload.region])
+    key = bucket.Object(tooltool_api.utils.keyname(sha512))
+    try:
+        key.load()
+    except botocore.exceptions.ClientError:
+        # XXX check for 404?
         # not uploaded yet
         return
 
