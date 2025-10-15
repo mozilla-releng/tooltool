@@ -17,7 +17,6 @@ flask-oidc
 flask-talisman
 gunicorn
 kombu
-mohawk<0.4,>=0.3.4
 psycopg2
 requests
 sentry-sdk[flask]
