@@ -38,7 +38,7 @@ tasks:
         NAME: tooltool-api-staging
         DOCKER_TAG: staging
     dependencies:
-      parent-image: build-docker-image-tooltool-api-staging
+      parent-image: docker-image-tooltool-api-staging
 
   production:
     run-on-git-branches: [^production$]
@@ -47,4 +47,4 @@ tasks:
         NAME: tooltool-api-staging
         DOCKER_TAG: production
     dependencies:
-      parent-image: build-docker-image-tooltool-api-production
+      parent-image: docker-image-tooltool-api-production
