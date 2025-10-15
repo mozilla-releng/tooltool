@@ -22,6 +22,5 @@ pytest-cov
 pytest-mock
 python-hglib
 responses
-types-boto
 types-pytz
 types-requests<2.31.0.7
