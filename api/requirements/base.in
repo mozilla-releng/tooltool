@@ -19,8 +19,6 @@ gunicorn
 kombu
 mohawk<0.4,>=0.3.4
 psycopg2
-python-dateutil>=2.1
-python-jose
 requests
 sentry-sdk[flask]
 structlog
