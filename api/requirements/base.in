@@ -21,7 +21,6 @@ mohawk<0.4,>=0.3.4
 psycopg2
 python-dateutil>=2.1
 python-jose
-pytz
 requests
 sentry-sdk[flask]
 structlog
