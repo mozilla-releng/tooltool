@@ -50,7 +50,7 @@ def init_app(app):
     if csp_report_uri:
         config["content_security_policy_report_uri"] = csp_report_uri
 
-        env = app.config.get("ENV")
+        env = os.environ.get("ENV")
         if env:
             config["content_security_policy_report_uri"] += f"&sentry_environment={env}"
 
