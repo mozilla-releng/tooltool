@@ -60,6 +60,12 @@ class Api:
             pass_context_arg_name=pass_context_arg_name,
             options=options,
         )
+
+        # Work around a connexion 2 bug to keep the api served at `/` despite it
+        # having to have a baseUrl different from `/` for the internal route names
+        # to match between what connexion registers and what it expects later
+        api.blueprint.url_prefix = ""
+
         self.swagger_url = api.options.openapi_console_ui_path
         app.register_blueprint(api.blueprint)
 
