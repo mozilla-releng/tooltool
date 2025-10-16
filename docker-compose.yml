@@ -1,7 +1,11 @@
 version: '3'
 services:
   api:
-    build: api
+    build:
+      dockerfile: taskcluster/docker/tooltool-api/Dockerfile
+      args:
+        SRC: .
+        FRONTEND_CONFIG: config.local.mjs
     ports:
       - "8010:8010"
     volumes:
