@@ -8,6 +8,10 @@ task-defaults:
 api-py313:
   worker:
     docker-image: {in-tree: api-tox-py313}
+    artifacts:
+        - type: file
+          path: /builds/worker/checkouts/vcs/api/coverage.xml
+          name: public/coverage.xml
   run:
     command: tox -e tooltool_api-py313
 
