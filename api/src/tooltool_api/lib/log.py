@@ -11,6 +11,7 @@
 import os
 
 import logbook
+import logbook.compat
 import structlog
 import structlog.exceptions
 
