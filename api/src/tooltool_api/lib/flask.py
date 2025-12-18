@@ -17,7 +17,7 @@ EXTENSIONS = ["log", "security", "cors", "api", "auth", "pulse", "db"]
 logger = tooltool_api.lib.log.get_logger(__name__)
 
 
-def create_app(project_name, extensions=[], config=None, enable_dockerflow=True, **kw):
+def create_app(project_name, extensions=(), config=None, enable_dockerflow=True, **kw):
     """
     Create a new Flask backend application
     project_name is the Python application name, used as Flask import_name
@@ -28,7 +28,7 @@ def create_app(project_name, extensions=[], config=None, enable_dockerflow=True,
     connexion_app = connexion.FlaskApp(import_name=project_name, server_args=kw)
     app = connexion_app.app
     app.name = project_name
-    app.__extensions = extensions
+    app.__extensions = []
 
     if not app.config.get("APP_TESTING") and os.environ.get("APP_SETTINGS"):
         logger.info("Loading custom configuration from APP_SETTINGS", APP_SETTINGS=os.environ.get("APP_SETTINGS"))
@@ -45,6 +45,9 @@ def create_app(project_name, extensions=[], config=None, enable_dockerflow=True,
         if extension_name not in extensions:
             continue
 
+        if app.config.get("DISABLE_PULSE") and extension_name == "pulse":
+            continue
+
         logger.debug("Initializing extension", extension=extension_name, app=app.name)
 
         extension_init_app = None
@@ -57,6 +60,7 @@ def create_app(project_name, extensions=[], config=None, enable_dockerflow=True,
         if extension_init_app is None:
             raise Exception(f"Could not import tooltool_api.lib extension: {extension_name}")
 
+        app.__extensions.append(extension_name)
         extension = extension_init_app(app)
         if extension and extension_name is not None:
             setattr(app, extension_name, extension)

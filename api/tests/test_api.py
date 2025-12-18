@@ -226,3 +226,9 @@ def bucket(s3):
 def test_swagger(real_client):
     resp = real_client.get("/apidocs/")
     assert resp.status_code == 200
+
+
+def test_heartbeat(real_client):
+    resp = real_client.get("/__heartbeat__")
+    assert resp.status_code == 200
+    assert resp.text == "OK"
