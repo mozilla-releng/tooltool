@@ -62,7 +62,7 @@ def heartbeat_response():
 
         extension_heartbeat = None
         try:
-            app_heartbeat = getattr(importlib.import_module("tooltool_api.lib.flask." + extension_name), "app_heartbeat")
+            app_heartbeat = getattr(importlib.import_module("tooltool_api.lib." + extension_name), "app_heartbeat")
             logger.info(f"Testing heartbeat of {extension_name} extension")
             app_heartbeat()
         except HeartbeatException as e:

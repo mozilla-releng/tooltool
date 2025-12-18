@@ -206,5 +206,6 @@ def real_client(real_app):
                 requests_mock.add_callback(
                     responses.POST, "http://taskcluster.mock/api/auth/v1/authenticate-hawk", callback=mock_auth_taskcluster, content_type="application/json"
                 )
+                requests_mock.get("http://taskcluster.mock/api/auth/v1/ping", json={"alive": True, "uptime": 13221.399768699})
 
             yield client
