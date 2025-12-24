@@ -2,36 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
-task-defaults:
-  description: test the tooltool client
-
-client-py38:
+client:
+  matrix:
+    python: ["38", "39", "310", "311", "312", "313"]
+  description: test the tooltool client with python{matrix[python]}
   worker:
-    docker-image: {in-tree: client-tox-py38}
+    docker-image: {in-tree: "client-tox-py{matrix[python]}"}
   run:
-    command: tox -e tooltool_client-py38
-client-py39:
-  worker:
-    docker-image: {in-tree: client-tox-py39}
-  run:
-    command: tox -e tooltool_client-py39
-client-py310:
-  worker:
-    docker-image: {in-tree: client-tox-py310}
-  run:
-    command: tox -e tooltool_client-py310
-client-py311:
-  worker:
-    docker-image: {in-tree: client-tox-py311}
-  run:
-    command: tox -e tooltool_client-py311
-client-py312:
-  worker:
-    docker-image: {in-tree: client-tox-py312}
-  run:
-    command: tox -e tooltool_client-py312
-client-py313:
-  worker:
-    docker-image: {in-tree: client-tox-py313}
-  run:
-    command: tox -e tooltool_client-py313
+    command: tox -e tooltool_client-py{matrix[python]}
