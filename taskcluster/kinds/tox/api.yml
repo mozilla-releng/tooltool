@@ -7,7 +7,7 @@ task-defaults:
 
 api:
   matrix:
-    python: [py313]
+    python: [py313, py314]
   worker:
     docker-image: {in-tree: "api-tox-{matrix[python]}"}
   run:
