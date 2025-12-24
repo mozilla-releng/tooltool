@@ -9,7 +9,7 @@ task-defaults:
 
 api:
   matrix:
-    python: [py313]
+    python: [py313, py314]
   run:
     command: tox -e tooltool_api-{matrix[python]}
 
