@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 transforms:
+    - taskgraph.transforms.matrix
     - tooltool_taskgraph.transforms.codecov
 
 
@@ -16,7 +17,7 @@ task-defaults:
     using: run-task
     checkout:
       tooltool: {}
-    cwd: '{checkout}'
+    cwd: '{{checkout}}'
   scopes:
     - 'secrets:get:project/releng/tooltool/ci'
 
