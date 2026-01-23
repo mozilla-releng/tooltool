@@ -1,3 +1,74 @@
+[project]
+name = "mozilla-tooltool-api"
+version = "1.0.0"
+description = "The code behind https://tooltool.mozilla-releng.net/"
+authors = [
+  { name = "Mozilla Release Engineering", email = "release+tooltool@mozilla.com" },
+]
+license = "MPL-2.0"
+dependencies = [
+  "Flask",
+  "Flask-Cors",
+  "Flask-Login",
+  "Flask-Migrate",
+  "Flask-SQLAlchemy<3.1",
+  "Logbook",
+  "SQLAlchemy<2",
+  "Werkzeug",
+  "aioamqp",
+  "blinker",
+  "boto3",
+  "botocore",
+  "click",
+  "connexion[swagger-ui]<3",
+  "cryptography",
+  "flask-oidc",
+  "flask-talisman",
+  "gunicorn",
+  "kombu",
+  "psycopg2",
+  "requests",
+  "sentry-sdk[flask]",
+  "structlog",
+  "taskcluster",
+]
+requires-python = ">=3.13"
+
+[dependency-groups]
+dev = [
+  "Flask-Caching",
+  "Jinja2",
+  "black",
+  "codecov",
+  "coverage",
+  "flake8",
+  "flake8-copyright",
+  "flake8-debugger",
+  "flake8-isort",
+  "flake8-quotes",
+  "inotify",  # needed by gunicorn for faster/better reload
+  "isort",
+  "moto",
+  "mypy",
+  "pdbpp",
+  "pytest",
+  "pytest-cov",
+  "pytest-mock",
+  "python-hglib",
+  "responses",
+  "types-requests",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/migrations", "src/tooltool_api"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.urls]
+Homepage = "https://tooltool.mozilla-releng.net/"
+
 [tool.black]
 line-length = 160
 target-version = ["py37", "py38"]
