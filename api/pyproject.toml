@@ -71,7 +71,7 @@ Homepage = "https://tooltool.mozilla-releng.net/"
 
 [tool.black]
 line-length = 160
-target-version = ["py37", "py38"]
+target-version = ["py313"]
 include = '\.(wsgi|pyi?)$'
 exclude = '''
 /(
