@@ -6,6 +6,7 @@
 import base64
 import functools
 import os
+from importlib.metadata import version
 
 import tooltool_api.lib.pulse
 import tooltool_api.lib.security
@@ -100,8 +101,7 @@ secrets = {
 
 locals().update(secrets)
 
-with open(os.path.join(os.path.dirname(__file__), "version.txt")) as f:
-    VERSION = f.read().strip()
+VERSION = version("mozilla-tooltool-api")
 
 if CLOUDFRONT_PRIVATE_KEY:
     with open(CLOUDFRONT_PRIVATE_KEY, "rb") as key:
