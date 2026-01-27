@@ -16,7 +16,7 @@ RUN mkdir -p /builds && \
 ENV HOME=/builds/worker \
     PATH=/builds/worker/.local/bin:$PATH
 
-RUN apt-get update && apt-get install -y jq && pip install tox
+RUN apt-get update && apt-get install -y jq && pip install tox tox-uv
 ARG SETUP_COMMAND
 RUN eval $SETUP_COMMAND
 
