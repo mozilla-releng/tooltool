@@ -11,7 +11,7 @@ dependencies = [
   "Flask-Cors",
   "Flask-Login",
   "Flask-Migrate",
-  "Flask-SQLAlchemy<3.1",
+  "Flask-SQLAlchemy<3.2",
   "Logbook",
   "SQLAlchemy<2",
   "Werkzeug",
