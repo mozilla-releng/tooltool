@@ -1,5 +1,5 @@
-FROM ghcr.io/astral-sh/uv:0.7.9 as uv
-FROM python:3.13
+FROM ghcr.io/astral-sh/uv:0.7.9@sha256:563b73ab264117698521303e361fb781a0b421058661b4055750b6c822262d1e as uv
+FROM python:3.13@sha256:e5fc5242206917be77a48689fd25f693eb2ae17b707f35c4645d08052d6e0d6e
 
 COPY --from=uv /uv /bin
 
