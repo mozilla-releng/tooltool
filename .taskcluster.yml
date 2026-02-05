@@ -32,7 +32,7 @@ tasks:
           project:
               $switch:
                   'tasks_for in ["github-push", "github-release"]': '${event.repository.name}'
-                  'tasks_for[:19] == "github-pull-request"': '${event.pull_request.head.repo.name}'
+                  'tasks_for[:19] == "github-pull-request"': '${event.pull_request.base.repo.name}'
                   'tasks_for in ["cron", "action", "pr-action"]': '${repository.project}'
           head_branch:
               $switch:
@@ -222,7 +222,7 @@ tasks:
                                         ACTION_CALLBACK: '${action.cb_name}'
 
                           cache:
-                              "${trustDomain}-project-${project}-level-${level}-checkouts-sparse-v2": /builds/worker/checkouts
+                              "${trustDomain}-project-${project}-level-${level}-checkouts-v2": /builds/worker/checkouts
 
                           features:
                               taskclusterProxy: true
