@@ -1215,7 +1215,7 @@ requires-dist = [
     { name = "flask-login" },
     { name = "flask-migrate" },
     { name = "flask-oidc" },
-    { name = "flask-sqlalchemy", specifier = "<3.1" },
+    { name = "flask-sqlalchemy", specifier = "<3.2" },
     { name = "flask-talisman" },
     { name = "gunicorn" },
     { name = "kombu" },
