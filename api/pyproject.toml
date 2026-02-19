@@ -20,7 +20,7 @@ dependencies = [
   "boto3",
   "botocore",
   "click",
-  "connexion[swagger-ui]<3",
+  "connexion[swagger-ui]<4",
   "cryptography",
   "flask-oidc",
   "flask-talisman",
