@@ -11,7 +11,7 @@ services:
     volumes:
       # App reloading doesn't quite work because the app has to be installed
       # Maybe we should drop the volume mount and rely on rebuilding?
-      - ./api:/app
+      - ./api/src:/app/src
       # This mount does, however, because this mounted version of the config
       # ends up getting installed with the Python module.
       - ./api/src/tooltool_api/static/config.local.mjs:/app/src/tooltool_api/static/config.mjs
