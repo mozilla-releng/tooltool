@@ -108,8 +108,10 @@ def init_app(app):
 
 def app_heartbeat():
     try:
+        import sqlalchemy
+
         db = flask.current_app.db
-        db.session.execute("SELECT 1").fetchall()
+        db.session.execute(sqlalchemy.text("SELECT 1")).fetchall()
     except Exception as e:
         logger.exception(e)
         raise tooltool_api.lib.dockerflow.HeartbeatException("Cannot connect to the database.")

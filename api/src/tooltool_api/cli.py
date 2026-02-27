@@ -144,7 +144,7 @@ def check_pending_upload(session, pending_upload):
 
     # add a file instance, but it's OK if it already exists
     try:
-        tooltool_api.models.FileInstance(file=pending_upload.file, region=pending_upload.region)
+        session.add(tooltool_api.models.FileInstance(file=pending_upload.file, region=pending_upload.region))
         session.commit()
     except sa.exc.IntegrityError:
         session.rollback()
