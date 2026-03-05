@@ -15,6 +15,6 @@ api:
 
 api-check:
   matrix:
-    python: [py313]
+    python: [py314]
   run:
     command: tox -e tooltool_api-check
