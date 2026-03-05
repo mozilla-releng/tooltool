@@ -3,7 +3,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import asyncio
 import datetime
 import hashlib
 import json
@@ -215,4 +214,4 @@ def cmd_worker():
         pulse_user, pulse_pass, exchange, tooltool_api.config.PULSE_ROUTE_CHECK_FILE_PENDING_UPLOADS, check_file_pending_uploads
     )
     logger.info("Listening for new messages on", exchange=exchange, route=tooltool_api.config.PULSE_ROUTE_CHECK_FILE_PENDING_UPLOADS)
-    tooltool_api.lib.pulse.run_consumer(asyncio.gather(*[check_file_pending_uploads_consumer]))
+    tooltool_api.lib.pulse.run_consumer(check_file_pending_uploads_consumer)
