@@ -47,7 +47,7 @@ dev = [
   "flake8-isort",
   "flake8-quotes",
   "inotify",  # needed by gunicorn for faster/better reload
-  "isort",
+  "isort>=5",
   "moto",
   "mypy",
   "pdbpp",

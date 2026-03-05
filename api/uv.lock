@@ -1255,7 +1255,7 @@ dev = [
     { name = "flake8-quotes" },
     { name = "flask-caching" },
     { name = "inotify" },
-    { name = "isort" },
+    { name = "isort", specifier = ">=5" },
     { name = "jinja2" },
     { name = "moto" },
     { name = "mypy" },
