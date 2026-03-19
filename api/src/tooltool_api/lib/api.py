@@ -38,7 +38,7 @@ class Api:
         validator_map=None,
         pythonic_params=False,
         pass_context_arg_name=None,
-        options=dict(swagger_url="apidocs"),
+        options=dict(swagger_ui=False),
     ):
         """Adds an API to the application based on a swagger file"""
 
