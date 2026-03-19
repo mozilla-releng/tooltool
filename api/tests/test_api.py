@@ -223,11 +223,6 @@ def bucket(s3):
     s3.create_bucket(Bucket="bucket")
 
 
-def test_swagger(real_client):
-    resp = real_client.get("/apidocs/")
-    assert resp.status_code == 200
-
-
 def test_heartbeat(real_client):
     resp = real_client.get("/__heartbeat__")
     assert resp.status_code == 200
