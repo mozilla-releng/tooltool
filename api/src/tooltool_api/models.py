@@ -23,6 +23,7 @@ class File(tooltool_api.lib.db.db.Model):
     visibility = sa.Column(sa.Enum("public", "internal", name="visibility"), nullable=False)
 
     instances = sa.orm.relationship("FileInstance", backref="file")
+    _batches = sa.orm.relationship("BatchFile", back_populates="file")
 
     # note that changes to this dictionary will not be reflected to the DB;
     # add or delete BatchFile instances directly instead.
@@ -46,6 +47,8 @@ class Batch(tooltool_api.lib.db.db.Model):
     uploaded = sa.Column(sa.DateTime, index=True, nullable=False)
     author = sa.Column(sa.Text, nullable=False)
     message = sa.Column(sa.Text, nullable=False)
+
+    _files = sa.orm.relationship("BatchFile", back_populates="batch")
 
     # note that changes to this dictionary will not be reflected to the DB;
     # add or delete BatchFile instances directly instead.
@@ -78,9 +81,9 @@ class BatchFile(tooltool_api.lib.db.db.Model):
     __tablename__ = "releng_tooltool_batch_files"
 
     file_id = sa.Column(sa.Integer, sa.ForeignKey("releng_tooltool_files.id"), primary_key=True)
-    file = sa.orm.relationship("File", backref="_batches")
+    file = sa.orm.relationship("File", back_populates="_batches")
     batch_id = sa.Column(sa.Integer, sa.ForeignKey("releng_tooltool_batches.id"), primary_key=True)
-    batch = sa.orm.relationship("Batch", backref="_files")
+    batch = sa.orm.relationship("Batch", back_populates="_files")
     filename = sa.Column(sa.Text, nullable=False)
 
 
