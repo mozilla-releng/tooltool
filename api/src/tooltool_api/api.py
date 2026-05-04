@@ -30,19 +30,23 @@ def _get_region_and_bucket(region: typing.Optional[str], regions: typing.Dict[st
     return random.choice(list(regions.items()))
 
 
+def _batch_query_options():
+    return sa.orm.selectinload(tooltool_api.models.Batch._files).joinedload(tooltool_api.models.BatchFile.file)
+
+
 def search_batches(q: str) -> dict:
     return dict(
         result=[
             row.to_dict()
-            for row in tooltool_api.models.Batch.query.filter(
-                sa.or_(tooltool_api.models.Batch.author.contains(q), tooltool_api.models.Batch.message.contains(q))
-            ).all()
+            for row in tooltool_api.models.Batch.query.options(_batch_query_options())
+            .filter(sa.or_(tooltool_api.models.Batch.author.contains(q), tooltool_api.models.Batch.message.contains(q)))
+            .all()
         ]
     )
 
 
 def get_batch(id: int) -> dict:
-    row = tooltool_api.models.Batch.query.filter(tooltool_api.models.Batch.id == id).first()
+    row = tooltool_api.models.Batch.query.options(_batch_query_options()).filter(tooltool_api.models.Batch.id == id).first()
     if not row:
         raise werkzeug.exceptions.NotFound
     return row.to_dict()

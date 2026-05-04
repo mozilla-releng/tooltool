@@ -223,6 +223,34 @@ def bucket(s3):
     s3.create_bucket(Bucket="bucket")
 
 
+def test_search_and_get_batch_include_files(real_client, bucket):
+    ext_data = {"scopes": ["project:releng:services/tooltool/api/upload/public"]}
+    header = build_header("test/user@mozilla.com", ext_data)
+
+    resp = real_client.post(
+        "/upload",
+        json={
+            "message": "batch with files",
+            "files": {
+                "test.txt": {"size": 1, "digest": DIGEST, "algorithm": "sha512", "visibility": "public"},
+            },
+        },
+        headers=[("Authorization", header)],
+    )
+    assert resp.status_code == 200
+
+    resp = real_client.get("/upload?q=batch with files")
+    assert resp.status_code == 200
+    assert len(resp.json["result"]) == 1
+    result = resp.json["result"][0]
+    assert "test.txt" in result["files"]
+    assert result["files"]["test.txt"]["digest"] == DIGEST
+
+    batch_resp = real_client.get(f"/upload/{result['id']}")
+    assert batch_resp.status_code == 200
+    assert batch_resp.json == result
+
+
 def test_heartbeat(real_client):
     resp = real_client.get("/__heartbeat__")
     assert resp.status_code == 200
