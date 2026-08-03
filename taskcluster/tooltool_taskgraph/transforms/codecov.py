@@ -9,6 +9,9 @@ from taskgraph.transforms.base import TransformSequence
 
 transforms = TransformSequence()
 
+SECRET_NAME = "project/releng/tooltool/ci"
+SECRET_URL = f"http://taskcluster/secrets/v1/secret/{SECRET_NAME}"
+
 
 @transforms.add
 def set_coverage_env(config, tasks):
@@ -21,7 +24,13 @@ def set_coverage_env(config, tasks):
 
 @transforms.add
 def get_secret(config, tasks):
+    if config.params["tasks_for"] == "github-pull-request-untrusted":
+        yield from tasks
+        return
+
     for task in tasks:
+        task["worker"]["env"]["SECRET_URL"] = SECRET_URL
+        task.setdefault("scopes", []).append(f"secrets:get:{SECRET_NAME}")
         secret = 'export CODECOV_TOKEN=$(wget -qO- $SECRET_URL | jq -r \'.["secret"]["codecov"]["token"]\')'
         task["run"][
             "command"
