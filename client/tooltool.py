@@ -62,7 +62,7 @@ DEFAULT_MANIFEST_NAME = "manifest.tt"
 TOOLTOOL_PACKAGE_SUFFIX = ".TOOLTOOL-PACKAGE"
 HAWK_VER = 1
 
-import urllib.request as urllib2
+import urllib.request
 from http.client import HTTPConnection, HTTPSConnection
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlparse
@@ -867,7 +867,7 @@ def _urlopen(req):
     ssl_context = None
     if os.name == "nt":
         ssl_context = ssl.create_default_context(cafile=certifi.where())
-    return urllib2.urlopen(req, context=ssl_context)
+    return urllib.request.urlopen(req, context=ssl_context)
 
 
 @contextmanager
@@ -1331,7 +1331,11 @@ def _send_batch(base_url, auth_file, batch, region):
     _authorize(req, auth_file)
     try:
         resp = _urlopen(req)
-    except (URLError, HTTPError) as e:
+    except HTTPError as e:
+        _log_api_error(e)
+        e.close()
+        return None
+    except URLError as e:
         _log_api_error(e)
         return None
     return json.load(resp)["result"]
@@ -1376,10 +1380,11 @@ def _notify_upload_complete(base_url, auth_file, file):
     req = Request(urljoin(base_url, "upload/complete/%(algorithm)s/%(digest)s" % file))
     _authorize(req, auth_file)
     try:
-        _urlopen(req)
+        _urlopen(req).close()
     except HTTPError as e:
         if e.code != 409:
             _log_api_error(e)
+            e.close()
             return
         # 409 indicates that the upload URL hasn't expired yet and we
         # should retry after a delay
@@ -1387,6 +1392,7 @@ def _notify_upload_complete(base_url, auth_file, file):
         log.warning("Waiting %d seconds for upload URLs to expire" % to_wait)
         time.sleep(to_wait)
         _notify_upload_complete(base_url, auth_file, file)
+        e.close()
     except Exception:
         log.exception("While notifying server of upload completion:")
 
