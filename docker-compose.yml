@@ -42,7 +42,7 @@ services:
         condition: service_healthy
 
   db:
-    image: postgres:16@sha256:1a6ab3f5345eb6dbe04a1349529caabdb0ab09293a09590fad07b2246bfa4b54
+    image: postgres:17@sha256:31ba9c94a03ada9988f2bb493a22a75eef3a185884533e5cdbcd498ea835b08f
     volumes:
       - dbstore:/var/lib/postgresql/data
     environment:
