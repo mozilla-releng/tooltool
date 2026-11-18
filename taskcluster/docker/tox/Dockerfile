@@ -16,9 +16,9 @@ RUN mkdir -p /builds && \
 ENV HOME=/builds/worker \
     PATH=/builds/worker/.local/bin:$PATH
 
-RUN apt-get update && apt-get install -y jq && pip install tox tox-uv
+RUN apt-get update && apt-get install -y --no-install-recommends jq && pip install tox tox-uv
 ARG SETUP_COMMAND
-RUN eval $SETUP_COMMAND
+RUN if [ -n "$SETUP_COMMAND" ]; then eval "$SETUP_COMMAND"; fi
 
 # Set a default command useful for debugging
 CMD ["/bin/sh"]
