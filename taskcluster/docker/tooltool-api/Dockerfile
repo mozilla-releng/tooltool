@@ -18,8 +18,18 @@ ENV PATH="/app/.venv/bin:${PATH}"
 # This build argument lets us share the Dockerfile between docker compose and image_builder
 ARG SRC=topsrcdir
 
-# %include api
-COPY ${SRC}/api/ /app
+# Include only what's needed, rather than all of api/, to avoid picking up
+# local state such as api/.venv (taskgraph has no exclude mechanism).
+# %include api/pyproject.toml
+COPY ${SRC}/api/pyproject.toml /app/pyproject.toml
+# %include api/uv.lock
+COPY ${SRC}/api/uv.lock /app/uv.lock
+# %include api/settings.py
+COPY ${SRC}/api/settings.py /app/settings.py
+# %include api/docker.d
+COPY ${SRC}/api/docker.d/ /app/docker.d/
+# %include api/src
+COPY ${SRC}/api/src/ /app/src/
 
 RUN chown -R app:app /app
 
